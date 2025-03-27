@@ -39,7 +39,7 @@
     >
         <div
             ref="modalRef"
-            class="w-[95%] rounded-sm bg-white p-9 text-black shadow-sm sm:max-w-[500px] dark:bg-gray-950 dark:text-white"
+            class="w-[95%] rounded-sm bg-white p-9 text-black shadow-sm sm:max-w-[500px]"
         >
             <slot />
         </div>

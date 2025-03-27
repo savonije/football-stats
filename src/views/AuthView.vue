@@ -31,7 +31,7 @@
 <template>
     <DefaultLayout>
         <div
-            class="mx-auto w-full rounded-sm bg-white p-6 shadow-sm sm:max-w-[500px] dark:bg-gray-950 dark:text-white"
+            class="mx-auto w-full rounded-sm bg-white p-6 shadow-sm sm:max-w-[500px]"
         >
             <h1>{{ t('common.login') }}</h1>
 

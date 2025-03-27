@@ -7,7 +7,7 @@
 <template>
     <div class="flex w-full grow items-center justify-center" role="status">
         <svg
-            class="h-16 w-16 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
+            class="h-16 w-16 animate-spin fill-blue-600 text-gray-200"
             aria-hidden="true"
             viewBox="0 0 100 101"
             fill="none"
