@@ -9,7 +9,7 @@
 </script>
 
 <template>
-    <header class="bg-shark text-teal mb-6 py-6 sm:p-3">
+    <header class="bg-shark text-teal py-6 sm:p-3">
         <div class="container flex items-center justify-between gap-6">
             <RouterLink to="/">
                 <span class="font-heading text-2xl font-bold">
@@ -17,14 +17,10 @@
                 </span>
             </RouterLink>
 
-            <div class="flex justify-end gap-3 lg:hidden">
-                Mobiel menu
-            </div>
-
-            <div class="hidden justify-end gap-3 lg:flex">
+            <div class="justify-end gap-3 lg:flex">
                 <button
                     v-if="storeAuth.user?.id"
-                    class="button button-transparent hover:text-shark text-white"
+                    class="button button-transparent hover:text-shark text-white text-xs"
                     type="button"
                     :aria-label="t('common.logoutUser')"
                     @click="storeAuth.logoutUser"
@@ -32,10 +28,19 @@
                     {{ t('common.logout') }}
                 </button>
 
-                <RouterLink v-else class="button hover:text-shark" to="/login">
+                <RouterLink v-else class="button hover:text-shark text-xs" to="/login">
                     {{ t('common.login') }}
                 </RouterLink>
             </div>
         </div>
     </header>
+
+    <nav class="bg-teal/20 text-shark mb-6 py-6 sm:p-3">
+        <div class="container">
+            <ul class="flex gap-3 justify-center text-xs font-bold">
+                <li>Wedstrijden</li>
+                <li>Topscoorders</li>
+            </ul>
+        </div>
+    </nav>
 </template>
