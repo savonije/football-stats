@@ -16,9 +16,14 @@ const router = createRouter({
             component: () => import('@/views/HomeView.vue'),
         },
         {
-            path: '/movie/:name/:id',
+            path: '/match/:id',
             name: 'detail',
             component: () => import('@/views/DetailView.vue'),
+        },
+        {
+            path: '/topscorers',
+            name: 'topscorers',
+            component: () => import('@/views/TopscorersView.vue'),
         },
         {
             path: '/login',

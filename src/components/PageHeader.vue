@@ -38,8 +38,16 @@
     <nav class="bg-teal/20 text-shark mb-6 py-6 sm:p-3">
         <div class="container">
             <ul class="flex gap-3 justify-center text-xs font-bold">
-                <li>Wedstrijden</li>
-                <li>Topscoorders</li>
+                <li>
+                    <RouterLink to="/">
+                        Wedstrijden
+                    </RouterLink>
+                </li>
+                <li>
+                    <RouterLink to="/topscorers">
+                        Topscoorders
+                    </RouterLink>
+                </li>
             </ul>
         </div>
     </nav>

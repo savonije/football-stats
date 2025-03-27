@@ -1,10 +1,10 @@
 <script setup lang="ts">
-    import GameDetail from '@/components/GameDetail.vue';
+    import TopscorersOverview from '@/components/TopscorersOverview.vue';
     import DefaultLayout from '@/layouts/DefaultLayout.vue';
 </script>
 
 <template>
     <DefaultLayout>
-        <GameDetail />
+        <TopscorersOverview />
     </DefaultLayout>
 </template>

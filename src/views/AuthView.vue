@@ -42,7 +42,7 @@
                     >
                     <input
                         v-model="credentials.email"
-                        class="h-12 w-full rounded-sm border p-3 shadow-sm"
+                        class="h-12 w-full rounded-sm border p-3 shadow-xs"
                         type="email"
                     />
                 </fieldset>
@@ -53,7 +53,7 @@
                     >
                     <input
                         v-model="credentials.password"
-                        class="h-12 w-full rounded-sm border p-3 shadow-sm"
+                        class="h-12 w-full rounded-sm border p-3 shadow-xs"
                         type="password"
                     />
                 </fieldset>
