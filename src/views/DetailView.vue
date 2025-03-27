@@ -1,3 +1,3 @@
 <template>
-    Home
+    Detail page
 </template>
