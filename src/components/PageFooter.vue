@@ -1,7 +1,5 @@
 <template>
-    <footer
-        class="text-shark-500 bg-black py-3"
-    >
+    <footer class="text-shark-500 bg-black py-3">
         <div class="container flex justify-between text-xs">
             <div>Voetbalstatistieken</div>
             <div class="text-right">

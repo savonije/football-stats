@@ -20,7 +20,7 @@
             <div class="justify-end gap-3 lg:flex">
                 <button
                     v-if="storeAuth.user?.id"
-                    class="button button-transparent hover:text-shark text-white text-xs"
+                    class="button button-transparent hover:text-shark text-xs text-white"
                     type="button"
                     :aria-label="t('common.logoutUser')"
                     @click="storeAuth.logoutUser"
@@ -28,7 +28,11 @@
                     {{ t('common.logout') }}
                 </button>
 
-                <RouterLink v-else class="button hover:text-shark text-xs" to="/login">
+                <RouterLink
+                    v-else
+                    class="button hover:text-shark text-xs"
+                    to="/login"
+                >
                     {{ t('common.login') }}
                 </RouterLink>
             </div>
@@ -37,16 +41,12 @@
 
     <nav class="bg-teal/20 text-shark mb-6 py-6 sm:p-3">
         <div class="container">
-            <ul class="flex gap-3 justify-center text-xs font-bold">
+            <ul class="flex justify-center gap-3 text-xs font-bold">
                 <li>
-                    <RouterLink to="/">
-                        Wedstrijden
-                    </RouterLink>
+                    <RouterLink to="/"> Wedstrijden </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/topscorers">
-                        Topscoorders
-                    </RouterLink>
+                    <RouterLink to="/topscorers"> Topscoorders </RouterLink>
                 </li>
             </ul>
         </div>
