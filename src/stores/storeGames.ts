@@ -1,10 +1,9 @@
 import {
+    addDoc, // Use addDoc to automatically generate an ID
     collection,
-    doc,
     onSnapshot,
     orderBy,
     query,
-    setDoc,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
@@ -36,11 +35,18 @@ export const useStoreGames = defineStore('storeGames', {
                 this.GamesLoaded = true;
             });
         },
+
         async addGame(game: Game) {
-            await setDoc(doc(db, 'games', game.id), {
-                ...game,
-                date: game.date.toISOString(),
-            });
+            try {
+                const gameRef = await addDoc(collectionRef, {
+                    ...game,
+                    date: game.date.toISOString(),
+                });
+
+                console.log('New game added with ID:', gameRef.id);
+            } catch (error) {
+                console.error('Error adding game:', error);
+            }
         },
     },
 });

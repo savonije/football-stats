@@ -1,5 +1,4 @@
 <script setup lang="ts">
-    import { nanoid } from 'nanoid';
     import { nextTick, onMounted, ref } from 'vue';
     import { toast, type ToastOptions } from 'vue3-toastify';
 
@@ -13,8 +12,6 @@
 
     const { t } = useI18n();
     const storeGames = useStoreGames();
-
-    const uniqueId = nanoid(14);
 
     const model = defineModel<boolean>();
     const opponentInput = ref<HTMLInputElement | null>(null);
@@ -31,7 +28,6 @@
 
     const submitForm = () => {
         const formData = {
-            id: uniqueId,
             opponent: opponent.value,
             goals_against: 0,
             goals_for: 0,
