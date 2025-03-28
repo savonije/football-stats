@@ -4,3 +4,7 @@ export interface Game {
     goals_for: number;
     opponent: string;
 }
+
+export interface Player {
+    name: string;
+}

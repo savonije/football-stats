@@ -1,5 +1,5 @@
 import {
-    addDoc, // Use addDoc to automatically generate an ID
+    addDoc,
     collection,
     onSnapshot,
     orderBy,
