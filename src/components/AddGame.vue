@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { defineAsyncComponent } from 'vue';
-    import { useI18n } from 'vue-i18n';
 
     import Loader from '@/components/Loader.vue';
 
@@ -10,7 +9,6 @@
         () => import('@/components/ModalAddGame.vue'),
     );
 
-    const { t } = useI18n();
     const storeAuth = useStoreAuth();
 
     const isModalVisible = defineModel<boolean>();
@@ -27,7 +25,7 @@
         type="button"
         @click="openModal"
     >
-        {{ t('titles.addMovie') }}
+        Wedstrijd starten
     </button>
 
     <Suspense>

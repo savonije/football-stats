@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { nanoid } from 'nanoid';
     import { nextTick, onMounted, ref } from 'vue';
     import { toast, type ToastOptions } from 'vue3-toastify';
 
@@ -8,21 +9,37 @@
 
     import { useI18n } from 'vue-i18n';
 
+    import { useStoreGames } from '@/stores/storeGames';
+
     const { t } = useI18n();
+    const storeGames = useStoreGames();
+
+    const uniqueId = nanoid(14);
 
     const model = defineModel<boolean>();
     const opponentInput = ref<HTMLInputElement | null>(null);
+    const seasonInput = ref<HTMLInputElement | null>(null);
 
     const opponent = ref('');
-    const goalsAgainst = ref(1);
-    const goalsFor = ref(1);
+    const season = ref('');
 
     const closeModal = () => {
         model.value = false;
     };
 
     const submitForm = () => {
-        toast.success(`Wedstrijd toegevoegd.`, {
+        const formData = {
+            id: uniqueId,
+            opponent: opponent.value,
+            goals_against: 0,
+            goals_for: 0,
+            season: season.value,
+            date: new Date(),
+        };
+
+        storeGames.addGame(formData);
+
+        toast.success(`Wedstrijd gestart!`, {
             autoClose: 3000,
             theme: 'dark',
             dangerouslyHTMLString: true,
@@ -42,10 +59,10 @@
 
 <template>
     <ModalLayout :showModal="model" @close="closeModal">
-        <h2>Wedstrijd toevoegen</h2>
+        <h2>Wedstrijd starten</h2>
 
         <form @submit.prevent="submitForm">
-            <div class="mb-12 flex gap-3">
+            <div class="mb-6 flex gap-3">
                 <div class="flex-1">
                     <label class="mb-2 block font-bold" for="opponent">
                         Tegenstander:
@@ -58,31 +75,23 @@
                         type="text"
                     />
                 </div>
+            </div>
 
-                <div>
-                    <label class="mb-2 block font-bold" for="goalsFor">
-                        Goals voor:
+            <div class="mb-12 flex gap-3">
+                <div class="flex-1">
+                    <label class="mb-2 block font-bold" for="opponent">
+                        Seizoen:
                     </label>
-                    <input
-                        id="goalsFor"
-                        ref="goalsFor"
-                        v-model="goalsFor"
+                    <select
+                        id="season"
+                        ref="seasonInput"
+                        v-model="season"
                         class="h-12 w-full rounded border px-6 py-3"
-                        type="number"
-                    />
-                </div>
-
-                <div>
-                    <label class="mb-2 block font-bold" for="goalsAgainst">
-                        Doelpunten tegen:
-                    </label>
-                    <input
-                        id="goalsAgainst"
-                        ref="goalsAgainst"
-                        v-model="goalsAgainst"
-                        class="h-12 w-full rounded border px-6 py-3"
-                        type="number"
-                    />
+                    >
+                        <option selected>Q1 2025</option>
+                        <option>Q4 2024</option>
+                        <option>Q3 2024</option>
+                    </select>
                 </div>
             </div>
 
@@ -95,9 +104,7 @@
                     {{ t('common.cancel') }}
                 </button>
 
-                <button class="button" type="submit">
-                    {{ t('common.save') }}
-                </button>
+                <button class="button" type="submit">Start!</button>
             </div>
         </form>
     </ModalLayout>
