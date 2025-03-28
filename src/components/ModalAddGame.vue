@@ -19,9 +19,11 @@
     const model = defineModel<boolean>();
     const opponentInput = ref<HTMLInputElement | null>(null);
     const seasonInput = ref<HTMLInputElement | null>(null);
+    const dateInput = ref<HTMLInputElement | null>(null);
 
     const opponent = ref('');
     const season = ref('');
+    const date = ref(new Date().toISOString().split('T')[0]);
 
     const closeModal = () => {
         model.value = false;
@@ -73,6 +75,21 @@
                         v-model="opponent"
                         class="h-12 w-full rounded border px-6 py-3"
                         type="text"
+                    />
+                </div>
+            </div>
+
+            <div class="mb-6 flex gap-3">
+                <div class="flex-1">
+                    <label class="mb-2 block font-bold" for="date">
+                        Datum:
+                    </label>
+                    <input
+                        id="date"
+                        ref="dateInput"
+                        v-model="date"
+                        class="h-12 w-full rounded border px-6 py-3"
+                        type="date"
                     />
                 </div>
             </div>
