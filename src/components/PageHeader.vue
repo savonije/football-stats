@@ -48,6 +48,9 @@
                 <li>
                     <RouterLink to="/topscorers"> Topscoorders </RouterLink>
                 </li>
+                <li>
+                    <RouterLink to="/players"> Spelers </RouterLink>
+                </li>
             </ul>
         </div>
     </nav>

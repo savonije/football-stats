@@ -26,17 +26,22 @@
 </script>
 
 <template>
-    <h1>{{ gameDetails?.opponent ?? 'Tegenstander' }} - Apollo</h1>
-
-    <div v-if="gameDetails">
-        <div class="text-xl font-bold">
-            {{ gameDetails.goals_against }} - {{ gameDetails.goals_for }}
+    <div v-if="gameDetails" class="mx-auto flex w-[550px] justify-center gap-9">
+        <div>
+            <h2>Apollo</h2>
+            <div class="text-center text-5xl font-bold">
+                {{ gameDetails.goals_for }}
+            </div>
+            <div class="mt-9">Spelers...</div>
         </div>
-
-        <div>⚽️ - Ryan</div>
-        <div>⚽️ - Ryan</div>
-        <div>⚽️ - Ryan</div>
+        <div>
+            <h2>{{ gameDetails?.opponent ?? 'Tegenstander' }}</h2>
+            <div class="text-center text-5xl font-bold">
+                {{ gameDetails.goals_against }}
+            </div>
+        </div>
     </div>
+
     <div v-else>
         <Loader />
         <p>Wedstrijd gegevens laden...</p>
