@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+    import { storeToRefs } from 'pinia';
     import { computed, onMounted, ref, watch } from 'vue';
     import { useRoute } from 'vue-router';
 
@@ -6,10 +7,16 @@
 
     import { useDebounce } from '@/composables/useDebounce';
     import { useStoreGames } from '@/stores/storeGames';
+    import { useStorePlayers } from '@/stores/storePlayers';
 
     const StoreGames = useStoreGames();
     const route = useRoute();
     const isDataLoading = ref(true);
+
+    const playersStore = useStorePlayers();
+    const { players } = storeToRefs(playersStore);
+
+    console.log(players.value);
 
     const id = computed(() => route.params.id as string);
 
@@ -42,18 +49,21 @@
         }
     });
 
-    onMounted(() => {
-        isDataLoading.value = !StoreGames.Games.length;
+    onMounted(async () => {
+        isDataLoading.value = StoreGames.Games.length === 0;
 
-        if (!StoreGames.Games.length) {
-            StoreGames.getGames();
-        }
+        await Promise.all([
+            playersStore.getPlayers(),
+            StoreGames.Games.length === 0
+                ? StoreGames.getGames()
+                : Promise.resolve(),
+        ]);
     });
 </script>
 
 <template>
     <div v-if="gameDetails" class="mx-auto flex w-[550px] justify-center gap-9">
-        <div>
+        <div class="w-[400px] text-center">
             <h2>Apollo</h2>
             <div class="text-center text-5xl font-bold">
                 <input
@@ -64,9 +74,15 @@
                     max="40"
                 />
             </div>
-            <div class="mt-9">Spelers...</div>
+            <div class="mt-9">
+                <ul>
+                    <li v-for="(player, index) in players" :key="player.name">
+                        <strong>{{ index + 1 }}.</strong> {{ player.name }}
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div>
+        <div class="w-[400px] text-center">
             <h2>{{ gameDetails?.opponent ?? 'Tegenstander' }}</h2>
             <div class="text-center text-5xl font-bold">
                 <input
