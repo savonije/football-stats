@@ -1,4 +1,5 @@
 export interface Game {
+    id: string;
     date: Date;
     goals_against: number;
     goals_for: number;

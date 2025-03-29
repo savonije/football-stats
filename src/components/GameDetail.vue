@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-    import { computed, onMounted, ref } from 'vue';
+    import { computed, onMounted, ref, watch } from 'vue';
     import { useRoute } from 'vue-router';
 
     import Loader from '@/components/Loader.vue';
 
+    import { useDebounce } from '@/composables/useDebounce';
     import { useStoreGames } from '@/stores/storeGames';
 
     const StoreGames = useStoreGames();
@@ -15,6 +16,31 @@
     const gameDetails = computed(
         () => StoreGames.Games.find((game) => game.id === id.value) || null,
     );
+
+    const debouncedGoalsFor = useDebounce(
+        computed(() => gameDetails.value?.goals_for),
+        500,
+    );
+    const debouncedGoalsAgainst = useDebounce(
+        computed(() => gameDetails.value?.goals_against),
+        500,
+    );
+
+    watch(debouncedGoalsFor, (newValue, oldValue) => {
+        if (newValue !== oldValue && gameDetails.value) {
+            StoreGames.updateGame(gameDetails.value.id, {
+                goals_for: newValue,
+            });
+        }
+    });
+
+    watch(debouncedGoalsAgainst, (newValue, oldValue) => {
+        if (newValue !== oldValue && gameDetails.value) {
+            StoreGames.updateGame(gameDetails.value.id, {
+                goals_against: newValue,
+            });
+        }
+    });
 
     onMounted(() => {
         isDataLoading.value = !StoreGames.Games.length;
@@ -30,14 +56,26 @@
         <div>
             <h2>Apollo</h2>
             <div class="text-center text-5xl font-bold">
-                {{ gameDetails.goals_for }}
+                <input
+                    v-model="gameDetails.goals_for"
+                    class="bg-shark-300 w-20 rounded-sm text-center"
+                    type="number"
+                    min="0"
+                    max="40"
+                />
             </div>
             <div class="mt-9">Spelers...</div>
         </div>
         <div>
             <h2>{{ gameDetails?.opponent ?? 'Tegenstander' }}</h2>
             <div class="text-center text-5xl font-bold">
-                {{ gameDetails.goals_against }}
+                <input
+                    v-model="gameDetails.goals_against"
+                    class="bg-shark-300 w-20 rounded-sm text-center"
+                    type="number"
+                    min="0"
+                    max="40"
+                />
             </div>
         </div>
     </div>

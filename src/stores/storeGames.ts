@@ -1,9 +1,11 @@
 import {
     addDoc,
     collection,
+    doc,
     onSnapshot,
     orderBy,
     query,
+    updateDoc,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
@@ -46,6 +48,15 @@ export const useStoreGames = defineStore('storeGames', {
                 console.log('New game added with ID:', gameRef.id);
             } catch (error) {
                 console.error('Error adding game:', error);
+            }
+        },
+
+        async updateGame(id: string, updates: Partial<Game>) {
+            try {
+                const gameRef = doc(db, 'games', id);
+                await updateDoc(gameRef, updates);
+            } catch (error) {
+                console.error('Error updating game:', error);
             }
         },
     },
