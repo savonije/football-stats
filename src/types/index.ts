@@ -6,10 +6,15 @@ export interface MatchResult {
 export interface Match {
   id: string
   opponent: string
+  date: Date
   home: boolean
-  date: string // ISO string, bv. "2025-09-15"
-  result?: MatchResult
+  result?: {
+    goalsFor: number
+    goalsAgainst: number
+  }
 }
+
+export type NewMatch = Omit<Match, 'id'>
 
 export interface Appearance {
   id: string

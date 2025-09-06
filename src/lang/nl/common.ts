@@ -1,7 +1,7 @@
 export default {
   away: 'Uit',
   date: 'Datum',
-  goal: 'Doelpunt |Doelpunten',
+  goal: 'Doelpunt | Doelpunten',
   home: 'Thuis',
   homeOrAway: 'Uit of thuis',
   match: 'Wedstrijd | Wedstrijden',
@@ -15,4 +15,17 @@ export default {
   totalGoals: 'Totaal aantal doelpunten',
   totalAppearances: 'Totaal aantal optredens',
   totalKeeper: 'Totaal aantal keer keeper geweest',
+  addMatch: 'Wedstrijd toevoegen',
+  goalsFor: 'Doelpunten voor',
+  goalsAgainst: 'Doelpunten tegen',
+  validation: {
+    warning: 'Waarschuwing',
+    fillAll: 'Vul alle verplichte velden in',
+  },
+  messages: {
+    success: 'Succes',
+    matchAdded: 'Wedstrijd succesvol toegevoegd',
+    error: 'Fout',
+    matchAddError: 'Kon de wedstrijd niet toevoegen',
+  },
 }
