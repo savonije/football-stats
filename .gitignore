@@ -20,6 +20,9 @@ dist-ssr
 coverage
 *.local
 
+.vite
+.eslintcache
+
 /cypress/videos/
 /cypress/screenshots/
 
