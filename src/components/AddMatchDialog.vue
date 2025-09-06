@@ -1,34 +1,45 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
-import type { NewMatch } from '@/types'
+import { Dialog, DatePicker, InputText, MultiSelect, Select, InputNumber, Button } from 'primevue'
+import type { NewMatch, Player } from '@/types'
 import { addMatch } from '@/services/matchService'
-
-import { Dialog, DatePicker, InputText, Select, InputNumber, Button } from 'primevue'
+import { usePlayerStore } from '@/stores/playerStore'
 
 const model = defineModel<boolean>('visible')
-
 const { t } = useI18n()
 const toast = useToast()
-
 const seasonId = '2025-2026'
 const loading = ref(false)
 
-const form = reactive<NewMatch & { date: Date | null }>({
+const form = reactive<NewMatch & { date: Date | null; players?: string[] }>({
   opponent: '',
   date: new Date(),
   home: true,
+  players: [],
 })
 const goalsFor = ref<number | null>(null)
 const goalsAgainst = ref<number | null>(null)
-
-const closeDialog = () => (model.value = false)
 
 const homeOptions = [
   { label: t('common.home'), value: true },
   { label: t('common.away'), value: false },
 ]
+
+const playerStore = usePlayerStore()
+const availablePlayers = ref<Player[]>([])
+
+onMounted(async () => {
+  await playerStore.fetchPlayers()
+  availablePlayers.value = playerStore.players
+})
+
+const playerOptions = computed(() =>
+  availablePlayers.value.map((player) => ({ label: player.name, value: player.id })),
+)
+
+const closeDialog = () => (model.value = false)
 
 const submitMatch = async () => {
   if (!form.opponent || !form.date) {
@@ -46,7 +57,9 @@ const submitMatch = async () => {
     if (goalsFor.value !== null && goalsAgainst.value !== null) {
       form.result = { goalsFor: goalsFor.value, goalsAgainst: goalsAgainst.value }
     }
-    await addMatch(seasonId, form)
+
+    await addMatch(seasonId, { ...form, playerIds: form.players })
+
     toast.add({
       severity: 'success',
       summary: t('common.messages.success'),
@@ -86,6 +99,16 @@ const submitMatch = async () => {
 
       <label>{{ t('common.homeOrAway') }}</label>
       <Select v-model="form.home" :options="homeOptions" optionLabel="label" optionValue="value" />
+
+      <label>{{ t('common.player', 2) }}</label>
+      <MultiSelect
+        v-model="form.players"
+        :options="playerOptions"
+        optionLabel="label"
+        optionValue="value"
+        multiple
+        showClear
+      />
 
       <label>{{ t('common.goalsFor') }}</label>
       <InputNumber v-model="goalsFor" :showButtons="true" />

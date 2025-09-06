@@ -15,8 +15,28 @@ export async function getMatches(seasonId: string): Promise<Match[]> {
   )
 }
 
-export async function addMatch(seasonId: string, match: NewMatch) {
-  const matchesRef = collection(db, `seasons/${seasonId}/matches`)
-  const docRef = await addDoc(matchesRef, match)
-  return docRef.id
+export const addMatch = async (seasonId: string, match: NewMatch) => {
+  const matchRef = await addDoc(collection(db, 'seasons', seasonId, 'matches'), {
+    opponent: match.opponent,
+    date: match.date,
+    home: match.home,
+    result: match.result || null,
+    createdAt: new Date(),
+  })
+
+  const playerIds = match.playerIds || []
+
+  if (playerIds.length) {
+    const appearancesCollection = collection(matchRef, 'appearances')
+    for (const playerId of playerIds) {
+      await addDoc(appearancesCollection, {
+        playerId,
+        present: true,
+        isGoalkeeper: false,
+        goals: 0,
+      })
+    }
+  }
+
+  return matchRef
 }

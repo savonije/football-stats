@@ -24,9 +24,7 @@ const appearancesWithName = computed(() =>
 
 onMounted(async () => {
   await matchStore.fetchMatchDetails(seasonId, matchId.value)
-  await Promise.all(
-    matchStore.presentPlayers.map((player) => playerStore.fetchPlayerName(player.playerId)),
-  )
+  await Promise.all(matchStore.presentPlayers.map((p) => playerStore.fetchPlayerName(p.playerId)))
 })
 </script>
 

@@ -14,7 +14,16 @@ export interface Match {
   }
 }
 
-export type NewMatch = Omit<Match, 'id'>
+export interface NewMatch {
+  opponent: string
+  date: Date
+  home: boolean
+  result?: {
+    goalsFor: number
+    goalsAgainst: number
+  }
+  playerIds?: string[]
+}
 
 export interface Appearance {
   id: string
@@ -24,4 +33,8 @@ export interface Appearance {
   isGoalkeeper: boolean
   seasonId: string
   matchId: string
+}
+export interface Player {
+  id: string
+  name: string
 }
