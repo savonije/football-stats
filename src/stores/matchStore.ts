@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { getMatches } from '@/services/matchService'
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore'
+import { doc, getDoc, collection, getDocs, collectionGroup, query, where } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Match, Appearance } from '@/types'
 
@@ -43,6 +43,19 @@ export const useMatchStore = defineStore('matchStore', {
             ...doc.data(),
           }) as Appearance,
       )
+
+      this.loadingAppearances = false
+    },
+
+    async fetchPlayerAppearances(seasonId: string, playerId: string) {
+      this.loadingAppearances = true
+
+      const q = query(collectionGroup(db, 'appearances'), where('seasonId', '==', seasonId))
+      const snapshot = await getDocs(q)
+
+      this.appearances = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }) as Appearance)
+        .filter((a) => a.playerId === playerId)
 
       this.loadingAppearances = false
     },

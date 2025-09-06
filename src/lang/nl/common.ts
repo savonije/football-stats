@@ -12,4 +12,7 @@ export default {
   result: 'Uitslag',
   score: 'Score',
   title: 'Wedstrijden',
+  totalGoals: 'Totaal aantal doelpunten',
+  totalAppearances: 'Totaal aantal optredens',
+  totalKeeper: 'Totaal aantal keer keeper geweest',
 }

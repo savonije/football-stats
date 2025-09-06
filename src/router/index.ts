@@ -14,6 +14,12 @@ const routes = [
     component: () => import('@/views/MatchView.vue'),
     meta: { title: "Wedstrijddetails - Apollo '69 JO9" },
   },
+  {
+    path: '/player/:id',
+    name: 'playerDetail',
+    component: () => import('@/views/PlayerView.vue'),
+    meta: { title: "Spelerdetails - Apollo '69 JO9" },
+  },
 ]
 
 const router = createRouter({

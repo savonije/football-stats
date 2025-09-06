@@ -17,4 +17,6 @@ export interface Appearance {
   present: boolean
   goals: number
   isGoalkeeper: boolean
+  seasonId: string
+  matchId: string
 }

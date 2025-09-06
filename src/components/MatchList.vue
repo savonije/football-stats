@@ -15,6 +15,7 @@ onMounted(async () => {
 
 <template>
   <div class="p-6">
+    <h1>{{ $t('common.title') }}</h1>
     <DataTable
       v-if="matchStore.matches.length"
       :value="matchStore.matches"
