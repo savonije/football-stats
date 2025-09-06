@@ -8,6 +8,9 @@ import { definePreset } from '@primeuix/themes'
 import { theme } from '@/utils/tailwind'
 import i18n from '@/config/i18n'
 import { Config, ToastService } from 'primevue'
+import { createPinia } from 'pinia'
+
+const pinia = createPinia()
 
 const app = createApp(App)
 
@@ -40,5 +43,6 @@ app.use(Config, {
 app.use(ToastService)
 app.use(i18n)
 app.use(router)
+app.use(pinia)
 
 app.mount('#app')
