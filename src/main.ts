@@ -1,4 +1,5 @@
 import '@/styles/main.css'
+import '@/config/dayjs'
 
 import { createApp } from 'vue'
 import App from '@/App.vue'
