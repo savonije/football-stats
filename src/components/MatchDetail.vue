@@ -6,15 +6,27 @@ import type { Appearance } from '@/types'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { useRoute } from 'vue-router'
+import { usePlayerStore } from '@/stores/playerStore'
 
+const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
 const seasonId = '2025-2026'
 
 const route = useRoute()
 const matchId = computed(() => route.params.id as string)
 
+const appearancesWithName = computed(() =>
+  matchStore.presentPlayers.map((player) => ({
+    ...player,
+    playerName: playerStore.players[player.playerId] || player.playerId,
+  })),
+)
+
 onMounted(async () => {
   await matchStore.fetchMatchDetails(seasonId, matchId.value)
+  await Promise.all(
+    matchStore.presentPlayers.map((player) => playerStore.fetchPlayerName(player.playerId)),
+  )
 })
 </script>
 
@@ -35,12 +47,12 @@ onMounted(async () => {
 
     <h2 class="text-xl font-semibold mb-2">{{ $t('common.presentPlayers') }}</h2>
     <DataTable
-      :value="matchStore.presentPlayers"
+      :value="appearancesWithName"
       :loading="matchStore.loadingAppearances"
       dataKey="id"
       stripedRows
     >
-      <Column field="playerId" :header="$t('common.player')" />
+      <Column field="playerName" :header="$t('common.player')" />
       <Column :header="$t('common.goal', 2)">
         <template #body="{ data }">
           {{ (data as Appearance).goals || 0 }}
