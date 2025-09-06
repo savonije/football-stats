@@ -6,11 +6,12 @@ import { Dialog, DatePicker, InputText, MultiSelect, Select, InputNumber, Button
 import type { NewMatch, Player } from '@/types'
 import { addMatch } from '@/services/matchService'
 import { usePlayerStore } from '@/stores/playerStore'
+import { SEASON } from '@/constants'
 
 const model = defineModel<boolean>('visible')
 const { t } = useI18n()
 const toast = useToast()
-const seasonId = '2025-2026'
+const seasonId = SEASON
 const loading = ref(false)
 
 const form = reactive<NewMatch & { date: Date | null; players?: string[] }>({

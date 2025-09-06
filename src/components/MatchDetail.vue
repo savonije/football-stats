@@ -7,12 +7,13 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { useRoute } from 'vue-router'
 import { usePlayerStore } from '@/stores/playerStore'
+import { SEASON } from '@/constants'
 
 import dayjs from 'dayjs'
 
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
-const seasonId = '2025-2026'
+const seasonId = SEASON
 
 const route = useRoute()
 const matchId = computed(() => route.params.id as string)

@@ -6,8 +6,10 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import dayjs from 'dayjs'
 
+import { SEASON } from '@/constants'
+
 const matchStore = useMatchStore()
-const seasonId = '2025-2026'
+const seasonId = SEASON
 
 onMounted(async () => {
   await matchStore.fetchMatches(seasonId)

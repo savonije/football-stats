@@ -2,11 +2,12 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMatchStore } from '@/stores/matchStore'
+import { SEASON } from '@/constants'
 
 const matchStore = useMatchStore()
 const route = useRoute()
 
-const seasonId = '2025-2026'
+const seasonId = SEASON
 const playerId = computed(() => route.params.id as string)
 
 const playerName = ref('')
