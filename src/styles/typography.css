@@ -1,0 +1,40 @@
+@layer base {
+  body {
+    @apply font-display text-base leading-normal;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-bold last:mb-0;
+  }
+
+  h1 {
+    @apply mb-6 text-2xl;
+  }
+
+  h2 {
+    @apply mb-4 text-lg;
+  }
+
+  h3 {
+    @apply mb-2;
+  }
+
+  h4 {
+    @apply leading-7;
+  }
+
+  h5 {
+    @apply text-base;
+  }
+
+  p {
+    @apply mb-6 last:mb-0;
+  }
+
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+}
