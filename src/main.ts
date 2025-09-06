@@ -1,7 +1,7 @@
 import '@/styles/main.css'
 import '@/config/dayjs'
 
-import { createApp } from 'vue'
+import { createApp, markRaw } from 'vue'
 import App from '@/App.vue'
 import Aura from '@primeuix/themes/aura'
 import router from '@/router'
@@ -10,8 +10,19 @@ import { theme } from '@/utils/tailwind'
 import i18n from '@/config/i18n'
 import { Config, ToastService } from 'primevue'
 import { createPinia } from 'pinia'
+import type { Router } from 'vue-router'
+
+declare module 'pinia' {
+  export interface PiniaCustomProperties {
+    router: Router
+  }
+}
 
 const pinia = createPinia()
+
+pinia.use(({ store }) => {
+  store.router = markRaw(router)
+})
 
 const app = createApp(App)
 

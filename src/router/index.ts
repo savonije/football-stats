@@ -20,6 +20,12 @@ const routes = [
     component: () => import('@/views/PlayerView.vue'),
     meta: { title: "Spelerdetails - Apollo '69 JO9" },
   },
+  {
+    path: '/login',
+    name: 'auth',
+    component: () => import('@/views/AuthView.vue'),
+    meta: { title: "Login -  Apollo '69 JO9" },
+  },
 ]
 
 const router = createRouter({
