@@ -52,7 +52,13 @@ onMounted(async () => {
       dataKey="id"
       stripedRows
     >
-      <Column field="playerName" :header="$t('common.player')" />
+      <Column :header="$t('common.player')">
+        <template #body="{ data }">
+          <router-link :to="{ name: 'playerDetail', params: { id: data.playerId } }">
+            {{ data.playerName }}
+          </router-link>
+        </template>
+      </Column>
       <Column :header="$t('common.goal', 2)">
         <template #body="{ data }">
           {{ (data as Appearance).goals || 0 }}
