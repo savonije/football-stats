@@ -10,11 +10,7 @@ const showAddMatchDialog = ref(false)
 <template>
   <div class="p-6">
     <div class="mb-4">
-      <Button
-        label="Nieuwe wedstrijd toevoegen"
-        icon="pi pi-plus"
-        @click="showAddMatchDialog = true"
-      />
+      <Button :label="$t('common.addMatch')" icon="pi pi-plus" @click="showAddMatchDialog = true" />
     </div>
 
     <AddMatchDialog v-model:visible="showAddMatchDialog" />
