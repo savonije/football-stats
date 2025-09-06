@@ -5,7 +5,14 @@ const routes = [
     path: '/',
     name: 'home',
     component: () => import('@/views/HomeView.vue'),
-    meta: { title: 'Home - Apollo JO9' },
+    meta: { title: "Home - Apollo '69 JO9" },
+  },
+
+  {
+    path: '/match/:id',
+    name: 'matchDetail',
+    component: () => import('@/views/MatchView.vue'),
+    meta: { title: "Wedstrijddetails - Apollo '69 JO9" },
   },
 ]
 

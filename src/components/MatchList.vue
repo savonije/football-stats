@@ -10,7 +10,6 @@ const seasonId = '2025-2026'
 
 onMounted(async () => {
   await matchStore.fetchMatches(seasonId)
-  console.log('Matches loaded from store:', matchStore.matches)
 })
 </script>
 
@@ -24,17 +23,22 @@ onMounted(async () => {
       class="shadow-lg rounded-2xl"
       stripedRows
     >
-      <Column field="date" :header="$t('common.matches.date')" />
-      <Column field="opponent" :header="$t('common.matches.opponent')" />
-      <Column :header="$t('common.matches.homeOrAway')">
+      <Column field="date" :header="$t('common.date')" />
+      <Column field="opponent" :header="$t('common.opponent')" />
+      <Column :header="$t('common.homeOrAway')">
         <template #body="{ data }">
           {{ data.home ? 'Thuis' : 'Uit' }}
         </template>
       </Column>
 
-      <Column :header="$t('common.matches.result')">
+      <Column :header="$t('common.result')">
         <template #body="{ data }">
           {{ data.result ? `${data.result.goalsFor}-${data.result.goalsAgainst}` : '-' }}
+        </template>
+      </Column>
+      <Column>
+        <template #body="{ data }">
+          <router-link :to="{ name: 'matchDetail', params: { id: data.id } }"> Bekijk </router-link>
         </template>
       </Column>
     </DataTable>
