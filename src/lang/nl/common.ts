@@ -11,6 +11,7 @@ export default {
   login: 'Inloggen',
   logout: 'Uitloggen',
   match: 'Wedstrijd | Wedstrijden',
+  noMatches: 'Geen wedstrijden gevonden...',
   opponent: 'Tegenstander',
   password: 'Wachtwoord',
   player: 'Speler | Spelers',

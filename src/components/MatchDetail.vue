@@ -8,6 +8,8 @@ import Column from 'primevue/column'
 import { useRoute } from 'vue-router'
 import { usePlayerStore } from '@/stores/playerStore'
 
+import dayjs from 'dayjs'
+
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
 const seasonId = '2025-2026'
@@ -41,6 +43,13 @@ onMounted(async () => {
         {{ matchStore.selectedMatch.result.goalsAgainst }}
       </span>
       <span v-else>-</span>
+    </p>
+
+    <p class="mb-4" v-if="matchStore.selectedMatch?.date">
+      {{ $t('common.date') }}:
+      <span>
+        {{ dayjs(matchStore.selectedMatch.date.toDate()).format('DD-MM-YY') }}
+      </span>
     </p>
 
     <h2 class="text-xl font-semibold mb-2">{{ $t('common.presentPlayers') }}</h2>

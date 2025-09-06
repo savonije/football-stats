@@ -4,6 +4,7 @@ import { useMatchStore } from '@/stores/matchStore'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import dayjs from 'dayjs'
 
 const matchStore = useMatchStore()
 const seasonId = '2025-2026'
@@ -24,7 +25,11 @@ onMounted(async () => {
       class="shadow-lg rounded-2xl"
       stripedRows
     >
-      <Column field="date" :header="$t('common.date')" />
+      <Column field="date" :header="$t('common.date')">
+        <template #body="{ data }">
+          {{ dayjs(data.date.toDate()).format('DD-MM-YY') }}
+        </template>
+      </Column>
       <Column field="opponent" :header="$t('common.opponent')" />
       <Column :header="$t('common.homeOrAway')">
         <template #body="{ data }">
@@ -43,5 +48,6 @@ onMounted(async () => {
         </template>
       </Column>
     </DataTable>
+    <h1 v-else>{{ $t('common.noMatches') }}</h1>
   </div>
 </template>

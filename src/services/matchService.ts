@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs } from 'firebase/firestore'
+import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Match, NewMatch } from '@/types'
 
@@ -18,10 +18,10 @@ export async function getMatches(seasonId: string): Promise<Match[]> {
 export const addMatch = async (seasonId: string, match: NewMatch) => {
   const matchRef = await addDoc(collection(db, 'seasons', seasonId, 'matches'), {
     opponent: match.opponent,
-    date: match.date,
+    date: new Date(match.date),
     home: match.home,
     result: match.result || null,
-    createdAt: new Date(),
+    createdAt: serverTimestamp(),
   })
 
   const playerIds = match.playerIds || []

@@ -1,3 +1,5 @@
+import type { Timestamp } from 'firebase/firestore'
+
 export interface MatchResult {
   goalsFor: number
   goalsAgainst: number
@@ -6,7 +8,7 @@ export interface MatchResult {
 export interface Match {
   id: string
   opponent: string
-  date: Date
+  date: Timestamp
   home: boolean
   result?: {
     goalsFor: number
@@ -16,7 +18,7 @@ export interface Match {
 
 export interface NewMatch {
   opponent: string
-  date: Date
+  date: Timestamp
   home: boolean
   result?: {
     goalsFor: number
