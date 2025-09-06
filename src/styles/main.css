@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import 'tailwindcss';
+
+@import 'primeicons/primeicons.css';
+
+@theme {
+  --color-primary-50: #effefc;
+  --color-primary-100: #c8fff8;
+  --color-primary-200: #92fdf2;
+  --color-primary-300: #53f5ea;
+  --color-primary-400: #20e1db;
+  --color-primary-500: #08d9d6;
+  --color-primary-600: #039c9e;
+  --color-primary-700: #077c7e;
+  --color-primary-800: #0b6264;
+  --color-primary-900: #0e5153;
+  --color-primary-950: #012e32;
+  --color-primary: #08d9d6;
+
+  --font-body: 'Roboto', sans-serif;
+  --font-heading: 'Josefin Sans', sans-serif;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+html,
+body {
+  @apply bg-gray font-body overflow-x-clip p-6 text-black dark:bg-black dark:text-white;
+}
+
+.container {
+  @apply mx-auto w-full max-w-[1440px] px-6 lg:px-10;
+}
