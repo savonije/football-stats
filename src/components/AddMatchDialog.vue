@@ -32,7 +32,7 @@ const availablePlayers = ref<Player[]>([])
 
 onMounted(async () => {
   await playerStore.fetchPlayers()
-  availablePlayers.value = playerStore.players
+  availablePlayers.value = Object.entries(playerStore.players).map(([id, name]) => ({ id, name }))
 })
 
 const playerOptions = computed(() =>
