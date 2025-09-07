@@ -31,16 +31,22 @@ type AppearanceWithName = Appearance & { playerName: string }
 
 const playerToDelete = ref<AppearanceWithName | null>(null)
 
-const appearancesWithName = computed<AppearanceWithName[]>(() =>
-  matchStore.presentPlayers.map((player) => ({
-    ...player,
-    playerName: playerStore.players[player.playerId] || player.playerId,
-  })),
-)
+const appearancesWithName = ref<AppearanceWithName[]>([])
 
 onMounted(async () => {
   await matchStore.fetchMatchDetails(seasonId, matchId.value)
-  await Promise.all(matchStore.presentPlayers.map((p) => playerStore.fetchPlayerName(p.playerId)))
+
+  appearancesWithName.value = matchStore.presentPlayers.map((player) => ({
+    ...player,
+    playerName: player.playerId,
+  }))
+
+  await Promise.all(
+    matchStore.presentPlayers.map(async (p, index) => {
+      const name = await playerStore.fetchPlayerName(p.playerId)
+      appearancesWithName.value[index].playerName = name
+    }),
+  )
 })
 
 const saveAppearance = async (appearance: Appearance) => {
