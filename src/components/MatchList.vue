@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 
 import { SEASON } from '@/constants'
 
-import Button from 'primevue/button'
+import { Button, ProgressSpinner } from 'primevue'
 
 const matchStore = useMatchStore()
 const seasonId = SEASON
@@ -57,6 +57,10 @@ onMounted(async () => {
       </template>
     </Column>
   </DataTable>
+
+  <div v-else-if="matchStore.loading" class="flex justify-content-center">
+    <ProgressSpinner />
+  </div>
 
   <h1 v-else>{{ $t('common.noMatches') }}</h1>
 </template>

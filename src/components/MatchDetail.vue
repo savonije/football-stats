@@ -5,7 +5,7 @@ import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
-import { ToggleButton, Button, Dialog } from 'primevue'
+import { ToggleButton, Button, Dialog, ProgressSpinner } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 
 import MatchHeader from '@/components/MatchHeader.vue'
@@ -77,7 +77,7 @@ const confirmDeletePlayer = async () => {
 </script>
 
 <template>
-  <div class="w-[800px] max-w-full mx-auto p-4">
+  <div class="w-[800px] max-w-full mx-auto p-4" v-if="matchStore.selectedMatch">
     <MatchHeader :match="matchStore.selectedMatch" />
 
     <div class="flex justify-between items-center mb-4">
@@ -140,5 +140,9 @@ const confirmDeletePlayer = async () => {
         <Button :label="$t('common.delete')" severity="danger" @click="confirmDeletePlayer" />
       </div>
     </Dialog>
+  </div>
+
+  <div v-else-if="matchStore.loading" class="flex justify-content-center">
+    <ProgressSpinner />
   </div>
 </template>
