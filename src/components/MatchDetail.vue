@@ -51,11 +51,15 @@ onMounted(async () => {
       class="flex items-center justify-center gap-3 my-12"
       v-if="matchStore.selectedMatch?.result"
     >
-      <div class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded">
+      <div
+        class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded shadow"
+      >
         {{ matchStore.selectedMatch.result.goalsFor }}
       </div>
       <div>-</div>
-      <div class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded">
+      <div
+        class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded shadow"
+      >
         {{ matchStore.selectedMatch.result.goalsAgainst }}
       </div>
     </div>
@@ -66,6 +70,7 @@ onMounted(async () => {
       :loading="matchStore.loadingAppearances"
       dataKey="id"
       stripedRows
+      class="shadow"
     >
       <Column :header="$t('common.player')">
         <template #body="{ data }">

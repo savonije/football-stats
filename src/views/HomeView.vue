@@ -11,18 +11,12 @@ const showAddMatchDialog = ref(false)
 
 <template>
   <DefaultLayout>
-    <div class="p-6">
-      <div class="mb-4">
-        <Button
-          :label="$t('common.addMatch')"
-          icon="pi pi-plus"
-          @click="showAddMatchDialog = true"
-        />
-      </div>
-
-      <AddMatchDialog v-model:visible="showAddMatchDialog" />
-
-      <MatchList />
+    <div class="mb-6">
+      <Button :label="$t('common.addMatch')" icon="pi pi-plus" @click="showAddMatchDialog = true" />
     </div>
+
+    <AddMatchDialog v-model:visible="showAddMatchDialog" />
+
+    <MatchList />
   </DefaultLayout>
 </template>
