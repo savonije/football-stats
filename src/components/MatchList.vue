@@ -45,7 +45,7 @@ onMounted(async () => {
         {{ data.result ? `${data.result.goalsFor}-${data.result.goalsAgainst}` : '-' }}
       </template>
     </Column>
-    <Column>
+    <Column class="!text-right">
       <template #body="{ data }">
         <Button
           as="router-link"
