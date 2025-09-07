@@ -43,6 +43,7 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
         present: true,
         isGoalkeeper: false,
         goals: 0,
+        seasonId,
       })
     }
   }

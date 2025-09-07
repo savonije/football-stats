@@ -56,15 +56,24 @@ export const useMatchStore = defineStore('matchStore', {
       this.loadingAppearances = false
     },
 
-    async fetchPlayerAppearances(seasonId: string, playerId: string) {
+    async fetchPlayerAppearances(seasonId: string) {
       this.loadingAppearances = true
 
       const q = query(collectionGroup(db, 'appearances'), where('seasonId', '==', seasonId))
       const snapshot = await getDocs(q)
 
-      this.appearances = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as Appearance)
-        .filter((a) => a.playerId === playerId)
+      this.appearances = snapshot.docs.map((doc) => {
+        const data = doc.data() as Appearance
+        return {
+          id: doc.id,
+          playerId: data.playerId,
+          seasonId: data.seasonId,
+          matchId: data.matchId,
+          present: data.present ?? false,
+          goals: data.goals ?? 0,
+          isGoalkeeper: data.isGoalkeeper ?? false,
+        } as Appearance
+      })
 
       this.loadingAppearances = false
     },

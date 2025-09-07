@@ -2,54 +2,71 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMatchStore } from '@/stores/matchStore'
+import { usePlayerStore } from '@/stores/playerStore'
 import { SEASON } from '@/constants'
 
+import { Skeleton, Card } from 'primevue'
+
 const matchStore = useMatchStore()
+const playerStore = usePlayerStore()
 const route = useRoute()
 
 const seasonId = SEASON
 const playerId = computed(() => route.params.id as string)
-
 const playerName = ref('')
 
-import { usePlayerStore } from '@/stores/playerStore'
-
-const playerStore = usePlayerStore()
-
 onMounted(async () => {
-  await matchStore.fetchPlayerAppearances(seasonId, playerId.value)
   playerName.value = await playerStore.fetchPlayerName(playerId.value)
+  await matchStore.fetchPlayerAppearances(seasonId)
 })
 
-const totalGoals = computed(() => matchStore.totalGoalsPerPlayer(playerId.value))
-const totalAppearances = computed(
-  () => matchStore.appearances.filter((a) => a.playerId === playerId.value && a.present).length,
+const playerAppearances = computed(() =>
+  matchStore.appearances.filter((a) => a.playerId === playerId.value),
 )
+
+const totalGoals = computed(() =>
+  playerAppearances.value.reduce((sum, player) => sum + (player.goals || 0), 0),
+)
+
+const totalAppearances = computed(
+  () => playerAppearances.value.filter((player) => player.present).length,
+)
+
 const totalKeeper = computed(
-  () =>
-    matchStore.appearances.filter((a) => a.playerId === playerId.value && a.isGoalkeeper).length,
+  () => playerAppearances.value.filter((player) => player.isGoalkeeper).length,
 )
 </script>
 
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">{{ playerName }}</h1>
+  <h1 class="text-2xl font-bold mb-4" v-if="playerName">{{ playerName }}</h1>
+  <span v-else><Skeleton height="20px" width="100px" class="mb-4" /></span>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="shadow-lg rounded-2xl p-4 bg-white">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <Card class="shadow-lg rounded-2xl p-4 bg-white">
+      <template #header>
         <h2 class="text-xl font-semibold mb-2">{{ $t('common.totalGoals') }}</h2>
-        <p class="text-3xl font-bold text-blue-600">{{ totalGoals }}</p>
-      </div>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ totalGoals }}</p>
+      </template>
+    </Card>
 
-      <div class="shadow-lg rounded-2xl p-4 bg-white">
+    <Card class="shadow-lg rounded-2xl p-4 bg-white">
+      <template #header>
         <h2 class="text-xl font-semibold mb-2">{{ $t('common.totalAppearances') }}</h2>
-        <p class="text-3xl font-bold text-green-600">{{ totalAppearances }}</p>
-      </div>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ totalAppearances }}</p>
+      </template>
+    </Card>
 
-      <div class="shadow-lg rounded-2xl p-4 bg-white">
+    <Card class="shadow-lg rounded-2xl p-4 bg-white">
+      <template #header>
         <h2 class="text-xl font-semibold mb-2">{{ $t('common.totalKeeper') }}</h2>
-        <p class="text-3xl font-bold text-purple-600">{{ totalKeeper }}</p>
-      </div>
-    </div>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ totalKeeper }}</p>
+      </template>
+    </Card>
   </div>
 </template>
