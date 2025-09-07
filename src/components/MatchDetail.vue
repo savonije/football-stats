@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
-import type { Appearance } from '@/types'
-
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { useRoute } from 'vue-router'
 import { usePlayerStore } from '@/stores/playerStore'
+import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
-
-import { Button } from 'primevue'
-
+import { useRoute } from 'vue-router'
+import { Button, ToggleButton, InputNumber, Checkbox } from 'primevue'
 import dayjs from 'dayjs'
+import type { Appearance } from '@/types'
 
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
+const authStore = useStoreAuth()
 const seasonId = SEASON
-
 const route = useRoute()
 const matchId = computed(() => route.params.id as string)
+
+const editing = ref(false)
 
 const appearancesWithName = computed(() =>
   matchStore.presentPlayers.map((player) => ({
@@ -31,12 +29,19 @@ onMounted(async () => {
   await matchStore.fetchMatchDetails(seasonId, matchId.value)
   await Promise.all(matchStore.presentPlayers.map((p) => playerStore.fetchPlayerName(p.playerId)))
 })
+
+const saveAppearance = async (appearance: Appearance) => {
+  await matchStore.updateAppearance(seasonId, matchId.value, appearance.id, {
+    goals: appearance.goals,
+    isGoalkeeper: appearance.isGoalkeeper,
+  })
+}
 </script>
 
 <template>
   <div class="w-[800px] max-w-full mx-auto p-4">
     <h1
-      class="mb-0 flex gap-2 items-center text-primary"
+      class="mb-0 flex gap-2 items-center text-primary inline-flex"
       :class="matchStore.selectedMatch?.home ? 'flex-row' : 'flex-row-reverse'"
     >
       <span>SV Apollo '69</span>
@@ -48,8 +53,9 @@ onMounted(async () => {
     </div>
 
     <div
-      class="flex items-center justify-center gap-3 my-12"
       v-if="matchStore.selectedMatch?.result"
+      class="flex items-center justify-center gap-3 my-12"
+      :class="matchStore.selectedMatch?.home ? 'flex-row' : 'flex-row-reverse'"
     >
       <div
         class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded shadow"
@@ -64,42 +70,70 @@ onMounted(async () => {
       </div>
     </div>
 
-    <h2 class="text-xl font-semibold mb-2">{{ $t('common.presentPlayers') }}</h2>
-    <DataTable
-      :value="appearancesWithName"
-      :loading="matchStore.loadingAppearances"
-      dataKey="id"
-      stripedRows
-      class="shadow"
-    >
-      <Column :header="$t('common.player')">
-        <template #body="{ data }">
-          <router-link :to="{ name: 'playerDetail', params: { id: data.playerId } }">
-            {{ data.playerName }}
-          </router-link>
-        </template>
-      </Column>
-      <Column :header="$t('common.goal', 2)">
-        <template #body="{ data }">
-          {{ (data as Appearance).goals || 0 }}
-        </template>
-      </Column>
-      <Column :header="$t('common.wasKeeper')">
-        <template #body="{ data }">
-          {{ data.isGoalkeeper ? $t('common.yes') : $t('common.no') }}
-        </template>
-      </Column>
-      <Column class="hidden sm:table-cell">
-        <template #body="{ data }">
-          <Button
-            as="router-link"
-            :to="{ name: 'playerDetail', params: { id: data.playerId } }"
-            size="small"
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">{{ $t('common.presentPlayers') }}</h2>
+      <div v-if="authStore.user?.id">
+        <ToggleButton
+          v-model="editing"
+          :onLabel="$t('common.view')"
+          :offLabel="$t('common.edit')"
+          offIcon="pi pi-pencil"
+          onIcon="pi pi-eye"
+        />
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div
+        v-for="appearance in appearancesWithName"
+        :key="appearance.id"
+        class="flex items-center justify-between bg-white shadow rounded p-4"
+      >
+        <div class="flex flex-col">
+          <router-link
+            :to="{ name: 'playerDetail', params: { id: appearance.playerId } }"
+            class="font-medium text-primary"
           >
-            {{ $t('common.viewPlayer') }}
-          </Button>
-        </template>
-      </Column>
-    </DataTable>
+            {{ appearance.playerName }}
+          </router-link>
+        </div>
+
+        <div v-if="!editing" class="flex items-center gap-4 text-2xl">
+          <span v-if="appearance.goals && appearance.goals > 0">
+            <span v-for="n in appearance.goals" :key="n">⚽</span>
+          </span>
+          <span v-else class="text-gray-400">-</span>
+
+          <span v-if="appearance.isGoalkeeper">🧤</span>
+        </div>
+
+        <div v-else class="flex items-center gap-4">
+          <label class="flex items-center gap-2" for="goalsInput">
+            {{ $t('common.goal', 2) }}:
+          </label>
+
+          <InputNumber
+            id="goalsInput"
+            type="number"
+            :min="0"
+            v-model.number="appearance.goals"
+            show-buttons
+          />
+
+          <label class="flex items-center gap-2" for="keeperCheckbox">
+            {{ $t('common.wasKeeper') }}
+          </label>
+
+          <Checkbox id="keeperCheckbox" v-model="appearance.isGoalkeeper" />
+
+          <Button
+            :label="$t('common.save')"
+            size="small"
+            :loading="matchStore.loadingAppearances"
+            @click="saveAppearance(appearance)"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>

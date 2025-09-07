@@ -4,6 +4,7 @@ export default {
   away: 'Uit',
   cancel: 'Annuleren',
   date: 'Datum',
+  edit: 'Bewerken',
   email: 'E-mail',
   goal: 'Doelpunt | Doelpunten',
   goalsAgainst: 'Doelpunten tegen',
@@ -22,6 +23,7 @@ export default {
   position: 'Positie',
   presentPlayers: 'Aanwezige spelers',
   result: 'Uitslag',
+  save: 'Opslaan',
   score: 'Score',
   title: 'Wedstrijden',
   totalAppearances: 'Totaal aantal optredens',
@@ -29,6 +31,7 @@ export default {
   totalKeeper: 'Totaal aantal keer keeper geweest',
   viewPlayer: 'Bekijk speler',
   yes: 'Ja',
+  view: 'Bekijken',
   validation: {
     warning: 'Waarschuwing',
     fillAll: 'Vul alle verplichte velden in',

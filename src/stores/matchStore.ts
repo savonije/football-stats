@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getMatches } from '@/services/matchService'
+import { getMatches, updateAppearance } from '@/services/matchService'
 import { doc, getDoc, collection, getDocs, collectionGroup, query, where } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Match, Appearance } from '@/types'
@@ -58,6 +58,25 @@ export const useMatchStore = defineStore('matchStore', {
         .filter((a) => a.playerId === playerId)
 
       this.loadingAppearances = false
+    },
+
+    async updateAppearance(
+      seasonId: string,
+      matchId: string,
+      appearanceId: string,
+      data: Partial<Appearance>,
+    ) {
+      try {
+        await updateAppearance(seasonId, matchId, appearanceId, data)
+
+        const idx = this.appearances.findIndex((a) => a.id === appearanceId)
+        if (idx !== -1) {
+          this.appearances[idx] = { ...this.appearances[idx], ...data }
+        }
+      } catch (err) {
+        console.error('Error updating appearance:', err)
+        throw err
+      }
     },
   },
   getters: {

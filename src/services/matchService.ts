@@ -1,6 +1,6 @@
-import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
-import type { Match, NewMatch } from '@/types'
+import type { Appearance, Match, NewMatch } from '@/types'
 
 export async function getMatches(seasonId: string): Promise<Match[]> {
   const matchesRef = collection(db, 'seasons', seasonId, 'matches')
@@ -39,4 +39,14 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
   }
 
   return matchRef
+}
+
+export async function updateAppearance(
+  seasonId: string,
+  matchId: string,
+  appearanceId: string,
+  data: Partial<Appearance>,
+) {
+  const ref = doc(db, `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`)
+  await updateDoc(ref, data)
 }
