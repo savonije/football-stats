@@ -1,4 +1,12 @@
-import { addDoc, collection, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
+} from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Appearance, Match, NewMatch } from '@/types'
 
@@ -16,9 +24,10 @@ export async function getMatches(seasonId: string): Promise<Match[]> {
 }
 
 export const addMatch = async (seasonId: string, match: NewMatch) => {
+  const date = match.date instanceof Timestamp ? match.date.toDate() : new Date(match.date)
   const matchRef = await addDoc(collection(db, 'seasons', seasonId, 'matches'), {
     opponent: match.opponent,
-    date: new Date(match.date),
+    date,
     home: match.home,
     result: match.result || null,
     createdAt: serverTimestamp(),
