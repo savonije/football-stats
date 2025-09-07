@@ -18,7 +18,7 @@ const toast = useToast()
         <span class="text-white text-xs">{{ SEASON }}</span>
       </Router-Link>
 
-      <div class="hidden items-center justify-end gap-6 lg:flex xl:gap-9">
+      <div class="items-center justify-end gap-6 flex">
         <Button v-if="storeAuth.user?.id" @click="storeAuth.logoutUser(toast, $t)">
           {{ $t('common.logout') }}
         </Button>
