@@ -60,6 +60,7 @@ export default {
   messages: {
     success: 'Succes',
     matchAdded: 'Wedstrijd succesvol toegevoegd',
+    playerEditted: 'Speler succesvol bewerkt',
     error: 'Fout',
     matchAddError: 'Kon de wedstrijd niet toevoegen',
   },

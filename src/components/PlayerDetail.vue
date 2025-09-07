@@ -5,14 +5,18 @@ import { useMatchStore } from '@/stores/matchStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
+import { useToast } from 'primevue/usetoast'
 
 import { Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
 import type { Player } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const matchStore = useMatchStore()
 const playerStore = usePlayerStore()
 const AuthStore = useStoreAuth()
 const route = useRoute()
+const toast = useToast()
+const { t } = useI18n()
 
 const seasonId = SEASON
 const playerId = computed(() => route.params.id as string)
@@ -59,6 +63,13 @@ async function savePlayer() {
   await playerStore.updatePlayer(player.value.id, editForm.value)
   player.value = { ...player.value, ...editForm.value } as Player
   editVisible.value = false
+
+  toast.add({
+    severity: 'success',
+    summary: t('common.messages.success'),
+    detail: t('common.messages.playerEditted'),
+    life: 3000,
+  })
 }
 </script>
 
