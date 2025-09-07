@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia'
 import { getMatches, updateAppearance } from '@/services/matchService'
-import { doc, getDoc, collection, getDocs, collectionGroup, query, where } from 'firebase/firestore'
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  collectionGroup,
+  query,
+  where,
+  deleteDoc,
+} from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Match, Appearance } from '@/types'
 
@@ -76,6 +85,33 @@ export const useMatchStore = defineStore('matchStore', {
       } catch (err) {
         console.error('Error updating appearance:', err)
         throw err
+      }
+    },
+
+    async deleteMatch(seasonId: string, matchId: string) {
+      try {
+        const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+        await deleteDoc(matchRef)
+
+        this.matches = this.matches.filter((m) => m.id !== matchId)
+        this.selectedMatch = null
+        this.appearances = []
+      } catch (err) {
+        console.error('Error deleting match:', err)
+      }
+    },
+
+    async deleteAppearance(seasonId: string, matchId: string, appearanceId: string) {
+      try {
+        const appearanceRef = doc(
+          db,
+          `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`,
+        )
+        await deleteDoc(appearanceRef)
+
+        this.appearances = this.appearances.filter((a) => a.id !== appearanceId)
+      } catch (err) {
+        console.error('Error deleting appearance:', err)
       }
     },
   },
