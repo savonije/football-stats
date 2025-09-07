@@ -77,30 +77,30 @@ async function savePlayer() {
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <Card>
-      <template #title
-        ><h2>{{ $t('common.totalGoals') }}</h2></template
-      >
-      <template #content
-        ><p class="text-3xl font-bold">{{ totalGoals }}</p></template
-      >
+      <template #title>
+        <h2>{{ $t('common.totalGoals') }}</h2>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ totalGoals }}</p>
+      </template>
     </Card>
 
     <Card>
-      <template #title
-        ><h2>{{ $t('common.totalAppearances') }}</h2></template
-      >
-      <template #content
-        ><p class="text-3xl font-bold">{{ totalAppearances }}/{{ totalMatches }}</p></template
-      >
+      <template #title>
+        <h2>{{ $t('common.totalAppearances') }}</h2>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ totalAppearances }}/{{ totalMatches }}</p>
+      </template>
     </Card>
 
     <Card>
-      <template #title
-        ><h2>{{ $t('common.totalKeeper') }}</h2></template
-      >
-      <template #content
-        ><p class="text-3xl font-bold">{{ totalKeeper }}</p></template
-      >
+      <template #title>
+        <h2>{{ $t('common.totalKeeper') }}</h2>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ totalKeeper }}</p>
+      </template>
     </Card>
 
     <Card>
