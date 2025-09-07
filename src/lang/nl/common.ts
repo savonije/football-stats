@@ -3,6 +3,7 @@ export default {
   addMatch: 'Wedstrijd toevoegen',
   away: 'Uit',
   cancel: 'Annuleren',
+  changesSaved: 'Wijzigingen opgeslagen',
   date: 'Datum',
   delete: 'Verwijderen',
   deleteMatch: 'Wedstrijd verwijderen',

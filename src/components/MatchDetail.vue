@@ -11,16 +11,18 @@ import { useToast } from 'primevue/usetoast'
 import MatchHeader from '@/components/MatchHeader.vue'
 import PlayerAppearanceItem from '@/components/PlayerAppearanceItem.vue'
 import type { Appearance } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const toast = useToast()
 const router = useRouter()
-
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
 const authStore = useStoreAuth()
 const seasonId = SEASON
 const route = useRoute()
 const matchId = computed(() => route.params.id as string)
+
+const { t } = useI18n()
 
 const editing = ref(false)
 const showDeleteMatchDialog = ref(false)
@@ -46,6 +48,12 @@ const saveAppearance = async (appearance: Appearance) => {
     goals: appearance.goals,
     isGoalkeeper: appearance.isGoalkeeper,
   })
+  toast.add({
+    severity: 'success',
+    summary: t('common.success'),
+    detail: t('common.changesSaved'),
+    life: 3000,
+  })
 }
 
 const confirmDeleteMatch = async () => {
@@ -53,8 +61,8 @@ const confirmDeleteMatch = async () => {
   showDeleteMatchDialog.value = false
   toast.add({
     severity: 'success',
-    summary: 'Success',
-    detail: 'Wedstrijd verwijderd!',
+    summary: t('common.success'),
+    detail: t('common.matchDeleted'),
     life: 3000,
   })
   router.push({ name: 'home' })
