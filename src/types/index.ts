@@ -18,7 +18,7 @@ export interface Match {
 
 export interface NewMatch {
   opponent: string
-  date: Timestamp
+  date: Timestamp | Date
   home: boolean
   result?: {
     goalsFor: number
