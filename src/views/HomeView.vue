@@ -13,7 +13,7 @@ const storeAuth = useStoreAuth()
 
 <template>
   <DefaultLayout>
-    <div class="mb-6" v-if="storeAuth.user?.id">
+    <div class="mb-6 text-right" v-if="storeAuth.user?.id">
       <Button :label="$t('common.addMatch')" icon="pi pi-plus" @click="showAddMatchDialog = true" />
     </div>
 
