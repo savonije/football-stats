@@ -6,6 +6,7 @@ import type { Player } from '@/types'
 
 export const usePlayerStore = defineStore('playerStore', () => {
   const players = ref<Record<string, string>>({})
+  const loading = ref(false)
 
   // fetch a single player name
   async function fetchPlayerName(playerId: string): Promise<string> {
@@ -21,6 +22,7 @@ export const usePlayerStore = defineStore('playerStore', () => {
 
   // fetch all players (optional, e.g. for dropdowns)
   async function fetchPlayers(): Promise<Player[]> {
+    loading.value = true
     const snapshot = await getDocs(collection(db, 'players'))
     const allPlayers: Player[] = []
 
@@ -32,8 +34,9 @@ export const usePlayerStore = defineStore('playerStore', () => {
       allPlayers.push({ ...data, id })
     })
 
+    loading.value = false // <-- stop loading
     return allPlayers
   }
 
-  return { players, fetchPlayerName, fetchPlayers }
+  return { players, loading, fetchPlayerName, fetchPlayers }
 })
