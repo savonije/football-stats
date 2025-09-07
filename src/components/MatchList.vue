@@ -26,9 +26,9 @@ onMounted(async () => {
     class="shadow-lg rounded-2xl"
     stripedRows
   >
-    <Column field="date" :header="$t('common.date')">
+    <Column field="date" :header="$t('common.date')" sortable>
       <template #body="{ data }">
-        {{ dayjs(data.date.toDate()).format('DD-MM-YY') }}
+        {{ dayjs(data.date.toDate()).format('DD-MM-YYYY') }}
       </template>
     </Column>
     <Column field="opponent" :header="$t('common.opponent')" />
