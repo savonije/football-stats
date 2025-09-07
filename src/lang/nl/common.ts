@@ -1,6 +1,8 @@
 export default {
+  add: 'Toevoegen',
   addMatch: 'Wedstrijd toevoegen',
   away: 'Uit',
+  cancel: 'Annuleren',
   date: 'Datum',
   email: 'E-mail',
   goal: 'Doelpunt | Doelpunten',

@@ -92,35 +92,60 @@ const submitMatch = async () => {
     style="width: 450px"
   >
     <div class="flex flex-col gap-3">
-      <label>{{ t('common.opponent') }}</label>
-      <InputText v-model="form.opponent" />
+      <div>
+        <label>{{ t('common.opponent') }}</label>
+        <InputText v-model="form.opponent" fluid />
+      </div>
 
-      <label>{{ t('common.date') }}</label>
-      <DatePicker v-model="form.date" dateFormat="yy-mm-dd" showIcon />
+      <div>
+        <label>{{ t('common.date') }}</label>
+        <DatePicker v-model="form.date" dateFormat="yy-mm-dd" showIcon fluid />
+      </div>
 
-      <label>{{ t('common.homeOrAway') }}</label>
-      <Select v-model="form.home" :options="homeOptions" optionLabel="label" optionValue="value" />
+      <div>
+        <label>{{ t('common.homeOrAway') }}</label>
+        <Select
+          v-model="form.home"
+          :options="homeOptions"
+          optionLabel="label"
+          optionValue="value"
+          fluid
+        />
+      </div>
 
-      <label>{{ t('common.player', 2) }}</label>
-      <MultiSelect
-        v-model="form.players"
-        :options="playerOptions"
-        optionLabel="label"
-        optionValue="value"
-        multiple
-        showClear
-      />
+      <div>
+        <label>{{ t('common.player', 2) }}</label>
+        <MultiSelect
+          v-model="form.players"
+          :options="playerOptions"
+          optionLabel="label"
+          optionValue="value"
+          multiple
+          showClear
+          fluid
+        />
+      </div>
 
-      <label>{{ t('common.goalsFor') }}</label>
-      <InputNumber v-model="goalsFor" :showButtons="true" />
-
-      <label>{{ t('common.goalsAgainst') }}</label>
-      <InputNumber v-model="goalsAgainst" :showButtons="true" />
+      <div>
+        <label>{{ t('common.goalsFor') }}</label>
+        <InputNumber v-model="goalsFor" :showButtons="true" fluid />
+      </div>
+      <div>
+        <label>{{ t('common.goalsAgainst') }}</label>
+        <InputNumber v-model="goalsAgainst" :showButtons="true" fluid />
+      </div>
     </div>
 
     <template #footer>
-      <Button label="Annuleren" icon="pi pi-times" @click="closeDialog" />
-      <Button label="Toevoegen" icon="pi pi-check" :loading="loading" @click="submitMatch" />
+      <div class="flex justify-between w-full">
+        <Button :label="$t('common.cancel')" @click="closeDialog" severity="secondary" />
+        <Button
+          :label="$t('common.add')"
+          icon="pi pi-check"
+          :loading="loading"
+          @click="submitMatch"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
