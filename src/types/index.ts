@@ -39,4 +39,7 @@ export interface Appearance {
 export interface Player {
   id: string
   name: string
+  clothingSize?: string
+  hasJacket?: boolean
+  hasBag?: boolean
 }

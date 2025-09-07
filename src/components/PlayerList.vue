@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { usePlayerStore } from '@/stores/playerStore'
 
 import DataTable from 'primevue/datatable'
@@ -7,13 +7,6 @@ import Column from 'primevue/column'
 import { Button, ProgressSpinner } from 'primevue'
 
 const playerStore = usePlayerStore()
-
-const playersArray = computed(() =>
-  Object.entries(playerStore.players).map(([id, name]) => ({
-    id,
-    name,
-  })),
-)
 
 onMounted(async () => {
   await playerStore.fetchPlayers()
@@ -24,8 +17,8 @@ onMounted(async () => {
   <h1 class="mb-2">{{ $t('common.player', 2) }}</h1>
 
   <DataTable
-    v-if="playersArray.length"
-    :value="playersArray"
+    v-if="playerStore.playersArray.length"
+    :value="playerStore.playersArray"
     :loading="playerStore.loading"
     dataKey="id"
     class="shadow-lg rounded-2xl"
@@ -33,7 +26,9 @@ onMounted(async () => {
     :sort-field="'name'"
     :sort-order="1"
   >
-    <Column field="name" :header="$t('common.name')" sortable />
+    <Column field="name" :header="$t('common.name')" sortable>
+      <template #body="{ data }">{{ data.name }}</template>
+    </Column>
 
     <Column class="!text-right">
       <template #body="{ data }">
