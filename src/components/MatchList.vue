@@ -8,6 +8,8 @@ import dayjs from 'dayjs'
 
 import { SEASON } from '@/constants'
 
+import Button from 'primevue/button'
+
 const matchStore = useMatchStore()
 const seasonId = SEASON
 
@@ -34,7 +36,7 @@ onMounted(async () => {
     <Column field="opponent" :header="$t('common.opponent')" />
     <Column :header="$t('common.homeOrAway')">
       <template #body="{ data }">
-        {{ data.home ? 'Thuis' : 'Uit' }}
+        {{ data.home ? $t('common.home') : $t('common.away') }}
       </template>
     </Column>
 
@@ -45,7 +47,13 @@ onMounted(async () => {
     </Column>
     <Column>
       <template #body="{ data }">
-        <router-link :to="{ name: 'matchDetail', params: { id: data.id } }"> Bekijk </router-link>
+        <Button
+          as="router-link"
+          size="small"
+          :to="{ name: 'matchDetail', params: { id: data.id } }"
+        >
+          {{ $t('common.view') }}
+        </Button>
       </template>
     </Column>
   </DataTable>
