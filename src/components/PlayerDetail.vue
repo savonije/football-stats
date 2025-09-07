@@ -69,7 +69,7 @@ async function savePlayer() {
 
     <Button
       v-if="player && AuthStore.user?.id"
-      label="Bewerken"
+      :label="$t('common.edit')"
       icon="pi pi-pencil"
       @click="openEditDialog"
     />
@@ -104,31 +104,37 @@ async function savePlayer() {
     </Card>
 
     <Card>
-      <template #title><h2>Goals / wedstrijd</h2></template>
-      <template #content
-        ><p class="text-3xl font-bold">{{ goalsPerMatch }}</p></template
-      >
+      <template #title>
+        <h2>{{ $t('common.goalsPerMatch') }}</h2>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ goalsPerMatch }}</p>
+      </template>
     </Card>
 
     <Card>
-      <template #title><h2>Aanwezigheid (%)</h2></template>
-      <template #content
-        ><p class="text-3xl font-bold">{{ attendancePercentage }}%</p></template
-      >
+      <template #title>
+        <h2>{{ $t('common.attendancePercentage') }}</h2>
+      </template>
+      <template #content>
+        <p class="text-3xl font-bold">{{ attendancePercentage }}%</p>
+      </template>
     </Card>
 
     <Card class="md:col-span-3">
-      <template #title><h2>Spelerinformatie</h2></template>
+      <template #title>
+        <h2>{{ $t('common.playerInfo') }}</h2>
+      </template>
       <template #content>
         <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
-          <dt class="font-medium">Kledingmaat</dt>
+          <dt class="font-medium">{{ $t('common.clothingSize') }}</dt>
           <dd>{{ player?.clothingSize ?? '-' }}</dd>
 
-          <dt class="font-medium">Jas</dt>
-          <dd>{{ player?.hasJacket ? '✅ Ja' : '❌ Nee' }}</dd>
+          <dt class="font-medium">{{ $t('common.hasJacket') }}</dt>
+          <dd>{{ player?.hasJacket ? $t('common.yes') : $t('common.no') }}</dd>
 
-          <dt class="font-medium">Tas</dt>
-          <dd>{{ player?.hasBag ? '✅ Ja' : '❌ Nee' }}</dd>
+          <dt class="font-medium">{{ $t('common.hasBag') }}</dt>
+          <dd>{{ player?.hasBag ? $t('common.yes') : $t('common.no') }}</dd>
         </dl>
       </template>
     </Card>
@@ -137,34 +143,43 @@ async function savePlayer() {
   <Dialog v-model:visible="editVisible" modal header="Speler bewerken" :style="{ width: '400px' }">
     <div class="flex flex-col gap-4">
       <div>
-        <label class="block mb-1">Naam</label>
-        <InputText v-model="editForm.name" class="w-full" />
+        <label for="name">{{ $t('common.name') }}</label>
+        <InputText v-model="editForm.name" fluid input-id="name" />
       </div>
 
       <div>
-        <label class="block mb-1">Kledingmaat</label>
+        <label for="clothingSize">{{ $t('common.clothingSize') }}</label>
         <Select
           v-model="editForm.clothingSize"
-          :options="['128', '134', '140', '146', '152', '158', '164']"
-          placeholder="Selecteer maat"
-          class="w-full"
+          :options="['164', '158', '152', '146', '140', '134', '128']"
+          :placeholder="$t('common.clothingSize')"
+          input-id="clothingSize"
+          fluid
         />
       </div>
 
       <div class="flex items-center gap-2">
-        <Checkbox v-model="editForm.hasJacket" binary />
-        <label>Heeft jas</label>
+        <Checkbox v-model="editForm.hasJacket" binary input-id="hasJacket" />
+        <label for="hasJacket">{{ $t('common.hasJacket') }}</label>
       </div>
 
       <div class="flex items-center gap-2">
-        <Checkbox v-model="editForm.hasBag" binary />
-        <label>Heeft tas</label>
+        <Checkbox v-model="editForm.hasBag" binary input-id="hasBag" />
+        <label for="hasBag">{{ $t('common.hasBag') }}</label>
       </div>
     </div>
 
     <template #footer>
-      <Button label="Annuleren" icon="pi pi-times" text @click="editVisible = false" />
-      <Button label="Opslaan" icon="pi pi-check" @click="savePlayer" />
+      <div class="flex justify-between w-full">
+        <Button
+          :label="$t('common.cancel')"
+          icon="pi pi-times"
+          severity="secondary"
+          text
+          @click="editVisible = false"
+        />
+        <Button :label="$t('common.save')" icon="pi pi-check" @click="savePlayer" />
+      </div>
     </template>
   </Dialog>
 </template>
