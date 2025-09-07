@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore'
+import { doc, getDoc, collection, getDocs, updateDoc } from 'firebase/firestore'
 import { ref, computed } from 'vue'
 import { db } from '@/firebase'
 import type { Player } from '@/types'
@@ -56,6 +56,16 @@ export const usePlayerStore = defineStore('playerStore', () => {
     }
   }
 
+  async function updatePlayer(playerId: string, data: Partial<Player>) {
+    const playerRef = doc(db, 'players', playerId)
+    await updateDoc(playerRef, data)
+
+    // update local cache
+    if (players.value[playerId]) {
+      players.value[playerId] = { ...players.value[playerId], ...data }
+    }
+  }
+
   return {
     // state
     players,
@@ -66,5 +76,6 @@ export const usePlayerStore = defineStore('playerStore', () => {
     fetchPlayer,
     fetchPlayerName,
     fetchPlayers,
+    updatePlayer,
   }
 })

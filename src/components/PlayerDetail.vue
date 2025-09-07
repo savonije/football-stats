@@ -3,18 +3,23 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMatchStore } from '@/stores/matchStore'
 import { usePlayerStore } from '@/stores/playerStore'
+import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 
-import { Skeleton, Card } from 'primevue'
+import { Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
 import type { Player } from '@/types'
 
 const matchStore = useMatchStore()
 const playerStore = usePlayerStore()
+const AuthStore = useStoreAuth()
 const route = useRoute()
 
 const seasonId = SEASON
 const playerId = computed(() => route.params.id as string)
 const player = ref<Player | null>(null)
+
+const editVisible = ref(false)
+const editForm = ref<Partial<Player>>({})
 
 onMounted(async () => {
   player.value = await playerStore.fetchPlayer(playerId.value)
@@ -31,9 +36,7 @@ const totalGoals = computed(() =>
 )
 
 const totalAppearances = computed(() => playerAppearances.value.filter((p) => p.present).length)
-
 const totalKeeper = computed(() => playerAppearances.value.filter((p) => p.isGoalkeeper).length)
-
 const totalMatches = computed(() => matchStore.matches.length)
 
 const goalsPerMatch = computed(() =>
@@ -43,52 +46,75 @@ const goalsPerMatch = computed(() =>
 const attendancePercentage = computed(() =>
   totalMatches.value > 0 ? Math.round((totalAppearances.value / totalMatches.value) * 100) : 0,
 )
+
+function openEditDialog() {
+  if (player.value) {
+    editForm.value = { ...player.value }
+    editVisible.value = true
+  }
+}
+
+async function savePlayer() {
+  if (!player.value) return
+  await playerStore.updatePlayer(player.value.id, editForm.value)
+  player.value = { ...player.value, ...editForm.value } as Player
+  editVisible.value = false
+}
 </script>
 
 <template>
-  <h1 class="text-2xl font-bold mb-4" v-if="player">{{ player.name }}</h1>
-  <span v-else><Skeleton height="20px" width="100px" class="mb-4" /></span>
+  <h1 class="text-2xl font-bold mb-4 flex justify-between items-center">
+    <span v-if="player">{{ player.name }}</span>
+    <span v-else><Skeleton height="20px" width="100px" /></span>
+
+    <Button
+      v-if="player && AuthStore.user?.id"
+      label="Bewerken"
+      icon="pi pi-pencil"
+      @click="openEditDialog"
+    />
+  </h1>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <Card>
-      <template #title>
-        <h2>{{ $t('common.totalGoals') }}</h2>
-      </template>
-      <template #content>
-        <p class="text-3xl font-bold">{{ totalGoals }}</p>
-      </template>
+      <template #title
+        ><h2>{{ $t('common.totalGoals') }}</h2></template
+      >
+      <template #content
+        ><p class="text-3xl font-bold">{{ totalGoals }}</p></template
+      >
     </Card>
 
     <Card>
-      <template #title>
-        <h2>{{ $t('common.totalAppearances') }}</h2>
-      </template>
-      <template #content>
-        <p class="text-3xl font-bold">{{ totalAppearances }}/{{ totalMatches }}</p>
-      </template>
+      <template #title
+        ><h2>{{ $t('common.totalAppearances') }}</h2></template
+      >
+      <template #content
+        ><p class="text-3xl font-bold">{{ totalAppearances }}/{{ totalMatches }}</p></template
+      >
     </Card>
 
     <Card>
-      <template #title>
-        <h2>{{ $t('common.totalKeeper') }}</h2>
-      </template>
-      <template #content>
-        <p class="text-3xl font-bold">{{ totalKeeper }}</p>
-      </template>
+      <template #title
+        ><h2>{{ $t('common.totalKeeper') }}</h2></template
+      >
+      <template #content
+        ><p class="text-3xl font-bold">{{ totalKeeper }}</p></template
+      >
     </Card>
 
     <Card>
       <template #title><h2>Goals / wedstrijd</h2></template>
-      <template #content>
-        <p class="text-3xl font-bold">{{ goalsPerMatch }}</p>
-      </template>
+      <template #content
+        ><p class="text-3xl font-bold">{{ goalsPerMatch }}</p></template
+      >
     </Card>
 
     <Card>
       <template #title><h2>Aanwezigheid (%)</h2></template>
-      <template #content>
-        <p class="text-3xl font-bold">{{ attendancePercentage }}%</p>
-      </template>
+      <template #content
+        ><p class="text-3xl font-bold">{{ attendancePercentage }}%</p></template
+      >
     </Card>
 
     <Card class="md:col-span-3">
@@ -107,4 +133,38 @@ const attendancePercentage = computed(() =>
       </template>
     </Card>
   </div>
+
+  <Dialog v-model:visible="editVisible" modal header="Speler bewerken" :style="{ width: '400px' }">
+    <div class="flex flex-col gap-4">
+      <div>
+        <label class="block mb-1">Naam</label>
+        <InputText v-model="editForm.name" class="w-full" />
+      </div>
+
+      <div>
+        <label class="block mb-1">Kledingmaat</label>
+        <Select
+          v-model="editForm.clothingSize"
+          :options="['128', '134', '140', '146', '152', '158', '164']"
+          placeholder="Selecteer maat"
+          class="w-full"
+        />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <Checkbox v-model="editForm.hasJacket" binary />
+        <label>Heeft jas</label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <Checkbox v-model="editForm.hasBag" binary />
+        <label>Heeft tas</label>
+      </div>
+    </div>
+
+    <template #footer>
+      <Button label="Annuleren" icon="pi pi-times" text @click="editVisible = false" />
+      <Button label="Opslaan" icon="pi pi-check" @click="savePlayer" />
+    </template>
+  </Dialog>
 </template>
