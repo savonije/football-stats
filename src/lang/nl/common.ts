@@ -9,7 +9,7 @@ export default {
   deleteMatchConfirm: 'Weet je zeker dat je deze wedstrijd wilt verwijderen?',
   deleteMatchSuccess: 'Wedstrijd succesvol verwijderd',
   deletePlayer: 'Speler verwijderen',
-  deletePlayerConfirm: 'Weet je zeker dat je {player} wilt verwijderen uit deze wedstrijd?',
+  deletePlayerConfirm: 'Weet je zeker dat je {0} wilt verwijderen uit deze wedstrijd?',
   edit: 'Bewerken',
   email: 'E-mail',
   error: 'Fout',
