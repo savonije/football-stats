@@ -33,7 +33,13 @@ onMounted(async () => {
         {{ dayjs(data.date.toDate()).format('DD-MM-YYYY') }}
       </template>
     </Column>
-    <Column field="opponent" :header="$t('common.opponent')" />
+    <Column field="opponent" :header="$t('common.opponent')">
+      <template #body="{ data }">
+        <RouterLink :to="{ name: 'matchDetail', params: { id: data.id } }">
+          {{ data.opponent }}
+        </RouterLink>
+      </template>
+    </Column>
     <Column :header="$t('common.homeOrAway')">
       <template #body="{ data }">
         {{ data.home ? $t('common.home') : $t('common.away') }}
