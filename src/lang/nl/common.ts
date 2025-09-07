@@ -14,6 +14,8 @@ export default {
   wasKeeper: 'Keeper geweest?',
   login: 'Inloggen',
   logout: 'Uitloggen',
+  logoutMessage: 'Je bent uitgelogd',
+  logoutSuccess: 'Uitloggen succesvol',
   match: 'Wedstrijd | Wedstrijden',
   no: 'Nee',
   noMatches: 'Geen wedstrijden gevonden...',
