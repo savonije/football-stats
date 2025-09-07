@@ -12,7 +12,7 @@ const toast = useToast()
   <header class="bg-primary text-white mb-6 py-3 sm:p-3 sm:py-6">
     <div class="container flex items-center justify-between gap-6">
       <Router-Link :to="{ name: 'home' }" variant="text" class="!text-white">
-        <h1>SV Apollo '69 - JO 9</h1>
+        <h1>SV Apollo '69 - JO9</h1>
       </Router-Link>
 
       <div class="hidden items-center justify-end gap-6 lg:flex xl:gap-9">

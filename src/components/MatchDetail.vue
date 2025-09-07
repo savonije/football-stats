@@ -9,6 +9,8 @@ import { useRoute } from 'vue-router'
 import { usePlayerStore } from '@/stores/playerStore'
 import { SEASON } from '@/constants'
 
+import { Button } from 'primevue'
+
 import dayjs from 'dayjs'
 
 const playerStore = usePlayerStore()
@@ -32,26 +34,31 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">
-      {{ $t('common.opponent') }}: {{ matchStore.selectedMatch?.opponent }}
+  <div class="w-[800px] max-w-full mx-auto p-4">
+    <h1
+      class="mb-0 flex gap-2 items-center text-primary"
+      :class="matchStore.selectedMatch?.home ? 'flex-row' : 'flex-row-reverse'"
+    >
+      <span>SV Apollo '69</span>
+      <span> - </span>
+      <span>{{ matchStore.selectedMatch?.opponent }}</span>
     </h1>
+    <div v-if="matchStore.selectedMatch?.date" class="text-gray-600 text-sm">
+      {{ dayjs(matchStore.selectedMatch.date.toDate()).format('D MMMM YYYY') }}
+    </div>
 
-    <p class="mb-4">
-      {{ $t('common.score') }}:
-      <span v-if="matchStore.selectedMatch?.result">
-        {{ matchStore.selectedMatch.result.goalsFor }} -
+    <div
+      class="flex items-center justify-center gap-3 my-12"
+      v-if="matchStore.selectedMatch?.result"
+    >
+      <div class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded">
+        {{ matchStore.selectedMatch.result.goalsFor }}
+      </div>
+      <div>-</div>
+      <div class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded">
         {{ matchStore.selectedMatch.result.goalsAgainst }}
-      </span>
-      <span v-else>-</span>
-    </p>
-
-    <p class="mb-4" v-if="matchStore.selectedMatch?.date">
-      {{ $t('common.date') }}:
-      <span>
-        {{ dayjs(matchStore.selectedMatch.date.toDate()).format('DD-MM-YY') }}
-      </span>
-    </p>
+      </div>
+    </div>
 
     <h2 class="text-xl font-semibold mb-2">{{ $t('common.presentPlayers') }}</h2>
     <DataTable
@@ -72,9 +79,20 @@ onMounted(async () => {
           {{ (data as Appearance).goals || 0 }}
         </template>
       </Column>
-      <Column :header="$t('common.position')">
+      <Column :header="$t('common.wasKeeper')">
         <template #body="{ data }">
-          {{ data.isGoalkeeper ? 'Keeper' : 'Speler' }}
+          {{ data.isGoalkeeper ? $t('common.yes') : $t('common.no') }}
+        </template>
+      </Column>
+      <Column class="hidden sm:table-cell">
+        <template #body="{ data }">
+          <Button
+            as="router-link"
+            :to="{ name: 'playerDetail', params: { id: data.playerId } }"
+            size="small"
+          >
+            {{ $t('common.viewPlayer') }}
+          </Button>
         </template>
       </Column>
     </DataTable>
