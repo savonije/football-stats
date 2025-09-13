@@ -11,7 +11,7 @@ const toast = useToast()
 </script>
 
 <template>
-  <header class="bg-primary text-white mb-6 py-3 sm:p-3 sm:py-6">
+  <header class="bg-primary text-white py-3 sm:p-3 sm:py-6">
     <div class="container flex items-center justify-between gap-6">
       <Router-Link :to="{ name: 'home' }" variant="text">
         <h1 class="text-white mb-0">SV Apollo '69 - JO9</h1>
@@ -29,4 +29,18 @@ const toast = useToast()
       </div>
     </div>
   </header>
+
+  <nav class="bg-primary-900 text-white mb-6">
+    <ul class="flex gap-6 my-3 items-center justify-center">
+      <li>
+        <Router-Link :to="{ name: 'home' }">{{ $t('common.game', 2) }}</Router-Link>
+      </li>
+      <li>
+        <Router-Link :to="{ name: 'topscorers' }">{{ $t('common.topscorers') }}</Router-Link>
+      </li>
+      <li>
+        <Router-Link :to="{ name: 'players' }">{{ $t('common.player', 2) }}</Router-Link>
+      </li>
+    </ul>
+  </nav>
 </template>

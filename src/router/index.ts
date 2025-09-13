@@ -21,8 +21,14 @@ const routes = [
     meta: { title: "Spelerdetails - Apollo '69 JO9" },
   },
   {
+    path: '/players',
+    name: 'players',
+    component: () => import('@/views/PlayersView.vue'),
+    meta: { title: "Spelers - Apollo '69 JO9" },
+  },
+  {
     path: '/topscorers',
-    name: 'topScorers',
+    name: 'topscorers',
     component: () => import('@/views/TopScorersView.vue'),
     meta: { title: "Topscorers - Apollo '69 JO9" },
   },

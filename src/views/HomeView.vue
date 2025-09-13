@@ -6,7 +6,6 @@ import { Button } from 'primevue'
 
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { useStoreAuth } from '@/stores/authStore'
-import PlayerList from '@/components/PlayerList.vue'
 
 const showAddMatchDialog = ref(false)
 const storeAuth = useStoreAuth()
@@ -22,10 +21,6 @@ const storeAuth = useStoreAuth()
 
     <div class="mb-9">
       <MatchList />
-    </div>
-
-    <div class="mb-9">
-      <PlayerList />
     </div>
   </DefaultLayout>
 </template>
