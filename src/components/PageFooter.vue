@@ -3,7 +3,7 @@ const version = __APP_VERSION__
 </script>
 
 <template>
-  <footer class="py-6 bg-primary text-white">
+  <footer class="py-6 bg-primary text-white mt-12">
     <div class="container flex justify-between text-xs">
       <div>Voetbal stats - {{ version }}</div>
       <div class="text-right">
