@@ -151,7 +151,12 @@ async function savePlayer() {
     </Card>
   </div>
 
-  <Dialog v-model:visible="editVisible" modal header="Speler bewerken" :style="{ width: '400px' }">
+  <Dialog
+    v-model:visible="editVisible"
+    modal
+    :header="t('common.editPlayer')"
+    :style="{ width: '400px' }"
+  >
     <div class="flex flex-col gap-4">
       <div>
         <label for="name">{{ $t('common.name') }}</label>

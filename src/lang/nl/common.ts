@@ -14,6 +14,7 @@ export default {
   deletePlayer: 'Speler verwijderen',
   deletePlayerConfirm: 'Weet je zeker dat je {0} wilt verwijderen uit deze wedstrijd?',
   edit: 'Bewerken',
+  editPlayer: 'Speler bewerken',
   email: 'E-mail',
   error: 'Fout',
   errorGeneric: 'Er is iets misgegaan, probeer het later opnieuw',
