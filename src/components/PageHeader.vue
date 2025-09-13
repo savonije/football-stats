@@ -30,7 +30,7 @@ const toast = useToast()
     </div>
   </header>
 
-  <nav class="bg-primary-900 text-white mb-6">
+  <nav class="bg-primary-900 text-white mb-12">
     <ul class="flex my-3 items-center justify-center text-sm font-semibold">
       <li>
         <Router-Link :to="{ name: 'home' }">{{ $t('common.game', 2) }}</Router-Link>

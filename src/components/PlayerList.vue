@@ -2,28 +2,32 @@
 import { onMounted } from 'vue'
 import { usePlayerStore } from '@/stores/playerStore'
 
-import DataTable from 'primevue/datatable'
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import { Button, ProgressSpinner } from 'primevue'
+import router from '@/router'
 
 const playerStore = usePlayerStore()
 
 onMounted(() => {
   playerStore.fetchPlayers()
 })
+
+const onRowClick = (event: DataTableRowClickEvent) => {
+  router.push({ name: 'playerDetail', params: { id: event.data.id } })
+}
 </script>
 
 <template>
-  <h1 class="mb-2">{{ $t('common.player', 2) }}</h1>
-
   <DataTable
     v-if="playerStore.playersLoaded && playerStore.players.length"
     :value="playerStore.players"
-    dataKey="id"
+    data-key="id"
     class="shadow-lg rounded-2xl"
-    stripedRows
+    striped-rows
     :sort-field="'name'"
     :sort-order="1"
+    @row-click="onRowClick"
   >
     <Column field="name" :header="$t('common.name')" sortable>
       <template #body="{ data }">{{ data.name }}</template>
@@ -35,9 +39,9 @@ onMounted(() => {
           as="router-link"
           size="small"
           :to="{ name: 'playerDetail', params: { id: data.id } }"
-        >
-          {{ $t('common.view') }}
-        </Button>
+          icon="pi pi-chevron-right"
+          :aria-label="$t('common.viewPlayerDetails')"
+        />
       </template>
     </Column>
   </DataTable>

@@ -25,17 +25,16 @@ const onRowClick = (event: DataTableRowClickEvent) => {
 </script>
 
 <template>
-  <h1 class="mb-2">{{ $t('common.title') }}</h1>
   <DataTable
     v-if="matchStore.matchesLoaded && matchStore.matches.length"
     :value="matchStore.matches"
     :loading="!matchStore.matchesLoaded"
-    dataKey="id"
+    data-key="id"
     class="shadow-lg rounded-2xl"
-    stripedRows
+    striped-rows
     sort-field="date"
     :sort-order="-1"
-    @rowClick="onRowClick"
+    @row-click="onRowClick"
   >
     <Column field="date" :header="$t('common.date')" sortable>
       <template #body="{ data }">
@@ -80,9 +79,9 @@ const onRowClick = (event: DataTableRowClickEvent) => {
           as="router-link"
           size="small"
           :to="{ name: 'matchDetail', params: { id: data.id } }"
-        >
-          {{ $t('common.view') }}
-        </Button>
+          icon="pi pi-chevron-right"
+          :aria-label="$t('common.viewMatchDetails')"
+        />
       </template>
     </Column>
   </DataTable>

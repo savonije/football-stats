@@ -25,7 +25,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <DataTable :value="playersWithGoals" :sortField="'totalGoals'" :sortOrder="-1">
+  <DataTable
+    :value="playersWithGoals"
+    :sortField="'totalGoals'"
+    :sortOrder="-1"
+    class="shadow-lg rounded-2xl"
+    striped-rows
+  >
     <Column field="name" header="Name" sortable></Column>
     <Column field="totalGoals" header="Goals" sortable></Column>
   </DataTable>

@@ -5,6 +5,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 
 <template>
   <DefaultLayout>
+    <h1 class="mb-3">{{ $t('common.player', 2) }}</h1>
     <PlayersList />
   </DefaultLayout>
 </template>

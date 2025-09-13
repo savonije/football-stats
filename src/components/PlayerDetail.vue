@@ -84,7 +84,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h1 class="text-2xl font-bold mb-4 flex justify-between items-center">
+  <h1 class="text-4xl font-bold mb-9 flex justify-between items-center">
     <span v-if="player">{{ player.name }}</span>
     <span v-else><Skeleton height="32px" width="100px" /></span>
 
@@ -96,7 +96,7 @@ onMounted(async () => {
     />
   </h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <Card>
       <template #title>
         <h2>{{ $t('common.totalGoals') }}</h2>

@@ -19,8 +19,7 @@ const storeAuth = useStoreAuth()
 
     <AddMatchDialog v-model:visible="showAddMatchDialog" />
 
-    <div class="mb-9">
-      <MatchList />
-    </div>
+    <h1 class="mb-3">{{ $t('common.title') }}</h1>
+    <MatchList />
   </DefaultLayout>
 </template>

@@ -56,6 +56,8 @@ export default {
   viewPlayer: 'Bekijk speler',
   yes: 'Ja',
   view: 'Bekijken',
+  viewMatchDetails: 'Bekijk wedstrijd details',
+  viewPlayerDetails: 'Bekijk speler details',
   validation: {
     warning: 'Waarschuwing',
     fillAll: 'Vul alle verplichte velden in',

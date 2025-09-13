@@ -5,6 +5,7 @@ import TopscorersList from '@/components/TopscorersList.vue'
 
 <template>
   <DefaultLayout>
+    <h1 class="mb-3">{{ $t('common.topscorers') }}</h1>
     <TopscorersList />
   </DefaultLayout>
 </template>
