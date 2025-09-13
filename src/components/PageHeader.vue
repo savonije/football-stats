@@ -31,7 +31,7 @@ const toast = useToast()
   </header>
 
   <nav class="bg-primary-900 text-white mb-6">
-    <ul class="flex gap-6 my-3 items-center justify-center">
+    <ul class="flex my-3 items-center justify-center text-sm font-semibold">
       <li>
         <Router-Link :to="{ name: 'home' }">{{ $t('common.game', 2) }}</Router-Link>
       </li>
@@ -44,3 +44,12 @@ const toast = useToast()
     </ul>
   </nav>
 </template>
+
+<style scoped>
+li:not(:last-child)::after {
+  content: '|';
+  margin-left: 1rem;
+  margin-right: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+</style>
