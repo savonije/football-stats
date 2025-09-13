@@ -31,25 +31,6 @@ const playerToDelete = ref<AppearanceWithName | null>(null)
 
 const appearancesWithName = ref<AppearanceWithName[]>([])
 
-onMounted(() => {
-  matchStore.fetchMatchDetails(seasonId, matchId.value)
-})
-
-watch(
-  () => matchStore.presentPlayers,
-  async (players) => {
-    appearancesWithName.value = players.map((p) => ({ ...p, playerName: p.playerId }))
-
-    await Promise.all(
-      appearancesWithName.value.map(async (appearance, index) => {
-        const name = await playerStore.fetchPlayerName(appearance.playerId)
-        appearancesWithName.value[index].playerName = name
-      }),
-    )
-  },
-  { immediate: true },
-)
-
 const saveAll = async () => {
   await Promise.all(
     appearancesWithName.value.map((appearance) =>
@@ -86,6 +67,25 @@ const confirmDeletePlayer = async () => {
   playerToDelete.value = null
   showDeletePlayerDialog.value = false
 }
+
+onMounted(() => {
+  matchStore.fetchMatchDetails(seasonId, matchId.value)
+})
+
+watch(
+  () => matchStore.presentPlayers,
+  async (players) => {
+    appearancesWithName.value = players.map((p) => ({ ...p, playerName: p.playerId }))
+
+    await Promise.all(
+      appearancesWithName.value.map(async (appearance, index) => {
+        const name = await playerStore.fetchPlayerName(appearance.playerId)
+        appearancesWithName.value[index].playerName = name
+      }),
+    )
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
