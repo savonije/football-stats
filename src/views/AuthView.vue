@@ -38,7 +38,7 @@ const submitForm = () => {
       >
         <h1 data-testid="login-title">{{ t('common.login') }}</h1>
 
-        <form @submit.prevent="submitForm" data-testid="login-form" class="grid gap-6">
+        <form @submit.prevent="submitForm" data-testid="login-form" class="grid gap-2">
           <FloatLabel class="mb-6" variant="on">
             <InputText
               v-model="credentials.email"
@@ -75,7 +75,12 @@ const submitForm = () => {
           </Message>
 
           <div class="mt-6 text-right">
-            <Button type="submit" :label="t('common.login')" data-testid="btn-submit" />
+            <Button
+              type="submit"
+              :label="t('common.login')"
+              data-testid="btn-submit"
+              icon="pi pi-lock"
+            />
           </div>
         </form>
       </div>
