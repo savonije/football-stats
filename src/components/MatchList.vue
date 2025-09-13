@@ -62,8 +62,12 @@ const onRowClick = (event: DataTableRowClickEvent) => {
     </Column>
 
     <Column class="!text-right hidden sm:table-cell">
-      <template #body>
-        <Button size="small">
+      <template #body="{ data }">
+        <Button
+          as="router-link"
+          size="small"
+          :to="{ name: 'matchDetail', params: { id: data.id } }"
+        >
           {{ $t('common.view') }}
         </Button>
       </template>
