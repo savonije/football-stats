@@ -5,18 +5,12 @@ import { db } from '@/firebase'
 import type { Player } from '@/types'
 
 export const usePlayerStore = defineStore('playerStore', () => {
-  // map: id => Player
   const players = ref<Record<string, Player>>({})
-
-  // loading state
   const loading = ref(false)
 
-  // convenience computed array (useful for DataTable)
   const playersArray = computed(() => Object.values(players.value))
 
-  // fetch a single player object (from cache if available)
   async function fetchPlayer(playerId: string): Promise<Player | null> {
-    // cache hit
     if (players.value[playerId]) return players.value[playerId]
 
     const playerRef = doc(db, 'players', playerId)
@@ -60,19 +54,16 @@ export const usePlayerStore = defineStore('playerStore', () => {
     const playerRef = doc(db, 'players', playerId)
     await updateDoc(playerRef, data)
 
-    // update local cache
     if (players.value[playerId]) {
       players.value[playerId] = { ...players.value[playerId], ...data }
     }
   }
 
   return {
-    // state
     players,
     playersArray,
     loading,
 
-    // actions
     fetchPlayer,
     fetchPlayerName,
     fetchPlayers,

@@ -42,8 +42,8 @@ onMounted(async () => {
   }))
 
   await Promise.all(
-    matchStore.presentPlayers.map(async (p, index) => {
-      const name = await playerStore.fetchPlayerName(p.playerId)
+    matchStore.presentPlayers.map(async (player, index) => {
+      const name = await playerStore.fetchPlayerName(player.playerId)
       appearancesWithName.value[index].playerName = name
     }),
   )
@@ -123,7 +123,7 @@ const confirmDeletePlayer = async () => {
       />
     </div>
 
-    <Dialog v-model:visible="showDeleteMatchDialog" modal header="Confirm" style="width: 350px">
+    <Dialog v-model:visible="showDeleteMatchDialog" modal style="width: 350px" :draggable="false">
       <template #header>
         <h3 class="m-0">{{ $t('common.deleteMatch') }}</h3>
       </template>
@@ -134,7 +134,7 @@ const confirmDeletePlayer = async () => {
       </div>
     </Dialog>
 
-    <Dialog v-model:visible="showDeletePlayerDialog" modal header="Confirm" style="width: 350px">
+    <Dialog v-model:visible="showDeletePlayerDialog" modal style="width: 350px" :draggable="false">
       <template #header>
         <h3 class="m-0">{{ $t('common.deletePlayer') }}</h3>
       </template>
