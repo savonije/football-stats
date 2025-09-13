@@ -1,72 +1,71 @@
 import { defineStore } from 'pinia'
-import { doc, getDoc, collection, getDocs, updateDoc } from 'firebase/firestore'
-import { ref, computed } from 'vue'
+import {
+  collection,
+  doc,
+  deleteDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+  getDoc,
+} from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Player } from '@/types'
 
-export const usePlayerStore = defineStore('playerStore', () => {
-  const players = ref<Record<string, Player>>({})
-  const loading = ref(false)
+export const usePlayerStore = defineStore('playerStore', {
+  state: (): {
+    players: Player[]
+    playersLoaded: boolean
+    selectedPlayer: Player | null
+  } => ({
+    players: [],
+    playersLoaded: false,
+    selectedPlayer: null,
+  }),
 
-  const playersArray = computed(() => Object.values(players.value))
-
-  async function fetchPlayer(playerId: string): Promise<Player | null> {
-    if (players.value[playerId]) return players.value[playerId]
-
-    const playerRef = doc(db, 'players', playerId)
-    const playerSnap = await getDoc(playerRef)
-    if (!playerSnap.exists()) return null
-
-    const data = playerSnap.data() as Player
-    const player: Player = { ...data, id: playerSnap.id }
-    players.value[playerSnap.id] = player
-    return player
-  }
-
-  // fetch only the player's name (helper)
-  async function fetchPlayerName(playerId: string): Promise<string> {
-    const player = await fetchPlayer(playerId)
-    return player?.name ?? playerId
-  }
-
-  // fetch all players and populate the map
-  async function fetchPlayers(): Promise<Player[]> {
-    loading.value = true
-    try {
-      const snapshot = await getDocs(collection(db, 'players'))
-      const allPlayers: Player[] = []
-
-      snapshot.forEach((snapDoc) => {
-        const data = snapDoc.data() as Player
-        const id = snapDoc.id
-        const player: Player = { ...data, id }
-        players.value[id] = player
-        allPlayers.push(player)
+  actions: {
+    fetchPlayers() {
+      this.playersLoaded = false
+      const playersRef = collection(db, 'players')
+      onSnapshot(playersRef, (snapshot) => {
+        this.players = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Player)
+        this.playersLoaded = true
       })
+    },
 
-      return allPlayers
-    } finally {
-      loading.value = false
-    }
-  }
+    async fetchPlayer(playerId: string): Promise<Player | null> {
+      const snap = await getDoc(doc(db, 'players', playerId))
+      if (!snap.exists()) return null
+      const player = { id: snap.id, ...snap.data() } as Player
+      this.selectedPlayer = player
+      return player
+    },
 
-  async function updatePlayer(playerId: string, data: Partial<Player>) {
-    const playerRef = doc(db, 'players', playerId)
-    await updateDoc(playerRef, data)
+    addPlayer(player: Player) {
+      return setDoc(doc(db, 'players', player.id), player)
+    },
 
-    if (players.value[playerId]) {
-      players.value[playerId] = { ...players.value[playerId], ...data }
-    }
-  }
+    updatePlayer(playerId: string, data: Partial<Player>) {
+      return updateDoc(doc(db, 'players', playerId), data)
+    },
 
-  return {
-    players,
-    playersArray,
-    loading,
+    deletePlayer(playerId: string) {
+      return deleteDoc(doc(db, 'players', playerId))
+    },
 
-    fetchPlayer,
-    fetchPlayerName,
-    fetchPlayers,
-    updatePlayer,
-  }
+    async fetchPlayerName(playerId: string): Promise<string> {
+      const playerRef = doc(db, 'players', playerId)
+      const snap = await getDocs(query(collection(db, 'players'), where('id', '==', playerId)))
+      if (snap.empty) return playerId
+      const docData = snap.docs[0].data() as Player
+      return docData.name ?? playerId
+    },
+  },
+
+  getters: {
+    getPlayerById: (state) => (playerId: string) => state.players.find((p) => p.id === playerId),
+    playersSorted: (state) => [...state.players].sort((a, b) => a.name.localeCompare(b.name)),
+  },
 })

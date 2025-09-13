@@ -73,11 +73,12 @@ const savePlayer = async () => {
 }
 
 onMounted(async () => {
-  await Promise.all([
-    playerStore.fetchPlayer(playerId.value).then((p) => (player.value = p)),
-    matchStore.fetchMatches(seasonId),
-    matchStore.fetchAppearances(seasonId),
-  ])
+  const p = await playerStore.fetchPlayer(playerId.value)
+  player.value = p ?? null
+
+  matchStore.fetchMatches(seasonId)
+  matchStore.fetchAppearances(seasonId)
+
   loading.value = false
 })
 </script>

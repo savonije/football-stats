@@ -8,8 +8,8 @@ import { Button, ProgressSpinner } from 'primevue'
 
 const playerStore = usePlayerStore()
 
-onMounted(async () => {
-  await playerStore.fetchPlayers()
+onMounted(() => {
+  playerStore.fetchPlayers()
 })
 </script>
 
@@ -17,9 +17,8 @@ onMounted(async () => {
   <h1 class="mb-2">{{ $t('common.player', 2) }}</h1>
 
   <DataTable
-    v-if="playerStore.playersArray.length"
-    :value="playerStore.playersArray"
-    :loading="playerStore.loading"
+    v-if="playerStore.playersLoaded && playerStore.players.length"
+    :value="playerStore.players"
     dataKey="id"
     class="shadow-lg rounded-2xl"
     stripedRows
@@ -43,7 +42,7 @@ onMounted(async () => {
     </Column>
   </DataTable>
 
-  <div v-else-if="playerStore.loading" class="flex justify-content-center">
+  <div v-else-if="!playerStore.playersLoaded" class="flex justify-content-center">
     <ProgressSpinner />
   </div>
 
