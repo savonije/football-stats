@@ -13,7 +13,13 @@ const appearance = defineModel<AppearanceWithName>('appearance')
 </script>
 
 <template>
-  <div v-if="appearance" class="flex items-center justify-between bg-white shadow rounded p-4">
+  <div
+    v-if="appearance"
+    :class="{
+      'flex justify-between bg-white shadow rounded p-4': true, // always applied
+      'flex-col md:flex-row md:items-center gap-2': editing, // only when editing = true
+    }"
+  >
     <div class="flex flex-col">
       <router-link
         :to="{ name: 'playerDetail', params: { id: appearance.playerId } }"
@@ -30,16 +36,21 @@ const appearance = defineModel<AppearanceWithName>('appearance')
       <span v-if="appearance.isGoalkeeper">🧤</span>
     </div>
 
-    <div v-else class="flex items-center gap-4">
-      <label>{{ $t('common.goal', 2) }}</label>
-      <InputNumber v-model.number="appearance.goals" :min="0" show-buttons />
+    <div v-else class="flex flex-col md:flex-row md:items-center gap-6">
+      <div class="flex gap-3 items-center">
+        <label for="goals">{{ $t('common.goal', 2) }}</label>
+        <InputNumber id="goals" v-model.number="appearance.goals" :min="0" show-buttons />
+      </div>
 
-      <label>{{ $t('common.wasKeeper') }}</label>
-      <Checkbox v-model="appearance.isGoalkeeper" binary />
+      <div class="flex gap-3 items-center">
+        <label for="isGoalkeeper">{{ $t('common.wasKeeper') }}</label>
+        <Checkbox v-model="appearance.isGoalkeeper" name="isGoalkeeper" id="isGoalkeeper" binary />
+      </div>
 
       <Button
         icon="pi pi-trash"
         severity="danger"
+        :label="$t('common.delete')"
         size="small"
         @click="props.deletePlayer(appearance)"
       />
