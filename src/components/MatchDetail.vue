@@ -49,11 +49,18 @@ onMounted(async () => {
   )
 })
 
-const saveAppearance = async (appearance: Appearance) => {
-  await matchStore.updateAppearance(seasonId, matchId.value, appearance.id, {
-    goals: appearance.goals,
-    isGoalkeeper: appearance.isGoalkeeper,
-  })
+const saveAll = async () => {
+  await Promise.all(
+    appearancesWithName.value.map((appearance) =>
+      matchStore.updateAppearance(seasonId, matchId.value, appearance.id, {
+        goals: appearance.goals,
+        isGoalkeeper: appearance.isGoalkeeper,
+      }),
+    ),
+  )
+
+  editing.value = false
+
   toast.add({
     severity: 'success',
     summary: t('common.success'),
@@ -101,11 +108,10 @@ const confirmDeletePlayer = async () => {
 
     <div class="space-y-4">
       <PlayerAppearanceItem
-        v-for="appearance in appearancesWithName"
+        v-for="(appearance, index) in appearancesWithName"
         :key="appearance.id"
-        :appearance="appearance"
+        v-model:appearance="appearancesWithName[index]"
         :editing="editing"
-        :save="saveAppearance"
         :deletePlayer="
           (player) => {
             playerToDelete = player
@@ -115,10 +121,15 @@ const confirmDeletePlayer = async () => {
       />
     </div>
 
-    <div v-if="authStore.user?.id" class="mt-12 flex justify-end">
+    <div v-if="authStore.user?.id && editing" class="mt-8 flex justify-end">
+      <Button :label="$t('common.save')" icon="pi pi-save" @click="saveAll" />
+    </div>
+
+    <div v-if="authStore.user?.id" class="mt-12">
       <Button
         :label="$t('common.deleteMatch')"
         severity="danger"
+        variant="outlined"
         @click="showDeleteMatchDialog = true"
       />
     </div>
