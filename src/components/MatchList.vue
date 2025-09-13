@@ -57,7 +57,20 @@ const onRowClick = (event: DataTableRowClickEvent) => {
 
     <Column :header="$t('common.result')">
       <template #body="{ data }">
-        {{ data.result ? `${data.result.goalsFor}-${data.result.goalsAgainst}` : '-' }}
+        <span
+          class="font-bold"
+          :class="
+            data.result
+              ? data.result.goalsFor > data.result.goalsAgainst
+                ? 'text-green-700'
+                : data.result.goalsFor < data.result.goalsAgainst
+                  ? 'text-red-700'
+                  : 'text-yellow-700'
+              : 'text-gray-500'
+          "
+        >
+          {{ data.result ? `${data.result.goalsFor}-${data.result.goalsAgainst}` : '-' }}
+        </span>
       </template>
     </Column>
 
