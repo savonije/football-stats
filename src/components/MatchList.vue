@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
+import { useRouter } from 'vue-router'
 
-import DataTable from 'primevue/datatable'
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import dayjs from 'dayjs'
 
@@ -12,10 +13,15 @@ import { Button, ProgressSpinner } from 'primevue'
 
 const matchStore = useMatchStore()
 const seasonId = SEASON
+const router = useRouter()
 
 onMounted(async () => {
   await matchStore.fetchMatches(seasonId)
 })
+
+const onRowClick = (event: DataTableRowClickEvent) => {
+  router.push({ name: 'matchDetail', params: { id: event.data.id } })
+}
 </script>
 
 <template>
@@ -27,20 +33,23 @@ onMounted(async () => {
     dataKey="id"
     class="shadow-lg rounded-2xl"
     stripedRows
+    sort-field="date"
+    :sort-order="-1"
+    @rowClick="onRowClick"
   >
     <Column field="date" :header="$t('common.date')" sortable>
       <template #body="{ data }">
         {{ dayjs(data.date.toDate()).format('DD-MM-YYYY') }}
       </template>
     </Column>
+
     <Column field="opponent" :header="$t('common.opponent')">
       <template #body="{ data }">
-        <RouterLink :to="{ name: 'matchDetail', params: { id: data.id } }">
-          {{ data.opponent }}
-        </RouterLink>
+        {{ data.opponent }}
       </template>
     </Column>
-    <Column :header="$t('common.homeOrAway')">
+
+    <Column :header="$t('common.homeOrAway')" class="hidden sm:table-cell">
       <template #body="{ data }">
         {{ data.home ? $t('common.home') : $t('common.away') }}
       </template>
@@ -51,13 +60,10 @@ onMounted(async () => {
         {{ data.result ? `${data.result.goalsFor}-${data.result.goalsAgainst}` : '-' }}
       </template>
     </Column>
-    <Column class="!text-right">
-      <template #body="{ data }">
-        <Button
-          as="router-link"
-          size="small"
-          :to="{ name: 'matchDetail', params: { id: data.id } }"
-        >
+
+    <Column class="!text-right hidden sm:table-cell">
+      <template #body>
+        <Button size="small">
           {{ $t('common.view') }}
         </Button>
       </template>
