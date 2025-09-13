@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
@@ -23,31 +23,32 @@ const route = useRoute()
 const matchId = computed(() => route.params.id as string)
 
 const { t } = useI18n()
-
 const editing = ref(false)
 const showDeleteMatchDialog = ref(false)
 const showDeletePlayerDialog = ref(false)
 type AppearanceWithName = Appearance & { playerName: string }
-
 const playerToDelete = ref<AppearanceWithName | null>(null)
 
 const appearancesWithName = ref<AppearanceWithName[]>([])
 
-onMounted(async () => {
-  await matchStore.fetchMatchDetails(seasonId, matchId.value)
-
-  appearancesWithName.value = matchStore.presentPlayers.map((player) => ({
-    ...player,
-    playerName: player.playerId,
-  }))
-
-  await Promise.all(
-    matchStore.presentPlayers.map(async (player, index) => {
-      const name = await playerStore.fetchPlayerName(player.playerId)
-      appearancesWithName.value[index].playerName = name
-    }),
-  )
+onMounted(() => {
+  matchStore.fetchMatchDetails(seasonId, matchId.value)
 })
+
+watch(
+  () => matchStore.presentPlayers,
+  async (players) => {
+    appearancesWithName.value = players.map((p) => ({ ...p, playerName: p.playerId }))
+
+    await Promise.all(
+      appearancesWithName.value.map(async (appearance, index) => {
+        const name = await playerStore.fetchPlayerName(appearance.playerId)
+        appearancesWithName.value[index].playerName = name
+      }),
+    )
+  },
+  { immediate: true },
+)
 
 const saveAll = async () => {
   await Promise.all(
@@ -58,9 +59,7 @@ const saveAll = async () => {
       }),
     ),
   )
-
   editing.value = false
-
   toast.add({
     severity: 'success',
     summary: t('common.success'),
@@ -75,7 +74,7 @@ const confirmDeleteMatch = async () => {
   toast.add({
     severity: 'success',
     summary: t('common.success'),
-    detail: t('common.matchDeleted'),
+    detail: t('common.deleteMatchSuccess'),
     life: 3000,
   })
   router.push({ name: 'home' })
@@ -94,12 +93,12 @@ const confirmDeletePlayer = async () => {
     <MatchHeader :match="matchStore.selectedMatch" />
 
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">{{ $t('common.presentPlayers') }}</h2>
+      <h2 class="text-xl font-semibold">{{ t('common.presentPlayers') }}</h2>
       <div v-if="authStore.user?.id">
         <ToggleButton
           v-model="editing"
-          :onLabel="$t('common.view')"
-          :offLabel="$t('common.edit')"
+          :onLabel="t('common.view')"
+          :offLabel="t('common.edit')"
           offIcon="pi pi-pencil"
           onIcon="pi pi-eye"
         />
@@ -122,12 +121,12 @@ const confirmDeletePlayer = async () => {
     </div>
 
     <div v-if="authStore.user?.id && editing" class="mt-8 flex justify-end">
-      <Button :label="$t('common.save')" icon="pi pi-save" @click="saveAll" />
+      <Button :label="t('common.save')" icon="pi pi-save" @click="saveAll" />
     </div>
 
     <div v-if="authStore.user?.id" class="mt-12">
       <Button
-        :label="$t('common.deleteMatch')"
+        :label="t('common.deleteMatch')"
         severity="danger"
         variant="outlined"
         @click="showDeleteMatchDialog = true"
@@ -136,30 +135,28 @@ const confirmDeletePlayer = async () => {
 
     <Dialog v-model:visible="showDeleteMatchDialog" modal style="width: 350px" :draggable="false">
       <template #header>
-        <h3 class="m-0">{{ $t('common.deleteMatch') }}</h3>
+        <h3 class="m-0">{{ t('common.deleteMatch') }}</h3>
       </template>
-      <p>{{ $t('common.deleteMatchConfirm') }}</p>
+      <p>{{ t('common.deleteMatchConfirm') }}</p>
       <div class="flex justify-end gap-2 mt-4">
-        <Button :label="$t('common.cancel')" @click="showDeleteMatchDialog = false" />
-        <Button :label="$t('common.delete')" severity="danger" @click="confirmDeleteMatch" />
+        <Button :label="t('common.cancel')" @click="showDeleteMatchDialog = false" />
+        <Button :label="t('common.delete')" severity="danger" @click="confirmDeleteMatch" />
       </div>
     </Dialog>
 
     <Dialog v-model:visible="showDeletePlayerDialog" modal style="width: 350px" :draggable="false">
       <template #header>
-        <h3 class="m-0">{{ $t('common.deletePlayer') }}</h3>
+        <h3 class="m-0">{{ t('common.deletePlayer') }}</h3>
       </template>
-      <p>
-        {{ $t('common.deletePlayerConfirm', [playerToDelete?.playerName]) }}
-      </p>
+      <p>{{ t('common.deletePlayerConfirm', [playerToDelete?.playerName]) }}</p>
       <div class="flex justify-end gap-2 mt-4">
-        <Button :label="$t('common.cancel')" @click="showDeletePlayerDialog = false" />
-        <Button :label="$t('common.delete')" severity="danger" @click="confirmDeletePlayer" />
+        <Button :label="t('common.cancel')" @click="showDeletePlayerDialog = false" />
+        <Button :label="t('common.delete')" severity="danger" @click="confirmDeletePlayer" />
       </div>
     </Dialog>
   </div>
 
-  <div v-else-if="matchStore.loading" class="flex justify-content-center">
+  <div v-else-if="!matchStore.appearancesLoaded" class="flex justify-content-center">
     <ProgressSpinner />
   </div>
 </template>

@@ -15,8 +15,8 @@ const matchStore = useMatchStore()
 const seasonId = SEASON
 const router = useRouter()
 
-onMounted(async () => {
-  await matchStore.fetchMatches(seasonId)
+onMounted(() => {
+  matchStore.fetchMatches(seasonId)
 })
 
 const onRowClick = (event: DataTableRowClickEvent) => {
@@ -27,9 +27,9 @@ const onRowClick = (event: DataTableRowClickEvent) => {
 <template>
   <h1 class="mb-2">{{ $t('common.title') }}</h1>
   <DataTable
-    v-if="matchStore.matches.length"
+    v-if="matchStore.matchesLoaded && matchStore.matches.length"
     :value="matchStore.matches"
-    :loading="matchStore.loading"
+    :loading="!matchStore.matchesLoaded"
     dataKey="id"
     class="shadow-lg rounded-2xl"
     stripedRows
@@ -39,7 +39,7 @@ const onRowClick = (event: DataTableRowClickEvent) => {
   >
     <Column field="date" :header="$t('common.date')" sortable>
       <template #body="{ data }">
-        {{ dayjs(data.date.toDate()).format('DD-MM-YYYY') }}
+        {{ data.date ? dayjs(data.date.toDate()).format('DD-MM-YYYY') : '-' }}
       </template>
     </Column>
 
@@ -74,7 +74,7 @@ const onRowClick = (event: DataTableRowClickEvent) => {
     </Column>
   </DataTable>
 
-  <div v-else-if="matchStore.loading" class="flex justify-content-center">
+  <div v-else-if="!matchStore.matchesLoaded" class="flex justify-content-center">
     <ProgressSpinner />
   </div>
 

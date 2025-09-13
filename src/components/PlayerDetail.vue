@@ -76,7 +76,7 @@ onMounted(async () => {
   await Promise.all([
     playerStore.fetchPlayer(playerId.value).then((p) => (player.value = p)),
     matchStore.fetchMatches(seasonId),
-    matchStore.fetchPlayerAppearances(seasonId),
+    matchStore.fetchAppearances(seasonId),
   ])
   loading.value = false
 })
