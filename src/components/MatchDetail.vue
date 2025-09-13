@@ -89,19 +89,26 @@ const confirmDeletePlayer = async () => {
 </script>
 
 <template>
-  <div class="w-[800px] max-w-full mx-auto p-4" v-if="matchStore.selectedMatch">
+  <div class="w-[800px] max-w-full mx-auto sm:p-4" v-if="matchStore.selectedMatch">
     <MatchHeader :match="matchStore.selectedMatch" />
 
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold">{{ t('common.presentPlayers') }}</h2>
-      <div v-if="authStore.user?.id">
-        <ToggleButton
-          v-model="editing"
-          :onLabel="t('common.view')"
-          :offLabel="t('common.edit')"
-          offIcon="pi pi-pencil"
-          onIcon="pi pi-eye"
-        />
+
+      <div class="flex gap-2">
+        <template v-if="authStore.user?.id && editing">
+          <Button :label="t('common.save')" icon="pi pi-save" @click="saveAll" size="small" />
+        </template>
+
+        <template v-if="authStore.user?.id">
+          <ToggleButton
+            v-model="editing"
+            :on-label="t('common.view')"
+            :off-label="t('common.edit')"
+            off-icon="pi pi-pencil"
+            on-icon="pi pi-eye"
+          />
+        </template>
       </div>
     </div>
 
@@ -118,10 +125,6 @@ const confirmDeletePlayer = async () => {
           }
         "
       />
-    </div>
-
-    <div v-if="authStore.user?.id && editing" class="mt-8 flex justify-end">
-      <Button :label="t('common.save')" icon="pi pi-save" @click="saveAll" />
     </div>
 
     <div v-if="authStore.user?.id" class="mt-12">
