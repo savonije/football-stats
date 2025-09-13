@@ -7,7 +7,7 @@ import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useToast } from 'primevue/usetoast'
 
-import { Skeleton, Card, Dialog, Divider, InputText, Checkbox, Select, Button } from 'primevue'
+import { Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
 import type { Player } from '@/types'
 import { useI18n } from 'vue-i18n'
 
