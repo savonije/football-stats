@@ -4,6 +4,7 @@ import {
   collectionGroup,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   query,
   setDoc,
@@ -51,8 +52,16 @@ export const useMatchStore = defineStore('matchStore', {
       return setDoc(doc(db, `seasons/${seasonId}/matches`, match.id), match)
     },
 
-    deleteMatch(seasonId: string, matchId: string) {
-      return deleteDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`))
+    async deleteMatch(seasonId: string, matchId: string) {
+      const appearancesRef = collection(db, `seasons/${seasonId}/matches/${matchId}/appearances`)
+      const snapshot = await getDocs(appearancesRef)
+
+      // Delete all nested appearances
+      const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref))
+      await Promise.all(deletePromises)
+
+      // Delete the match itself
+      await deleteDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`))
     },
 
     fetchAppearances(seasonId: string, matchId?: string) {
