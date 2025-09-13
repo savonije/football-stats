@@ -7,7 +7,7 @@ import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useToast } from 'primevue/usetoast'
 
-import { Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
+import { Skeleton, Card, Dialog, Divider, InputText, Checkbox, Select, Button } from 'primevue'
 import type { Player } from '@/types'
 import { useI18n } from 'vue-i18n'
 
@@ -22,25 +22,25 @@ const seasonId = SEASON
 const playerId = computed(() => route.params.id as string)
 const player = ref<Player | null>(null)
 
+const loading = ref(true)
+
 const editVisible = ref(false)
 const editForm = ref<Partial<Player>>({})
 
-onMounted(async () => {
-  player.value = await playerStore.fetchPlayer(playerId.value)
-  await matchStore.fetchMatches(seasonId)
-  await matchStore.fetchPlayerAppearances(seasonId)
-})
-
 const playerAppearances = computed(() =>
-  matchStore.appearances.filter((a) => a.playerId === playerId.value),
+  matchStore.appearances.filter((player) => player.playerId === playerId.value),
 )
 
 const totalGoals = computed(() =>
-  playerAppearances.value.reduce((sum, p) => sum + (p.goals || 0), 0),
+  playerAppearances.value.reduce((sum, player) => sum + (player.goals || 0), 0),
 )
 
-const totalAppearances = computed(() => playerAppearances.value.filter((p) => p.present).length)
-const totalKeeper = computed(() => playerAppearances.value.filter((p) => p.isGoalkeeper).length)
+const totalAppearances = computed(
+  () => playerAppearances.value.filter((player) => player.present).length,
+)
+const totalKeeper = computed(
+  () => playerAppearances.value.filter((player) => player.isGoalkeeper).length,
+)
 const totalMatches = computed(() => matchStore.matches.length)
 
 const goalsPerMatch = computed(() =>
@@ -51,14 +51,14 @@ const attendancePercentage = computed(() =>
   totalMatches.value > 0 ? Math.round((totalAppearances.value / totalMatches.value) * 100) : 0,
 )
 
-function openEditDialog() {
+const openEditDialog = () => {
   if (player.value) {
     editForm.value = { ...player.value }
     editVisible.value = true
   }
 }
 
-async function savePlayer() {
+const savePlayer = async () => {
   if (!player.value) return
   await playerStore.updatePlayer(player.value.id, editForm.value)
   player.value = { ...player.value, ...editForm.value } as Player
@@ -71,12 +71,21 @@ async function savePlayer() {
     life: 3000,
   })
 }
+
+onMounted(async () => {
+  await Promise.all([
+    playerStore.fetchPlayer(playerId.value).then((p) => (player.value = p)),
+    matchStore.fetchMatches(seasonId),
+    matchStore.fetchPlayerAppearances(seasonId),
+  ])
+  loading.value = false
+})
 </script>
 
 <template>
   <h1 class="text-2xl font-bold mb-4 flex justify-between items-center">
     <span v-if="player">{{ player.name }}</span>
-    <span v-else><Skeleton height="20px" width="100px" /></span>
+    <span v-else><Skeleton height="32px" width="100px" /></span>
 
     <Button
       v-if="player && AuthStore.user?.id"
@@ -92,7 +101,8 @@ async function savePlayer() {
         <h2>{{ $t('common.totalGoals') }}</h2>
       </template>
       <template #content>
-        <p class="text-3xl font-bold">{{ totalGoals }}</p>
+        <p class="text-3xl font-bold" v-if="!loading">{{ totalGoals }}</p>
+        <Skeleton v-else height="40px" width="60px" />
       </template>
     </Card>
 
@@ -101,7 +111,8 @@ async function savePlayer() {
         <h2>{{ $t('common.totalAppearances') }}</h2>
       </template>
       <template #content>
-        <p class="text-3xl font-bold">{{ totalAppearances }}/{{ totalMatches }}</p>
+        <p class="text-3xl font-bold" v-if="!loading">{{ totalAppearances }}/{{ totalMatches }}</p>
+        <Skeleton v-else height="40px" width="60px" />
       </template>
     </Card>
 
@@ -110,7 +121,8 @@ async function savePlayer() {
         <h2>{{ $t('common.totalKeeper') }}</h2>
       </template>
       <template #content>
-        <p class="text-3xl font-bold">{{ totalKeeper }}</p>
+        <p class="text-3xl font-bold" v-if="!loading">{{ totalKeeper }}</p>
+        <Skeleton v-else height="40px" width="60px" />
       </template>
     </Card>
 
@@ -119,7 +131,8 @@ async function savePlayer() {
         <h2>{{ $t('common.goalsPerMatch') }}</h2>
       </template>
       <template #content>
-        <p class="text-3xl font-bold">{{ goalsPerMatch }}</p>
+        <p class="text-3xl font-bold" v-if="!loading">{{ goalsPerMatch }}</p>
+        <Skeleton v-else height="40px" width="60px" />
       </template>
     </Card>
 
@@ -128,24 +141,28 @@ async function savePlayer() {
         <h2>{{ $t('common.attendancePercentage') }}</h2>
       </template>
       <template #content>
-        <p class="text-3xl font-bold">{{ attendancePercentage }}%</p>
+        <p class="text-3xl font-bold" v-if="!loading">{{ attendancePercentage }}%</p>
+        <Skeleton v-else height="40px" width="60px" />
       </template>
     </Card>
 
-    <Card class="md:col-span-3">
+    <Card>
       <template #title>
         <h2>{{ $t('common.playerInfo') }}</h2>
       </template>
       <template #content>
         <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
-          <dt class="font-medium">{{ $t('common.clothingSize') }}</dt>
-          <dd>{{ player?.clothingSize ?? '-' }}</dd>
+          <dt class="font-medium">{{ $t('common.clothingSize') }}:</dt>
+          <dd v-if="!loading">{{ player?.clothingSize ?? '-' }}</dd>
+          <dd v-else><Skeleton height="20px" width="40px" /></dd>
 
-          <dt class="font-medium">{{ $t('common.hasJacket') }}</dt>
-          <dd>{{ player?.hasJacket ? $t('common.yes') : $t('common.no') }}</dd>
+          <dt class="font-medium">{{ $t('common.hasJacket') }}:</dt>
+          <dd v-if="!loading">{{ player?.hasJacket ? $t('common.yes') : $t('common.no') }}</dd>
+          <dd v-else><Skeleton height="20px" width="40px" /></dd>
 
-          <dt class="font-medium">{{ $t('common.hasBag') }}</dt>
-          <dd>{{ player?.hasBag ? $t('common.yes') : $t('common.no') }}</dd>
+          <dt class="font-medium">{{ $t('common.hasBag') }}:</dt>
+          <dd v-if="!loading">{{ player?.hasBag ? $t('common.yes') : $t('common.no') }}</dd>
+          <dd v-else><Skeleton height="20px" width="40px" /></dd>
         </dl>
       </template>
     </Card>
@@ -156,6 +173,7 @@ async function savePlayer() {
     modal
     :header="t('common.editPlayer')"
     :style="{ width: '400px' }"
+    :draggable="false"
   >
     <div class="flex flex-col gap-4">
       <div>
@@ -189,7 +207,6 @@ async function savePlayer() {
       <div class="flex justify-between w-full">
         <Button
           :label="$t('common.cancel')"
-          icon="pi pi-times"
           severity="secondary"
           text
           @click="editVisible = false"
