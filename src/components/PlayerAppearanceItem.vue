@@ -16,8 +16,8 @@ const appearance = defineModel<AppearanceWithName>('appearance')
   <div
     v-if="appearance"
     :class="{
-      'flex justify-between bg-white shadow rounded p-4': true, // always applied
-      'flex-col md:flex-row md:items-center gap-2': editing, // only when editing = true
+      'flex justify-between bg-white shadow rounded p-4': true,
+      'flex-col md:flex-row md:items-center gap-2': editing,
     }"
   >
     <div class="flex flex-col">
