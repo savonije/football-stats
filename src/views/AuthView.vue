@@ -31,7 +31,7 @@ const submitForm = () => {
 
 <template>
   <DefaultLayout>
-    <div class="flex justify-center items-center w-full h-full p-24">
+    <div class="flex justify-center items-center w-full h-full p-6 sm:p-12 md:p-24">
       <div
         class="mx-auto w-full rounded-sm bg-white p-6 shadow-sm sm:max-w-[500px] grid gap-3"
         data-testid="login-container"
