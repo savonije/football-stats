@@ -76,17 +76,19 @@ onMounted(() => {
 watch(
   () => matchStore.presentPlayers,
   async (players) => {
-    appearancesWithName.value = players.map((p) => ({
+    const withEmptyNames = players.map((p) => ({
       ...p,
       playerName: '',
     }))
 
-    await Promise.all(
-      appearancesWithName.value.map(async (appearance, index) => {
+    const resolved = await Promise.all(
+      withEmptyNames.map(async (appearance) => {
         const name = await playerStore.fetchPlayerName(appearance.playerId)
-        appearancesWithName.value[index].playerName = name
+        return { ...appearance, playerName: name }
       }),
     )
+
+    appearancesWithName.value = resolved
   },
   { immediate: true },
 )
@@ -97,7 +99,7 @@ watch(
     <MatchHeader :match="matchStore.selectedMatch" />
 
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">{{ t('common.presentPlayers') }}</h2>
+      <h2 class="text-xl font-semibold mb-2">{{ t('common.player', 2) }}</h2>
 
       <div class="flex gap-2">
         <template v-if="authStore.user?.id && editing">
