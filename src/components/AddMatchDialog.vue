@@ -3,7 +3,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
 import { Dialog, DatePicker, InputText, MultiSelect, Select, InputNumber, Button } from 'primevue'
-import type { NewMatch, Player } from '@/types'
+import type { NewMatch } from '@/types'
 import { addMatch } from '@/services/matchService'
 import { usePlayerStore } from '@/stores/playerStore'
 import { SEASON } from '@/constants'
@@ -29,21 +29,12 @@ const homeOptions = [
 ]
 
 const playerStore = usePlayerStore()
-const availablePlayers = ref<Player[]>([])
-
-onMounted(async () => {
-  await playerStore.fetchPlayers()
-  availablePlayers.value = Object.entries(playerStore.players).map(([id, player]) => ({
-    id,
-    name: player.name,
-    clothingSize: player.clothingSize,
-    hasJacket: player.hasJacket,
-    hasBag: player.hasBag,
-  }))
-})
 
 const playerOptions = computed(() =>
-  availablePlayers.value.map((player) => ({ label: player.name, value: player.id })),
+  playerStore.players.map((player) => ({
+    label: player.name,
+    value: player.id,
+  })),
 )
 
 const closeDialog = () => (model.value = false)
@@ -86,6 +77,10 @@ const submitMatch = async () => {
     loading.value = false
   }
 }
+
+onMounted(async () => {
+  await playerStore.fetchPlayers()
+})
 </script>
 
 <template>
