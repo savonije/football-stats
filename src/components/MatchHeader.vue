@@ -24,16 +24,19 @@ const homeClass = computed(() => (props.match?.home ? 'flex-row' : 'flex-row-rev
     </div>
 
     <div
-      v-if="props.match?.result"
       class="flex items-center justify-center gap-3 my-12"
       :class="props.match?.home ? 'flex-row' : 'flex-row-reverse'"
     >
       <div class="score-box">
-        {{ props.match.result.goalsFor }}
+        <template v-if="props.match?.result?.goalsFor">
+          {{ props.match.result.goalsFor }}
+        </template>
       </div>
       <div class="text-2xl font-bold">-</div>
       <div class="score-box">
-        {{ props.match.result.goalsAgainst }}
+        <template v-if="props.match?.result?.goalsAgainst">
+          {{ props.match.result.goalsAgainst }}
+        </template>
       </div>
     </div>
   </div>
