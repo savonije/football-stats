@@ -10,7 +10,10 @@ const homeClass = computed(() => (props.match?.home ? 'flex-row' : 'flex-row-rev
 
 <template>
   <div v-if="props.match">
-    <h1 class="mb-0 flex gap-2 items-center text-primary inline-flex" :class="homeClass">
+    <h1
+      class="mb-0 flex gap-2 items-center text-primary inline-flex text-xl sm:text-3xl"
+      :class="homeClass"
+    >
       <span>SV Apollo '69</span>
       <span> - </span>
       <span>{{ props.match?.opponent }}</span>
@@ -25,17 +28,21 @@ const homeClass = computed(() => (props.match?.home ? 'flex-row' : 'flex-row-rev
       class="flex items-center justify-center gap-3 my-12"
       :class="props.match?.home ? 'flex-row' : 'flex-row-reverse'"
     >
-      <div
-        class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded shadow"
-      >
+      <div class="score-box">
         {{ props.match.result.goalsFor }}
       </div>
       <div class="text-2xl font-bold">-</div>
-      <div
-        class="bg-white flex items-center justify-center text-6xl font-bold size-32 rounded shadow"
-      >
+      <div class="score-box">
         {{ props.match.result.goalsAgainst }}
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+@reference '@/styles/main.css';
+
+.score-box {
+  @apply bg-white flex items-center justify-center text-4xl sm:text-6xl font-bold size-24 sm:size-32 rounded shadow;
+}
+</style>
