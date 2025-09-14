@@ -32,7 +32,7 @@ onMounted(() => {
     class="shadow-lg rounded-2xl"
     striped-rows
   >
-    <Column field="name" header="Name" sortable></Column>
-    <Column field="totalGoals" header="Goals" sortable></Column>
+    <Column field="name" :header="$t('common.name')" sortable></Column>
+    <Column field="totalGoals" :header="$t('common.goal', 2)" sortable></Column>
   </DataTable>
 </template>
