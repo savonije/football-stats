@@ -1,15 +1,41 @@
 <script setup lang="ts">
-import { InputNumber, Checkbox, Button, Skeleton } from 'primevue'
+import { InputNumber, Checkbox, Button, Skeleton, useConfirm } from 'primevue'
 import type { Appearance } from '@/types'
+import { useI18n } from 'vue-i18n'
+import { useMatchStore } from '@/stores/matchStore'
+import { SEASON } from '@/constants'
+import { useRoute } from 'vue-router'
 
 type AppearanceWithName = Appearance & { playerName: string }
 
 const props = defineProps<{
   editing: boolean
-  deletePlayer: (appearance: AppearanceWithName) => void
 }>()
 
+const { t } = useI18n()
+const confirm = useConfirm()
+const matchStore = useMatchStore()
+const seasonId = SEASON
+const route = useRoute()
+const matchId = route.params.id as string
+
 const appearance = defineModel<AppearanceWithName>('appearance')
+
+const handleDelete = () => {
+  if (!appearance.value) return
+
+  confirm.require({
+    message: t('common.deletePlayerConfirm', [appearance.value.playerName]),
+    header: t('common.deletePlayer'),
+    icon: 'pi pi-exclamation-triangle',
+    rejectLabel: t('common.cancel'),
+    acceptLabel: t('common.delete'),
+    acceptClass: 'p-button-danger',
+    accept: async () => {
+      await matchStore.deleteAppearance(seasonId, matchId, appearance.value!.id)
+    },
+  })
+}
 </script>
 
 <template>
@@ -52,7 +78,7 @@ const appearance = defineModel<AppearanceWithName>('appearance')
         severity="danger"
         :label="$t('common.delete')"
         size="small"
-        @click="props.deletePlayer(appearance)"
+        @click="handleDelete"
       />
     </div>
   </div>

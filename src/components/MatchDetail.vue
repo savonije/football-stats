@@ -5,7 +5,7 @@ import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
-import { ToggleButton, Button, Dialog, useConfirm } from 'primevue'
+import { ToggleButton, Button, useConfirm } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 
 import MatchHeader from '@/components/MatchHeader.vue'
@@ -26,9 +26,7 @@ const confirm = useConfirm()
 
 const { t } = useI18n()
 const editing = ref(false)
-const showDeletePlayerDialog = ref(false)
 type AppearanceWithName = Appearance & { playerName: string }
-const playerToDelete = ref<AppearanceWithName | null>(null)
 
 const appearancesWithName = ref<AppearanceWithName[]>([])
 
@@ -59,13 +57,6 @@ const confirmDeleteMatch = async () => {
     life: 3000,
   })
   router.push({ name: 'home' })
-}
-
-const confirmDeletePlayer = async () => {
-  if (!playerToDelete.value) return
-  await matchStore.deleteAppearance(seasonId, matchId.value, playerToDelete.value.id)
-  playerToDelete.value = null
-  showDeletePlayerDialog.value = false
 }
 
 onMounted(() => {
@@ -123,12 +114,6 @@ watch(
         :key="appearance.id"
         v-model:appearance="appearancesWithName[index]"
         :editing="editing"
-        :deletePlayer="
-          (player) => {
-            playerToDelete = player
-            showDeletePlayerDialog = true
-          }
-        "
       />
     </div>
 
@@ -150,17 +135,6 @@ watch(
         "
       />
     </div>
-
-    <Dialog v-model:visible="showDeletePlayerDialog" modal style="width: 350px" :draggable="false">
-      <template #header>
-        <h3 class="m-0">{{ t('common.deletePlayer') }}</h3>
-      </template>
-      <p>{{ t('common.deletePlayerConfirm', [playerToDelete?.playerName]) }}</p>
-      <div class="flex justify-end gap-2 mt-4">
-        <Button :label="t('common.cancel')" @click="showDeletePlayerDialog = false" />
-        <Button :label="t('common.delete')" severity="danger" @click="confirmDeletePlayer" />
-      </div>
-    </Dialog>
   </div>
 
   <div v-else-if="!matchStore.appearancesLoaded" class="flex justify-content-center">
