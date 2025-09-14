@@ -28,6 +28,7 @@ onMounted(() => {
   <DataTable
     :value="playersWithGoals"
     :sortField="'totalGoals'"
+    :loading="!playerStore.playersLoaded || !matchStore.appearancesLoaded"
     :sortOrder="-1"
     class="shadow-lg rounded-2xl"
     striped-rows
