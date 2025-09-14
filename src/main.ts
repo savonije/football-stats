@@ -11,6 +11,7 @@ import i18n from '@/config/i18n'
 import { Config, ToastService } from 'primevue'
 import { createPinia } from 'pinia'
 import type { Router } from 'vue-router'
+import ConfirmationService from 'primevue/confirmationservice'
 
 declare module 'pinia' {
   export interface PiniaCustomProperties {
@@ -56,5 +57,6 @@ app.use(ToastService)
 app.use(i18n)
 app.use(router)
 app.use(pinia)
+app.use(ConfirmationService)
 
 app.mount('#app')

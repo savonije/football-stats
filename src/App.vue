@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Toast } from 'primevue'
+import { Toast, ConfirmDialog } from 'primevue'
 import { RouterView } from 'vue-router'
 
 import { useStoreAuth } from '@/stores/authStore'
@@ -14,6 +14,6 @@ onMounted(() => {
 
 <template>
   <RouterView />
-
+  <ConfirmDialog />
   <Toast />
 </template>

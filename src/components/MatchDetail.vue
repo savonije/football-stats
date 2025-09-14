@@ -5,7 +5,7 @@ import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
-import { ToggleButton, Button, Dialog } from 'primevue'
+import { ToggleButton, Button, Dialog, useConfirm } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 
 import MatchHeader from '@/components/MatchHeader.vue'
@@ -22,10 +22,10 @@ const authStore = useStoreAuth()
 const seasonId = SEASON
 const route = useRoute()
 const matchId = computed(() => route.params.id as string)
+const confirm = useConfirm()
 
 const { t } = useI18n()
 const editing = ref(false)
-const showDeleteMatchDialog = ref(false)
 const showDeletePlayerDialog = ref(false)
 type AppearanceWithName = Appearance & { playerName: string }
 const playerToDelete = ref<AppearanceWithName | null>(null)
@@ -52,7 +52,6 @@ const saveAll = async () => {
 
 const confirmDeleteMatch = async () => {
   await matchStore.deleteMatch(seasonId, matchId.value)
-  showDeleteMatchDialog.value = false
   toast.add({
     severity: 'success',
     summary: t('common.success'),
@@ -138,20 +137,19 @@ watch(
         :label="t('common.deleteMatch')"
         severity="danger"
         variant="outlined"
-        @click="showDeleteMatchDialog = true"
+        @click="
+          confirm.require({
+            message: t('common.deleteMatchConfirm'),
+            header: t('common.deleteMatch'),
+            icon: 'pi pi-exclamation-triangle',
+            rejectLabel: t('common.cancel'),
+            acceptLabel: t('common.delete'),
+            acceptClass: 'p-button-danger',
+            accept: confirmDeleteMatch,
+          })
+        "
       />
     </div>
-
-    <Dialog v-model:visible="showDeleteMatchDialog" modal style="width: 350px" :draggable="false">
-      <template #header>
-        <h3 class="m-0">{{ t('common.deleteMatch') }}</h3>
-      </template>
-      <p>{{ t('common.deleteMatchConfirm') }}</p>
-      <div class="flex justify-end gap-2 mt-4">
-        <Button :label="t('common.cancel')" @click="showDeleteMatchDialog = false" />
-        <Button :label="t('common.delete')" severity="danger" @click="confirmDeleteMatch" />
-      </div>
-    </Dialog>
 
     <Dialog v-model:visible="showDeletePlayerDialog" modal style="width: 350px" :draggable="false">
       <template #header>
