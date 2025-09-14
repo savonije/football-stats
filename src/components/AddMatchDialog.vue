@@ -99,13 +99,13 @@ const submitMatch = async () => {
   >
     <div class="flex flex-col gap-3">
       <div>
-        <label>{{ t('common.opponent') }}</label>
-        <InputText v-model="form.opponent" fluid />
+        <label>{{ t('common.opponent') }}*</label>
+        <InputText v-model="form.opponent" fluid required />
       </div>
 
       <div>
         <label>{{ t('common.date') }}</label>
-        <DatePicker v-model="form.date" dateFormat="yy-mm-dd" showIcon fluid />
+        <DatePicker v-model="form.date" dateFormat="dd-mm-yy" showIcon fluid />
       </div>
 
       <div>
