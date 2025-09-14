@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { InputNumber, Checkbox, Button } from 'primevue'
+import { InputNumber, Checkbox, Button, Skeleton } from 'primevue'
 import type { Appearance } from '@/types'
 
 type AppearanceWithName = Appearance & { playerName: string }
@@ -14,7 +14,7 @@ const appearance = defineModel<AppearanceWithName>('appearance')
 
 <template>
   <div
-    v-if="appearance"
+    v-if="appearance && appearance.playerName"
     :class="{
       'flex justify-between bg-white shadow rounded p-4': true,
       'flex-col md:flex-row md:items-center gap-2': editing,
@@ -55,5 +55,8 @@ const appearance = defineModel<AppearanceWithName>('appearance')
         @click="props.deletePlayer(appearance)"
       />
     </div>
+  </div>
+  <div v-else>
+    <Skeleton width="100%" height="4rem" />
   </div>
 </template>

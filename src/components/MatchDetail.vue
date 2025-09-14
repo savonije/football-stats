@@ -76,7 +76,10 @@ onMounted(() => {
 watch(
   () => matchStore.presentPlayers,
   async (players) => {
-    appearancesWithName.value = players.map((p) => ({ ...p, playerName: p.playerId }))
+    appearancesWithName.value = players.map((p) => ({
+      ...p,
+      playerName: '',
+    }))
 
     await Promise.all(
       appearancesWithName.value.map(async (appearance, index) => {
