@@ -5,11 +5,12 @@ import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
-import { ToggleButton, Button, Dialog, ProgressSpinner } from 'primevue'
+import { ToggleButton, Button, Dialog } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 
 import MatchHeader from '@/components/MatchHeader.vue'
 import PlayerAppearanceItem from '@/components/PlayerAppearanceItem.vue'
+import ProgressSpinner from '@/components/ProgressSpinner.vue'
 import type { Appearance } from '@/types'
 import { useI18n } from 'vue-i18n'
 

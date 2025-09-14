@@ -2,9 +2,10 @@
 import { onMounted } from 'vue'
 import { usePlayerStore } from '@/stores/playerStore'
 
-import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
-import Column from 'primevue/column'
-import { Button, ProgressSpinner } from 'primevue'
+import { Button, Column, DataTable, type DataTableRowClickEvent } from 'primevue'
+
+import ProgressSpinner from '@/components/ProgressSpinner.vue'
+
 import router from '@/router'
 
 const playerStore = usePlayerStore()

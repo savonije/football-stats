@@ -28,6 +28,7 @@ export default {
   home: 'Thuis',
   homeOrAway: 'Uit of thuis',
   wasKeeper: 'Keeper geweest?',
+  loadingData: 'Data wordt geladen...',
   login: 'Inloggen',
   logout: 'Uitloggen',
   logoutMessage: 'Je bent uitgelogd',

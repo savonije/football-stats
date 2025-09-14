@@ -3,13 +3,12 @@ import { onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useRouter } from 'vue-router'
 
-import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
-import Column from 'primevue/column'
 import dayjs from 'dayjs'
+import { Button, Column, DataTable, type DataTableRowClickEvent } from 'primevue'
+
+import ProgressSpinner from '@/components/ProgressSpinner.vue'
 
 import { SEASON } from '@/constants'
-
-import { Button, ProgressSpinner } from 'primevue'
 
 const matchStore = useMatchStore()
 const seasonId = SEASON
