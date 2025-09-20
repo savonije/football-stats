@@ -42,8 +42,8 @@ const handleDelete = () => {
   <div
     v-if="appearance && appearance.playerName"
     :class="{
-      'flex justify-between bg-white shadow rounded p-4': true,
-      'flex-col md:flex-row md:items-center gap-2': editing,
+      'flex md:items-center justify-between bg-white shadow rounded p-4 min-h-[70px]': true,
+      'flex-col md:flex-row gap-2': editing,
     }"
   >
     <div class="flex flex-col">
