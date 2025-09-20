@@ -20,6 +20,10 @@ export default {
   errorGeneric: 'Er is iets misgegaan, probeer het later opnieuw',
   game: 'Wedstrijd | Wedstrijden',
   goal: 'Doelpunt | Doelpunten',
+  goalTypes: {
+    for: 'Doelpunt voor Apollo!',
+    against: 'Doelpunt voor de tegenstander :(',
+  },
   goalsAgainst: 'Doelpunten tegen',
   goalsPerMatch: 'Goals per wedstrijd',
   goalsFor: 'Doelpunten voor',
