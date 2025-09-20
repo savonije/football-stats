@@ -39,7 +39,9 @@ const saveAll = async () => {
       }),
     ),
   )
+
   editing.value = false
+
   toast.add({
     severity: 'success',
     summary: t('common.success'),
@@ -50,12 +52,14 @@ const saveAll = async () => {
 
 const confirmDeleteMatch = async () => {
   await matchStore.deleteMatch(seasonId, matchId.value)
+
   toast.add({
     severity: 'success',
     summary: t('common.success'),
     detail: t('common.deleteMatchSuccess'),
     life: 3000,
   })
+
   router.push({ name: 'home' })
 }
 
@@ -92,9 +96,15 @@ watch(
       <h2 class="text-xl font-semibold mb-2">{{ t('common.player', 2) }}</h2>
 
       <div class="flex gap-2">
-        <template v-if="authStore.user?.id && editing">
-          <Button :label="t('common.save')" icon="pi pi-save" @click="saveAll" size="small" />
-        </template>
+        <Transition name="fade" mode="out-in">
+          <Button
+            v-if="authStore.user?.id && editing"
+            :label="t('common.save')"
+            icon="pi pi-save"
+            @click="saveAll"
+            size="small"
+          />
+        </Transition>
 
         <template v-if="authStore.user?.id">
           <ToggleButton
@@ -121,6 +131,7 @@ watch(
       <Button
         :label="t('common.deleteMatch')"
         severity="danger"
+        icon="pi pi-trash"
         variant="outlined"
         @click="
           confirm.require({
