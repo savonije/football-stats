@@ -9,6 +9,7 @@ export interface Match {
   id: string
   opponent: string
   date: Timestamp
+  ended: boolean
   home: boolean
   result?: {
     goalsFor: number

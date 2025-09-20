@@ -45,7 +45,7 @@ const updateGoals = async (delta: 1 | -1) => {
 
 <template>
   <div class="flex" :class="reversed ? 'flex-row' : 'flex-row-reverse'">
-    <div v-if="authStore.user?.id" class="flex justify-between gap-3 flex-col mx-6">
+    <div v-if="authStore.user?.id && !match.ended" class="flex justify-between gap-3 flex-col mx-6">
       <Button icon="pi pi-chevron-up" severity="secondary" text @click="updateGoals(1)" />
 
       <Button icon="pi pi-chevron-down" severity="secondary" text @click="updateGoals(-1)" />

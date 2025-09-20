@@ -50,6 +50,19 @@ const saveAll = async () => {
   })
 }
 
+const confirmMatchEnd = async () => {
+  if (!matchStore.selectedMatch?.id) return
+
+  await matchStore.endMatch(seasonId, matchStore.selectedMatch.id)
+
+  toast.add({
+    severity: 'success',
+    summary: t('common.success'),
+    detail: t('common.endMatchSuccess'),
+    life: 3000,
+  })
+}
+
 const confirmDeleteMatch = async () => {
   await matchStore.deleteMatch(seasonId, matchId.value)
 
@@ -106,7 +119,7 @@ watch(
           />
         </Transition>
 
-        <template v-if="authStore.user?.id">
+        <template v-if="authStore.user?.id && !matchStore.selectedMatch?.ended">
           <ToggleButton
             v-model="editing"
             :on-label="t('common.view')"
@@ -127,7 +140,7 @@ watch(
       />
     </div>
 
-    <div v-if="authStore.user?.id" class="mt-12">
+    <div v-if="authStore.user?.id" class="mt-12 flex justify-between">
       <Button
         :label="t('common.deleteMatch')"
         severity="danger"
@@ -142,6 +155,24 @@ watch(
             acceptLabel: t('common.delete'),
             acceptClass: 'p-button-danger',
             accept: confirmDeleteMatch,
+          })
+        "
+      />
+
+      <Button
+        v-if="!matchStore.selectedMatch.ended"
+        label="Wedstrijd vastleggen"
+        variant="outlined"
+        severity="success"
+        icon="pi pi-check"
+        @click="
+          confirm.require({
+            message: t('common.endMatchConfirm'),
+            header: t('common.endMatch'),
+            rejectLabel: t('common.cancel'),
+            acceptLabel: t('common.endMatch'),
+            acceptClass: 'p-button-success',
+            accept: confirmMatchEnd,
           })
         "
       />

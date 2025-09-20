@@ -113,14 +113,18 @@ export const useMatchStore = defineStore('matchStore', {
       )
     },
 
-    async updateMatchGoals(
-      seasonId: string,
-      matchId: string,
-      type: 'for' | 'against',
-      goals: number,
-    ) {
+    endMatch(seasonId: string, matchId: string) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-      await updateDoc(matchRef, {
+
+      return updateDoc(matchRef, {
+        ended: true,
+      })
+    },
+
+    updateMatchGoals(seasonId: string, matchId: string, type: 'for' | 'against', goals: number) {
+      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+
+      return updateDoc(matchRef, {
         [`result.${type === 'for' ? 'goalsFor' : 'goalsAgainst'}`]: goals,
       })
     },
