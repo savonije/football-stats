@@ -30,6 +30,8 @@ const updateGoals = async (delta: 1 | -1) => {
 
   const newGoals = currentGoals + delta
 
+  if (newGoals < 0) return
+
   await matchStore.updateMatchGoals(seasonId, matchId, props.type, newGoals)
 
   if (delta > 0) {
