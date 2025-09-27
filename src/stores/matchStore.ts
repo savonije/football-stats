@@ -157,7 +157,7 @@ export const useMatchStore = defineStore('matchStore', {
         .filter((a) => a.present)
         .map((a) => ({
           ...a,
-          playerName: playerStore.getPlayerById(a.playerId)?.name ?? a.playerId,
+          playerName: playerStore.getPlayerById(a.playerId)?.name ?? '',
         }))
     },
   },
