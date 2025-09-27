@@ -116,7 +116,7 @@ onMounted(() => {
       />
     </div>
 
-    <div v-if="authStore.user?.id" class="mt-12 flex justify-between">
+    <div v-if="authStore.user?.id" class="mt-12 flex gap-6 justify-between">
       <Button
         :label="t('common.deleteMatch')"
         severity="danger"
