@@ -5,6 +5,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  increment,
   onSnapshot,
   query,
   setDoc,
@@ -13,6 +14,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Match, Appearance } from '@/types'
+import { usePlayerStore } from '@/stores/playerStore'
 
 export const useMatchStore = defineStore('matchStore', {
   state: (): {
@@ -128,6 +130,17 @@ export const useMatchStore = defineStore('matchStore', {
         [`result.${type === 'for' ? 'goalsFor' : 'goalsAgainst'}`]: goals,
       })
     },
+
+    incrementPlayerGoals(seasonId: string, matchId: string, appearanceId: string, delta = 1) {
+      const appearanceRef = doc(
+        db,
+        `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`,
+      )
+
+      return updateDoc(appearanceRef, {
+        goals: increment(delta),
+      })
+    },
   },
 
   getters: {
@@ -137,5 +150,15 @@ export const useMatchStore = defineStore('matchStore', {
         .reduce((sum, a) => sum + (a.goals || 0), 0),
 
     presentPlayers: (state) => state.appearances.filter((a) => a.present),
+
+    presentPlayersWithNames: (state) => {
+      const playerStore = usePlayerStore()
+      return state.appearances
+        .filter((a) => a.present)
+        .map((a) => ({
+          ...a,
+          playerName: playerStore.getPlayerById(a.playerId)?.name ?? a.playerId,
+        }))
+    },
   },
 })

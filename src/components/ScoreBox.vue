@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { Button, useToast } from 'primevue'
+import { Button, Dialog, useToast, Select } from 'primevue'
 import type { Match } from '@/types'
 import { useStoreAuth } from '@/stores/authStore'
 import { useMatchStore } from '@/stores/matchStore'
 import { SEASON } from '@/constants'
 import { useI18n } from 'vue-i18n'
+import { computed, onMounted, ref } from 'vue'
+import { usePlayerStore } from '@/stores/playerStore'
 
 const props = defineProps<{
   match: Match
@@ -12,12 +14,19 @@ const props = defineProps<{
   reversed?: boolean
 }>()
 
+const modal = defineModel<boolean>('visible')
+
 const authStore = useStoreAuth()
 const matchStore = useMatchStore()
+const playerStore = usePlayerStore()
 const toast = useToast()
 const { t } = useI18n()
 
 const seasonId = SEASON
+
+const players = computed(() => matchStore.presentPlayersWithNames)
+
+const selectedPlayer = ref<string | null>(null)
 
 const updateGoals = async (delta: 1 | -1) => {
   if (!props.match?.id) return
@@ -34,6 +43,10 @@ const updateGoals = async (delta: 1 | -1) => {
 
   await matchStore.updateMatchGoals(seasonId, matchId, props.type, newGoals)
 
+  if (props.type === 'for') {
+    modal.value = true
+  }
+
   if (delta > 0) {
     toast.add({
       severity: 'success',
@@ -43,6 +56,28 @@ const updateGoals = async (delta: 1 | -1) => {
     })
   }
 }
+
+const saveGoal = async () => {
+  if (!props.match?.id || !selectedPlayer.value) return
+
+  const matchId = props.match.id
+
+  const appearance = matchStore.appearances.find(
+    (a) => a.present && a.playerId === selectedPlayer.value,
+  )
+  if (!appearance) return
+
+  await matchStore.incrementPlayerGoals(seasonId, matchId, appearance.id, 1)
+
+  modal.value = false
+  selectedPlayer.value = null
+}
+
+onMounted(() => {
+  if (!playerStore.playersLoaded) {
+    playerStore.fetchPlayers()
+  }
+})
 </script>
 
 <template>
@@ -62,6 +97,29 @@ const updateGoals = async (delta: 1 | -1) => {
       </template>
     </div>
   </div>
+
+  <Dialog
+    v-model:visible="modal"
+    modal
+    :draggable="false"
+    class="w-96"
+    :header="t('common.goalScorer')"
+  >
+    <template #default>
+      <Select
+        v-model="selectedPlayer"
+        :options="players"
+        optionLabel="playerName"
+        optionValue="playerId"
+        :placeholder="t('common.selectPlayer')"
+        fluid
+      />
+    </template>
+
+    <template #footer>
+      <Button :label="t('common.save')" icon="pi pi-check" @click="saveGoal" />
+    </template>
+  </Dialog>
 </template>
 
 <style scoped>

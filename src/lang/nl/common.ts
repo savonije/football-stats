@@ -23,6 +23,7 @@ export default {
   errorGeneric: 'Er is iets misgegaan, probeer het later opnieuw',
   game: 'Wedstrijd | Wedstrijden',
   goal: 'Doelpunt | Doelpunten',
+  goalScorer: 'Doelpuntenmaker',
   goalTypes: {
     for: 'Doelpunt voor Apollo!',
     against: 'Doelpunt voor de tegenstander :(',
@@ -53,6 +54,7 @@ export default {
   position: 'Positie',
   result: 'Uitslag',
   save: 'Opslaan',
+  selectPlayer: 'Selecteer speler',
   score: 'Score',
   success: 'Succes',
   title: 'Wedstrijden',
