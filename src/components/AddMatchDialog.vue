@@ -2,7 +2,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
-import { Dialog, DatePicker, InputText, MultiSelect, Select, InputNumber, Button } from 'primevue'
+import { Dialog, DatePicker, InputText, MultiSelect, Select, Button } from 'primevue'
 import type { NewMatch } from '@/types'
 import { addMatch } from '@/services/matchService'
 import { usePlayerStore } from '@/stores/playerStore'
@@ -19,9 +19,8 @@ const form = reactive<NewMatch & { date: Date | null; players?: string[] }>({
   date: new Date(),
   home: true,
   players: [],
+  result: { goalsFor: 0, goalsAgainst: 0 },
 })
-const goalsFor = ref<number | null>(null)
-const goalsAgainst = ref<number | null>(null)
 
 const homeOptions = [
   { label: t('common.home'), value: true },
@@ -52,10 +51,6 @@ const submitMatch = async () => {
 
   loading.value = true
   try {
-    if (goalsFor.value !== null && goalsAgainst.value !== null) {
-      form.result = { goalsFor: goalsFor.value, goalsAgainst: goalsAgainst.value }
-    }
-
     await addMatch(seasonId, { ...form, playerIds: form.players })
 
     toast.add({
@@ -125,15 +120,6 @@ onMounted(async () => {
           showClear
           fluid
         />
-      </div>
-
-      <div>
-        <label>{{ t('common.goalsFor') }}</label>
-        <InputNumber v-model="goalsFor" :showButtons="true" fluid />
-      </div>
-      <div>
-        <label>{{ t('common.goalsAgainst') }}</label>
-        <InputNumber v-model="goalsAgainst" :showButtons="true" fluid />
       </div>
     </div>
 
