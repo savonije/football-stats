@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
-import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
@@ -11,12 +10,10 @@ import { useToast } from 'primevue/usetoast'
 import MatchHeader from '@/components/MatchHeader.vue'
 import PlayerAppearanceItem from '@/components/PlayerAppearanceItem.vue'
 import ProgressSpinner from '@/components/ProgressSpinner.vue'
-import type { Appearance } from '@/types'
 import { useI18n } from 'vue-i18n'
 
 const toast = useToast()
 const router = useRouter()
-const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
 const authStore = useStoreAuth()
 const seasonId = SEASON
@@ -26,9 +23,8 @@ const confirm = useConfirm()
 
 const { t } = useI18n()
 const editing = ref(false)
-type AppearanceWithName = Appearance & { playerName: string }
 
-const appearancesWithName = ref<AppearanceWithName[]>([])
+const appearancesWithName = computed(() => matchStore.presentPlayersWithNames)
 
 const saveAll = async () => {
   await Promise.all(
@@ -79,26 +75,6 @@ const confirmDeleteMatch = async () => {
 onMounted(() => {
   matchStore.fetchMatchDetails(seasonId, matchId.value)
 })
-
-watch(
-  () => matchStore.presentPlayers,
-  async (players) => {
-    const withEmptyNames = players.map((p) => ({
-      ...p,
-      playerName: '',
-    }))
-
-    const resolved = await Promise.all(
-      withEmptyNames.map(async (appearance) => {
-        const name = await playerStore.fetchPlayerName(appearance.playerId)
-        return { ...appearance, playerName: name }
-      }),
-    )
-
-    appearancesWithName.value = resolved
-  },
-  { immediate: true },
-)
 </script>
 
 <template>
