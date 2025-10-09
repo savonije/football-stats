@@ -33,7 +33,7 @@ Built with **Vite**, styled with **Tailwind CSS** and **PrimeVue**, powered by *
 
 ### Prerequisites
 
-Make sure you have [Node.js](https://nodejs.org/) (v16+) and npm installed.
+Make sure you have [Node.js](https://nodejs.org/) (v22+) and npm installed.
 
 ### Installation
 
