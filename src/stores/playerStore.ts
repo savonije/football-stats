@@ -59,7 +59,9 @@ export const usePlayerStore = defineStore('playerStore', {
       const playerRef = doc(db, 'players', playerId)
       const snap = await getDocs(query(collection(db, 'players'), where('id', '==', playerId)))
       if (snap.empty) return playerId
-      const docData = snap.docs[0].data() as Player
+      const firstDoc = snap.docs[0]
+      if (!firstDoc) return playerId
+      const docData = firstDoc.data() as Player
       return docData.name ?? playerId
     },
   },
