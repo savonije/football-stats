@@ -14,10 +14,10 @@ const toast = useToast()
   <header class="bg-primary text-white py-3 sm:p-3 sm:py-6">
     <div class="container flex items-center justify-between gap-6">
       <div class="flex items-center gap-3">
-        <img src="/images/logo.webp" alt="SV Apollo logo" class="max-h-16" />
+        <img src="/images/logo.webp" alt="SV Apollo logo" class="max-h-16 hidden lg:block" />
 
         <Router-Link :to="{ name: 'home' }" variant="text">
-          <h1 class="text-white mb-0">SV Apollo '69 - JO9</h1>
+          <h1 class="text-lg lg:text-2xl text-white mb-0">SV Apollo '69 - JO9</h1>
           <span class="text-white text-xs">{{ SEASON }}</span>
         </Router-Link>
       </div>
@@ -27,7 +27,7 @@ const toast = useToast()
           {{ $t('common.logout') }}
         </Button>
 
-        <Button v-else as="router-link" :to="{ name: 'auth' }" variant="outlined">
+        <Button v-else as="router-link" :to="{ name: 'auth' }">
           {{ $t('common.login') }}
         </Button>
       </div>
