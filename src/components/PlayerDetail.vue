@@ -7,7 +7,7 @@ import { useStoreAuth } from '@/stores/authStore'
 import { SEASON } from '@/constants'
 import { useToast } from 'primevue/usetoast'
 
-import { Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
+import { Avatar, Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
 import type { Player } from '@/types'
 import { useI18n } from 'vue-i18n'
 
@@ -85,8 +85,11 @@ onMounted(async () => {
 
 <template>
   <h1 class="text-4xl font-bold mb-9 flex justify-between items-center">
-    <span v-if="player">{{ player.name }}</span>
-    <span v-else><Skeleton height="32px" width="100px" /></span>
+    <span v-if="player">
+      <Avatar icon="pi pi-user" class="bg-primary-100! mr-2" size="xlarge" shape="circle" />
+      {{ player.name }}
+    </span>
+    <Skeleton v-else height="32px" width="100px" />
 
     <Button
       v-if="player && AuthStore.user?.id"
@@ -212,6 +215,7 @@ onMounted(async () => {
           text
           @click="editVisible = false"
         />
+
         <Button :label="$t('common.save')" icon="pi pi-check" @click="savePlayer" />
       </div>
     </template>
