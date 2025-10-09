@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import dayjs from 'dayjs'
 import type { Match } from '@/types'
 import ScoreBox from '@/components/ScoreBox.vue'
+import { TEAMNAME } from '@/constants'
 
 const props = defineProps<{ match: Match | null }>()
 const homeClass = computed(() => (props.match?.home ? 'flex-row' : 'flex-row-reverse'))
@@ -14,7 +15,7 @@ const homeClass = computed(() => (props.match?.home ? 'flex-row' : 'flex-row-rev
       class="mb-0 flex gap-2 items-center text-primary inline-flex text-xl sm:text-3xl"
       :class="homeClass"
     >
-      <span>SV Apollo '69</span>
+      <span>{{ TEAMNAME }}</span>
       <span> - </span>
       <span>{{ props.match?.opponent }}</span>
     </h1>
