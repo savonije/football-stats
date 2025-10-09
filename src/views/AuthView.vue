@@ -36,7 +36,7 @@ const submitForm = () => {
         class="mx-auto w-full rounded-sm bg-white p-6 shadow-sm sm:max-w-[500px] grid gap-3"
         data-testid="login-container"
       >
-        <h1 data-testid="login-title">{{ t('common.login') }}</h1>
+        <h1 data-testid="login-title">{{ t('auth.login') }}</h1>
 
         <form @submit.prevent="submitForm" data-testid="login-form" class="grid gap-2">
           <FloatLabel class="mb-6" variant="on">
@@ -72,7 +72,7 @@ const submitForm = () => {
             </IconField>
 
             <label class="font-bold" for="password">
-              {{ t('common.password') }}
+              {{ t('auth.password') }}
             </label>
           </FloatLabel>
 
@@ -88,7 +88,7 @@ const submitForm = () => {
           <div class="mt-6 text-right">
             <Button
               type="submit"
-              :label="t('common.login')"
+              :label="t('auth.login')"
               data-testid="btn-submit"
               icon="pi pi-lock"
             />

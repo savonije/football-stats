@@ -51,7 +51,7 @@ const updateGoals = async (delta: 1 | -1) => {
     toast.add({
       severity: 'success',
       summary: t('common.success'),
-      detail: t(`common.goalTypes.${props.type}`),
+      detail: t(`match.goalTypes.${props.type}`),
       life: 3000,
     })
   }
@@ -103,7 +103,7 @@ onMounted(() => {
     modal
     :draggable="false"
     class="w-96"
-    :header="t('common.goalScorer')"
+    :header="t('match.goalScorer')"
   >
     <template #default>
       <Select
@@ -111,7 +111,7 @@ onMounted(() => {
         :options="players"
         optionLabel="playerName"
         optionValue="playerId"
-        :placeholder="t('common.selectPlayer')"
+        :placeholder="t('player.selectPlayer')"
         fluid
       />
     </template>

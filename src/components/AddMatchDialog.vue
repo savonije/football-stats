@@ -56,7 +56,7 @@ const submitMatch = async () => {
     toast.add({
       severity: 'success',
       summary: t('common.messages.success'),
-      detail: t('common.messages.matchAdded'),
+      detail: t('match.messages.matchAdded'),
       life: 3000,
     })
     closeDialog()
@@ -65,7 +65,7 @@ const submitMatch = async () => {
     toast.add({
       severity: 'error',
       summary: t('common.messages.error'),
-      detail: t('common.messages.matchAddError'),
+      detail: t('match.messages.matchAddError'),
       life: 3000,
     })
   } finally {
@@ -81,7 +81,7 @@ onMounted(async () => {
 <template>
   <Dialog
     v-model:visible="model"
-    :header="t('common.addMatch')"
+    :header="t('match.addMatch')"
     modal
     closable
     dismissableMask
@@ -110,7 +110,7 @@ onMounted(async () => {
       </div>
 
       <div>
-        <label>{{ t('common.player', 2) }}</label>
+        <label>{{ t('player.player', 2) }}</label>
         <MultiSelect
           v-model="form.players"
           :options="playerOptions"

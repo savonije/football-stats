@@ -67,7 +67,7 @@ const savePlayer = async () => {
   toast.add({
     severity: 'success',
     summary: t('common.messages.success'),
-    detail: t('common.messages.playerEditted'),
+    detail: t('player.messages.playerEditted'),
     life: 3000,
   })
 }
@@ -102,7 +102,7 @@ onMounted(async () => {
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <Card>
       <template #title>
-        <h2>{{ $t('common.totalGoals') }}</h2>
+        <h2>{{ $t('player.totalGoals') }}</h2>
       </template>
       <template #content>
         <p class="text-3xl font-bold" v-if="!loading">{{ totalGoals }}</p>
@@ -112,7 +112,7 @@ onMounted(async () => {
 
     <Card>
       <template #title>
-        <h2>{{ $t('common.totalAppearances') }}</h2>
+        <h2>{{ $t('player.totalAppearances') }}</h2>
       </template>
       <template #content>
         <p class="text-3xl font-bold" v-if="!loading">{{ totalAppearances }}/{{ totalMatches }}</p>
@@ -122,7 +122,7 @@ onMounted(async () => {
 
     <Card>
       <template #title>
-        <h2>{{ $t('common.totalKeeper') }}</h2>
+        <h2>{{ $t('player.totalKeeper') }}</h2>
       </template>
       <template #content>
         <p class="text-3xl font-bold" v-if="!loading">{{ totalKeeper }}</p>
@@ -152,7 +152,7 @@ onMounted(async () => {
 
     <Card>
       <template #title>
-        <h2>{{ $t('common.playerInfo') }}</h2>
+        <h2>{{ $t('player.playerInfo') }}</h2>
       </template>
       <template #content>
         <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
@@ -175,7 +175,7 @@ onMounted(async () => {
   <Dialog
     v-model:visible="editVisible"
     modal
-    :header="t('common.editPlayer')"
+    :header="t('player.editPlayer')"
     :style="{ width: '400px' }"
     :draggable="false"
   >

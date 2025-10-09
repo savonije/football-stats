@@ -25,8 +25,8 @@ const handleDelete = () => {
   if (!appearance.value) return
 
   confirm.require({
-    message: t('common.deletePlayerConfirm', [appearance.value.playerName]),
-    header: t('common.deletePlayer'),
+    message: t('player.deletePlayerConfirm', [appearance.value.playerName]),
+    header: t('player.deletePlayer'),
     icon: 'pi pi-exclamation-triangle',
     rejectLabel: t('common.cancel'),
     acceptLabel: t('common.delete'),
@@ -76,7 +76,7 @@ const handleDelete = () => {
         </div>
 
         <div class="flex gap-3 items-center">
-          <label for="isGoalkeeper">{{ $t('common.wasKeeper') }}</label>
+          <label for="isGoalkeeper">{{ $t('player.wasKeeper') }}</label>
           <Checkbox
             v-model="appearance.isGoalkeeper"
             name="isGoalkeeper"
@@ -88,7 +88,7 @@ const handleDelete = () => {
         <Button
           icon="pi pi-trash"
           severity="danger"
-          :aria-label="$t('common.deletePlayer')"
+          :aria-label="$t('player.deletePlayer')"
           size="small"
           @click="handleDelete"
         />

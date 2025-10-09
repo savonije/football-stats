@@ -41,7 +41,7 @@ const onRowClick = (event: DataTableRowClickEvent) => {
           size="small"
           :to="{ name: 'playerDetail', params: { id: data.id } }"
           icon="pi pi-chevron-right"
-          :aria-label="$t('common.viewPlayerDetails')"
+          :aria-label="$t('player.viewPlayerDetails')"
         />
       </template>
     </Column>
@@ -51,5 +51,5 @@ const onRowClick = (event: DataTableRowClickEvent) => {
     <ProgressSpinner />
   </div>
 
-  <h1 v-else>{{ $t('common.noPlayers') }}</h1>
+  <h1 v-else>{{ $t('player.noPlayers') }}</h1>
 </template>

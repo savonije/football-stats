@@ -14,12 +14,12 @@ const storeAuth = useStoreAuth()
 <template>
   <DefaultLayout>
     <div class="mb-6 text-right" v-if="storeAuth.user?.id">
-      <Button :label="$t('common.addMatch')" icon="pi pi-plus" @click="showAddMatchDialog = true" />
+      <Button :label="$t('match.addMatch')" icon="pi pi-plus" @click="showAddMatchDialog = true" />
     </div>
 
     <AddMatchDialog v-model:visible="showAddMatchDialog" />
 
-    <h1 class="mb-3">{{ $t('common.title') }}</h1>
+    <h1 class="mb-3">{{ $t('match.game', 2) }}</h1>
     <MatchList />
   </DefaultLayout>
 </template>

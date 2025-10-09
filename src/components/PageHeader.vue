@@ -24,11 +24,11 @@ const toast = useToast()
 
       <div class="items-center justify-end gap-6 flex">
         <Button v-if="storeAuth.user?.id" @click="storeAuth.logoutUser(toast, $t)">
-          {{ $t('common.logout') }}
+          {{ $t('auth.logout') }}
         </Button>
 
         <Button v-else as="router-link" :to="{ name: 'auth' }">
-          {{ $t('common.login') }}
+          {{ $t('auth.login') }}
         </Button>
       </div>
     </div>
@@ -37,13 +37,13 @@ const toast = useToast()
   <nav class="bg-primary-900 text-white mb-12">
     <ul class="flex my-3 items-center justify-center text-sm font-semibold">
       <li>
-        <Router-Link :to="{ name: 'home' }">{{ $t('common.game', 2) }}</Router-Link>
+        <Router-Link :to="{ name: 'home' }">{{ $t('match.game', 2) }}</Router-Link>
       </li>
       <li>
         <Router-Link :to="{ name: 'topscorers' }">{{ $t('common.topscorers') }}</Router-Link>
       </li>
       <li>
-        <Router-Link :to="{ name: 'players' }">{{ $t('common.player', 2) }}</Router-Link>
+        <Router-Link :to="{ name: 'players' }">{{ $t('player.player', 2) }}</Router-Link>
       </li>
     </ul>
   </nav>

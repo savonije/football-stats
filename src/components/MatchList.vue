@@ -72,14 +72,14 @@ const onRowClick = (event: DataTableRowClickEvent) => {
       </template>
     </Column>
 
-    <Column class="!text-right hidden sm:table-cell">
+    <Column class="text-right! hidden sm:table-cell">
       <template #body="{ data }">
         <Button
           as="router-link"
           size="small"
           :to="{ name: 'matchDetail', params: { id: data.id } }"
           icon="pi pi-chevron-right"
-          :aria-label="$t('common.viewMatchDetails')"
+          :aria-label="$t('match.viewMatchDetails')"
         />
       </template>
     </Column>
@@ -89,5 +89,5 @@ const onRowClick = (event: DataTableRowClickEvent) => {
     <ProgressSpinner />
   </div>
 
-  <h1 v-else>{{ $t('common.noMatches') }}</h1>
+  <h1 v-else>{{ $t('match.noMatches') }}</h1>
 </template>

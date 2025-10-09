@@ -54,7 +54,7 @@ const confirmMatchEnd = async () => {
   toast.add({
     severity: 'success',
     summary: t('common.success'),
-    detail: t('common.endMatchSuccess'),
+    detail: t('match.endMatchSuccess'),
     life: 3000,
   })
 }
@@ -65,7 +65,7 @@ const confirmDeleteMatch = async () => {
   toast.add({
     severity: 'success',
     summary: t('common.success'),
-    detail: t('common.deleteMatchSuccess'),
+    detail: t('match.deleteMatchSuccess'),
     life: 3000,
   })
 
@@ -82,7 +82,7 @@ onMounted(() => {
     <MatchHeader :match="matchStore.selectedMatch" />
 
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold mb-2">{{ t('common.player', 2) }}</h2>
+      <h2 class="text-xl font-semibold mb-2">{{ t('player.player', 2) }}</h2>
 
       <div class="flex gap-2">
         <Transition name="fade" mode="out-in">
@@ -118,14 +118,14 @@ onMounted(() => {
 
     <div v-if="authStore.user?.id" class="mt-12 flex gap-6 justify-between">
       <Button
-        :label="t('common.deleteMatch')"
+        :label="t('match.deleteMatch')"
         severity="danger"
         icon="pi pi-trash"
         variant="outlined"
         @click="
           confirm.require({
-            message: t('common.deleteMatchConfirm'),
-            header: t('common.deleteMatch'),
+            message: t('match.deleteMatchConfirm'),
+            header: t('match.deleteMatch'),
             icon: 'pi pi-exclamation-triangle',
             rejectLabel: t('common.cancel'),
             acceptLabel: t('common.delete'),
@@ -137,16 +137,16 @@ onMounted(() => {
 
       <Button
         v-if="!matchStore.selectedMatch.ended"
-        label="Wedstrijd vastleggen"
+        :label="t('match.endMatch')"
         variant="outlined"
         severity="success"
         icon="pi pi-check"
         @click="
           confirm.require({
-            message: t('common.endMatchConfirm'),
-            header: t('common.endMatch'),
+            message: t('match.endMatchConfirm'),
+            header: t('match.endMatch'),
             rejectLabel: t('common.cancel'),
-            acceptLabel: t('common.endMatch'),
+            acceptLabel: t('match.endMatch'),
             acceptClass: 'p-button-success',
             accept: confirmMatchEnd,
           })
