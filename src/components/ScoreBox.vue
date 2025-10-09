@@ -63,7 +63,7 @@ const saveGoal = async () => {
   const matchId = props.match.id
 
   const appearance = matchStore.appearances.find(
-    (a) => a.present && a.playerId === selectedPlayer.value,
+    (player) => player.present && player.playerId === selectedPlayer.value,
   )
   if (!appearance) return
 
