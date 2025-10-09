@@ -13,10 +13,14 @@ const toast = useToast()
 <template>
   <header class="bg-primary text-white py-3 sm:p-3 sm:py-6">
     <div class="container flex items-center justify-between gap-6">
-      <Router-Link :to="{ name: 'home' }" variant="text">
-        <h1 class="text-white mb-0">SV Apollo '69 - JO9</h1>
-        <span class="text-white text-xs">{{ SEASON }}</span>
-      </Router-Link>
+      <div class="flex items-center gap-3">
+        <img src="/images/logo.webp" alt="SV Apollo logo" class="max-h-16" />
+
+        <Router-Link :to="{ name: 'home' }" variant="text">
+          <h1 class="text-white mb-0">SV Apollo '69 - JO9</h1>
+          <span class="text-white text-xs">{{ SEASON }}</span>
+        </Router-Link>
+      </div>
 
       <div class="items-center justify-end gap-6 flex">
         <Button v-if="storeAuth.user?.id" @click="storeAuth.logoutUser(toast, $t)">
