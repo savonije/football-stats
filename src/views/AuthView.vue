@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button, FloatLabel, InputText, Message } from 'primevue'
+import { Button, FloatLabel, InputText, IconField, InputIcon, Message } from 'primevue'
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -40,14 +40,17 @@ const submitForm = () => {
 
         <form @submit.prevent="submitForm" data-testid="login-form" class="grid gap-2">
           <FloatLabel class="mb-6" variant="on">
-            <InputText
-              v-model="credentials.email"
-              id="username"
-              type="email"
-              fluid
-              data-testid="input-email"
-              autocomplete="email"
-            />
+            <IconField>
+              <InputIcon class="pi pi-user" />
+              <InputText
+                v-model="credentials.email"
+                id="username"
+                type="email"
+                fluid
+                data-testid="input-email"
+                autocomplete="email"
+              />
+            </IconField>
 
             <label class="font-bold" for="username">
               {{ t('common.email') }}
@@ -55,22 +58,30 @@ const submitForm = () => {
           </FloatLabel>
 
           <FloatLabel class="mb-6" variant="on">
-            <InputText
-              id="password"
-              v-model="credentials.password"
-              toggle-mask
-              fluid
-              data-testid="input-password"
-              type="password"
-              autocomplete="current-password"
-            />
+            <IconField>
+              <InputIcon class="pi pi-lock" />
+              <InputText
+                id="password"
+                v-model="credentials.password"
+                toggle-mask
+                fluid
+                data-testid="input-password"
+                type="password"
+                autocomplete="current-password"
+              />
+            </IconField>
 
             <label class="font-bold" for="password">
               {{ t('common.password') }}
             </label>
           </FloatLabel>
 
-          <Message v-if="errorMessage" severity="error" data-testid="error-message">
+          <Message
+            v-if="errorMessage"
+            severity="error"
+            data-testid="error-message"
+            icon="pi pi-exclamation-triangle"
+          >
             {{ errorMessage }}
           </Message>
 
