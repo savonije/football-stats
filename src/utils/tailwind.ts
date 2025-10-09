@@ -1,3 +1,3 @@
-const styles = getComputedStyle(document.documentElement);
+const styles = getComputedStyle(document.documentElement)
 
-export const theme = (property: string) => styles.getPropertyValue(property);
+export const theme = (property: string) => styles.getPropertyValue(property)
