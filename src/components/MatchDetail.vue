@@ -77,21 +77,9 @@ const isRunning = computed(() => matchStore.selectedMatch?.running)
 const isEnded = computed(() => matchStore.selectedMatch?.ended)
 const isPaused = computed(() => matchStore.selectedMatch?.paused)
 
-const formattedDuration = computed(() => {
-  const min = durationMinutes.value
-  const hours = Math.floor(min / 60)
-  const minutes = min % 60
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-})
-
 const startMatch = () => {
   if (!matchStore.selectedMatch?.id) return
   matchStore.startMatch(seasonId, matchStore.selectedMatch.id)
-}
-
-const endMatch = async () => {
-  if (!matchStore.selectedMatch?.id) return
-  await matchStore.endMatch(seasonId, matchStore.selectedMatch.id)
 }
 
 const pauseMatch = () => {
@@ -115,24 +103,30 @@ onMounted(() => {
 
     <div
       v-if="!isEnded"
-      class="flex flex-col items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50"
+      class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50"
     >
-      <div>
-        <div class="text-3xl font-bold">{{ formattedDuration }}</div>
+      <div class="w-full md:w-auto">
+        <div class="text-2xl font-bold flex items-center gap-3">
+          <span v-if="isRunning" class="block size-3 rounded-full bg-red-500" />
+          {{ `${durationMinutes}e minuut` }}
+        </div>
+
         <div v-if="isRunning" class="text-green-600 font-semibold mt-1">
           {{ t('match.running') }}
         </div>
-        <div v-else-if="isPaused" class="text-gray-500 mt-1">
+        <div v-else-if="isPaused" class="text-gray-500 font-semibold mt-1">
           {{ t('match.isPaused') }}
+        </div>
+        <div v-else-if="isEnded" class="text-gray-500 font-semibold mt-1">
+          {{ t('match.isEnded') }}
         </div>
       </div>
 
-      <div v-if="authStore.user?.id" class="flex gap-2 mt-8">
+      <div v-if="authStore.user?.id" class="flex gap-2 mt-8 md:mt-0">
         <Button
           v-if="!isRunning && !isPaused && !isEnded"
           :label="t('common.start')"
           severity="success"
-          icon="pi pi-play"
           @click="startMatch"
         />
 
@@ -140,7 +134,6 @@ onMounted(() => {
           v-if="isRunning"
           :label="t('common.pause')"
           severity="warning"
-          icon="pi pi-pause"
           @click="pauseMatch"
         />
 
@@ -148,7 +141,6 @@ onMounted(() => {
           v-if="isPaused"
           :label="t('common.resume')"
           severity="success"
-          icon="pi pi-play"
           @click="resumeMatch"
         />
 
@@ -156,8 +148,16 @@ onMounted(() => {
           v-if="isRunning || isPaused"
           :label="t('match.endMatch')"
           severity="danger"
-          icon="pi pi-stop"
-          @click="endMatch"
+          @click="
+            confirm.require({
+              message: t('match.endMatchConfirm'),
+              header: t('match.endMatch'),
+              rejectLabel: t('common.cancel'),
+              acceptLabel: t('match.endMatch'),
+              acceptClass: 'p-button-success',
+              accept: confirmMatchEnd,
+            })
+          "
         />
       </div>
     </div>
@@ -211,24 +211,6 @@ onMounted(() => {
             acceptLabel: t('common.delete'),
             acceptClass: 'p-button-danger',
             accept: confirmDeleteMatch,
-          })
-        "
-      />
-
-      <Button
-        v-if="!matchStore.selectedMatch.ended"
-        :label="t('match.endMatch')"
-        variant="outlined"
-        severity="success"
-        icon="pi pi-check"
-        @click="
-          confirm.require({
-            message: t('match.endMatchConfirm'),
-            header: t('match.endMatch'),
-            rejectLabel: t('common.cancel'),
-            acceptLabel: t('match.endMatch'),
-            acceptClass: 'p-button-success',
-            accept: confirmMatchEnd,
           })
         "
       />
