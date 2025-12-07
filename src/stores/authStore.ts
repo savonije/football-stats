@@ -41,8 +41,8 @@ export const useStoreAuth = defineStore('storeAuth', {
         .then(() => {
           toast.add({
             severity: 'success',
-            summary: t('common.logoutSuccess'),
-            detail: t('common.logoutMessage'),
+            summary: t('auth.logoutSuccess'),
+            detail: t('auth.logoutMessage'),
             life: 3000,
           })
         })
