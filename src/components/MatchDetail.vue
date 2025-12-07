@@ -103,7 +103,7 @@ onMounted(() => {
 
     <div
       v-if="!isEnded"
-      class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50"
+      class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50 shadow"
     >
       <div class="w-full md:w-auto">
         <div class="text-2xl font-bold flex items-center gap-3">
