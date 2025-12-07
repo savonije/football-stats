@@ -3,7 +3,9 @@ import { computed, onMounted } from 'vue'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useMatchStore } from '@/stores/matchStore'
 import { SEASON } from '@/constants'
-import { DataTable, Column } from 'primevue'
+import { DataTable, Column, type DataTableRowClickEvent } from 'primevue'
+
+import router from '@/router'
 
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
@@ -26,6 +28,10 @@ const playerTotalStats = computed(() => {
   })
 })
 
+const onRowClick = (event: DataTableRowClickEvent) => {
+  router.push({ name: 'playerDetail', params: { id: event.data.id } })
+}
+
 onMounted(() => {
   playerStore.fetchPlayers()
   matchStore.fetchAppearances(SEASON)
@@ -40,6 +46,7 @@ onMounted(() => {
     :sortOrder="-1"
     class="shadow-lg rounded-2xl"
     striped-rows
+    @row-click="onRowClick"
   >
     <Column field="name" :header="$t('common.name')" sortable />
     <Column field="totalGoals" :header="$t('common.goal', 2)" sortable />
