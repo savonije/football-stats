@@ -15,10 +15,12 @@ export default {
   },
   goalsAgainst: 'Doelpunten tegen',
   goalsFor: 'Doelpunten voor',
+  isPaused: 'Wedstrijd gepauzeerd',
   messages: {
     matchAdded: 'Wedstrijd succesvol toegevoegd',
     matchAddError: 'Kon de wedstrijd niet toevoegen',
   },
   noMatches: 'Geen wedstrijden gevonden...',
+  running: 'Wedstrijd is bezig...',
   viewMatchDetails: 'Bekijk wedstrijd details',
 }
