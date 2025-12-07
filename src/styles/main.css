@@ -36,3 +36,8 @@ body {
 label {
   @apply font-bold mb-0 block text-sm;
 }
+
+/* PrimeVue dialog customization */
+.p-dialog {
+  @apply max-w-[95%];
+}
