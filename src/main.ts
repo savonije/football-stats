@@ -59,4 +59,10 @@ app.use(router)
 app.use(pinia)
 app.use(ConfirmationService)
 
+router.afterEach((to) => {
+  if (to.meta.title) {
+    document.title = to.meta.title as string
+  }
+})
+
 app.mount('#app')
