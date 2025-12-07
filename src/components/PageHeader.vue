@@ -44,7 +44,7 @@ const toast = useToast()
         <Router-Link :to="{ name: 'home' }">{{ $t('match.game', 2) }}</Router-Link>
       </li>
       <li>
-        <Router-Link :to="{ name: 'topscorers' }">{{ $t('common.topscorers') }}</Router-Link>
+        <Router-Link :to="{ name: 'topscorers' }">{{ $t('common.toplist') }}</Router-Link>
       </li>
       <li>
         <Router-Link :to="{ name: 'players' }">{{ $t('player.player', 2) }}</Router-Link>
