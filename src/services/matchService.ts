@@ -31,6 +31,10 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
     home: match.home,
     result: match.result || null,
     createdAt: serverTimestamp(),
+    durationMinutes: 0,
+    running: false,
+    ended: false,
+    paused: false,
   })
 
   const playerIds = match.playerIds || []

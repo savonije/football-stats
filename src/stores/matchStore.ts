@@ -23,15 +23,20 @@ export const useMatchStore = defineStore('matchStore', {
     selectedMatch: Match | null
     appearances: Appearance[]
     appearancesLoaded: boolean
+    timerInterval: ReturnType<typeof setInterval> | null
   } => ({
     matches: [],
     matchesLoaded: false,
     selectedMatch: null,
     appearances: [],
     appearancesLoaded: false,
+    timerInterval: null as ReturnType<typeof setInterval> | null,
   }),
 
   actions: {
+    /** -----------------------------
+     *  MATCHES
+     * ----------------------------- */
     fetchMatches(seasonId: string) {
       const matchesRef = collection(db, `seasons/${seasonId}/matches`)
       onSnapshot(matchesRef, (snapshot) => {
@@ -43,8 +48,15 @@ export const useMatchStore = defineStore('matchStore', {
 
     fetchMatchDetails(seasonId: string, matchId: string) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+
       onSnapshot(matchRef, (snap) => {
-        this.selectedMatch = snap.exists() ? ({ id: snap.id, ...snap.data() } as Match) : null
+        const match = snap.exists() ? ({ id: snap.id, ...snap.data() } as Match) : null
+        this.selectedMatch = match
+
+        // Auto-start local timer if match is running
+        if (match?.running && !match.ended) {
+          this.startTimer(seasonId, matchId)
+        }
       })
 
       this.fetchAppearances(seasonId, matchId)
@@ -58,13 +70,87 @@ export const useMatchStore = defineStore('matchStore', {
       const appearancesRef = collection(db, `seasons/${seasonId}/matches/${matchId}/appearances`)
       const snapshot = await getDocs(appearancesRef)
 
-      // Delete all nested appearances
       const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref))
       await Promise.all(deletePromises)
 
-      // Delete the match itself
       await deleteDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`))
     },
+
+    /** -----------------------------
+     *  MATCH TIMER CONTROL
+     * ----------------------------- */
+
+    startMatch(seasonId: string, matchId: string) {
+      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+
+      updateDoc(matchRef, {
+        running: true,
+        ended: false,
+      })
+
+      this.startTimer(seasonId, matchId)
+    },
+
+    startTimer(seasonId: string, matchId: string) {
+      if (this.timerInterval) return
+
+      this.timerInterval = setInterval(() => {
+        const match = this.selectedMatch
+        if (!match || match.ended || match.paused || !match.running) {
+          this.stopTimer()
+          return
+        }
+
+        // Increment Firestore timer
+        const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+        updateDoc(matchRef, {
+          durationMinutes: increment(1),
+        })
+      }, 60000)
+    },
+
+    stopTimer() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval)
+        this.timerInterval = null
+      }
+    },
+
+    endMatch(seasonId: string, matchId: string) {
+      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+
+      this.stopTimer()
+
+      return updateDoc(matchRef, {
+        ended: true,
+        running: false,
+      })
+    },
+
+    pauseMatch(seasonId: string, matchId: string) {
+      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+      this.stopTimer()
+
+      return updateDoc(matchRef, {
+        paused: true,
+        running: false,
+      })
+    },
+
+    resumeMatch(seasonId: string, matchId: string) {
+      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+
+      updateDoc(matchRef, {
+        paused: false,
+        running: true,
+      })
+
+      this.startTimer(seasonId, matchId)
+    },
+
+    /** -----------------------------
+     *  APPEARANCES
+     * ----------------------------- */
 
     fetchAppearances(seasonId: string, matchId?: string) {
       this.appearancesLoaded = false
@@ -115,13 +201,9 @@ export const useMatchStore = defineStore('matchStore', {
       )
     },
 
-    endMatch(seasonId: string, matchId: string) {
-      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-
-      return updateDoc(matchRef, {
-        ended: true,
-      })
-    },
+    /** -----------------------------
+     *  GOALS
+     * ----------------------------- */
 
     updateMatchGoals(seasonId: string, matchId: string, type: 'for' | 'against', goals: number) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)

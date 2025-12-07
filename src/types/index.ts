@@ -15,6 +15,9 @@ export interface Match {
     goalsFor: number
     goalsAgainst: number
   }
+  durationMinutes: number
+  running: boolean
+  paused: boolean
 }
 
 export interface NewMatch {

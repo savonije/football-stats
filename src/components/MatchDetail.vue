@@ -10,6 +10,7 @@ import { useToast } from 'primevue/usetoast'
 import MatchHeader from '@/components/MatchHeader.vue'
 import PlayerAppearanceItem from '@/components/PlayerAppearanceItem.vue'
 import ProgressSpinner from '@/components/ProgressSpinner.vue'
+import MatchTimer from '@/components/MatchTimer.vue'
 import { useI18n } from 'vue-i18n'
 
 const toast = useToast()
@@ -46,19 +47,6 @@ const saveAll = async () => {
   })
 }
 
-const confirmMatchEnd = async () => {
-  if (!matchStore.selectedMatch?.id) return
-
-  await matchStore.endMatch(seasonId, matchStore.selectedMatch.id)
-
-  toast.add({
-    severity: 'success',
-    summary: t('common.success'),
-    detail: t('match.endMatchSuccess'),
-    life: 3000,
-  })
-}
-
 const confirmDeleteMatch = async () => {
   await matchStore.deleteMatch(seasonId, matchId.value)
 
@@ -80,6 +68,8 @@ onMounted(() => {
 <template>
   <div class="w-[800px] max-w-full mx-auto sm:p-4" v-if="matchStore.selectedMatch">
     <MatchHeader :match="matchStore.selectedMatch" />
+
+    <MatchTimer :season-id="SEASON" />
 
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold mb-2">{{ t('player.player', 2) }}</h2>
@@ -130,24 +120,6 @@ onMounted(() => {
             acceptLabel: t('common.delete'),
             acceptClass: 'p-button-danger',
             accept: confirmDeleteMatch,
-          })
-        "
-      />
-
-      <Button
-        v-if="!matchStore.selectedMatch.ended"
-        :label="t('match.endMatch')"
-        variant="outlined"
-        severity="success"
-        icon="pi pi-check"
-        @click="
-          confirm.require({
-            message: t('match.endMatchConfirm'),
-            header: t('match.endMatch'),
-            rejectLabel: t('common.cancel'),
-            acceptLabel: t('match.endMatch'),
-            acceptClass: 'p-button-success',
-            accept: confirmMatchEnd,
           })
         "
       />
