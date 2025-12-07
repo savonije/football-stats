@@ -4,7 +4,7 @@ import Button from 'primevue/button'
 
 import { useStoreAuth } from '@/stores/authStore'
 
-import { SEASON, TEAMNAME } from '@/constants'
+import { SEASON, CLUBNAME, TEAMNAME } from '@/constants'
 
 const storeAuth = useStoreAuth()
 const toast = useToast()
@@ -14,10 +14,14 @@ const toast = useToast()
   <header class="bg-primary text-white py-3 sm:p-3 sm:py-6">
     <div class="container flex items-center justify-between gap-6">
       <div class="flex items-center gap-3">
-        <img src="/images/logo.webp" :alt="`${TEAMNAME} logo`" class="max-h-16 hidden lg:block" />
+        <img
+          src="/images/logo.webp"
+          :alt="`${CLUBNAME} ${TEAMNAME} logo`"
+          class="max-h-16 hidden lg:block"
+        />
 
         <Router-Link :to="{ name: 'home' }" variant="text">
-          <h1 class="text-lg lg:text-2xl text-white mb-0">{{ TEAMNAME }}</h1>
+          <h1 class="text-lg lg:text-2xl text-white mb-0">{{ CLUBNAME }} - {{ TEAMNAME }}</h1>
           <span class="text-white text-xs">{{ SEASON }}</span>
         </Router-Link>
       </div>
