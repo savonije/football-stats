@@ -8,13 +8,21 @@ import { DataTable, Column } from 'primevue'
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
 
-const playersWithGoals = computed(() => {
+const playerTotalStats = computed(() => {
   if (!playerStore.playersLoaded || !matchStore.appearancesLoaded) return []
 
   return playerStore.players.map((player) => {
     const appearances = matchStore.appearances.filter((a) => a.playerId === player.id)
+
     const totalGoals = appearances.reduce((sum, a) => sum + (a.goals || 0), 0)
-    return { ...player, totalGoals }
+
+    const goalkeeperCount = appearances.filter((a) => a.isGoalkeeper).length
+
+    return {
+      ...player,
+      totalGoals,
+      goalkeeperCount,
+    }
   })
 })
 
@@ -26,14 +34,15 @@ onMounted(() => {
 
 <template>
   <DataTable
-    :value="playersWithGoals"
+    :value="playerTotalStats"
     :sortField="'totalGoals'"
     :loading="!playerStore.playersLoaded || !matchStore.appearancesLoaded"
     :sortOrder="-1"
     class="shadow-lg rounded-2xl"
     striped-rows
   >
-    <Column field="name" :header="$t('common.name')" sortable></Column>
-    <Column field="totalGoals" :header="$t('common.goal', 2)" sortable></Column>
+    <Column field="name" :header="$t('common.name')" sortable />
+    <Column field="totalGoals" :header="$t('common.goal', 2)" sortable />
+    <Column field="goalkeeperCount" :header="$t('player.totalKeeper')" sortable />
   </DataTable>
 </template>

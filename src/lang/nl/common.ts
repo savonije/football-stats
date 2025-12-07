@@ -25,6 +25,7 @@ export default {
   score: 'Score',
   success: 'Succes',
   topscorers: 'Topscoorders',
+  toplist: 'Toplijst',
   yes: 'Ja',
   view: 'Bekijken',
   validation: {
