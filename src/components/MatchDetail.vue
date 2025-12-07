@@ -98,10 +98,9 @@ onMounted(() => {
         <template v-if="authStore.user?.id && !matchStore.selectedMatch?.ended">
           <ToggleButton
             v-model="editing"
-            :on-label="t('common.view')"
+            :on-label="t('common.cancel')"
             :off-label="t('common.edit')"
             off-icon="pi pi-pencil"
-            on-icon="pi pi-eye"
           />
         </template>
       </div>
