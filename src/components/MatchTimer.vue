@@ -63,7 +63,7 @@ const endMatch = async () => {
     class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50 shadow"
   >
     <div class="w-full md:w-auto">
-      <div class="text-2xl font-bold flex items-center gap-3">
+      <div v-if="!isEnded" class="text-2xl font-bold flex items-center gap-3">
         <span v-if="isRunning" class="block w-3 h-3 rounded-full bg-red-500" />
         {{ `${durationMinutes}e minuut` }}
       </div>
