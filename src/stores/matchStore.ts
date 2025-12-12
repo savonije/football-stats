@@ -23,14 +23,12 @@ export const useMatchStore = defineStore('matchStore', {
     selectedMatch: Match | null
     appearances: Appearance[]
     appearancesLoaded: boolean
-    timerInterval: ReturnType<typeof setInterval> | null
   } => ({
     matches: [],
     matchesLoaded: false,
     selectedMatch: null,
     appearances: [],
     appearancesLoaded: false,
-    timerInterval: null as ReturnType<typeof setInterval> | null,
   }),
 
   actions: {
@@ -52,11 +50,6 @@ export const useMatchStore = defineStore('matchStore', {
       onSnapshot(matchRef, (snap) => {
         const match = snap.exists() ? ({ id: snap.id, ...snap.data() } as Match) : null
         this.selectedMatch = match
-
-        // Auto-start local timer if match is running
-        if (match?.running && !match.ended) {
-          this.startTimer(seasonId, matchId)
-        }
       })
 
       this.fetchAppearances(seasonId, matchId)
@@ -82,79 +75,58 @@ export const useMatchStore = defineStore('matchStore', {
 
     startMatch(seasonId: string, matchId: string) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+      const now = Date.now()
 
       updateDoc(matchRef, {
         running: true,
         ended: false,
-      })
-
-      this.startTimer(seasonId, matchId)
-    },
-
-    startTimer(seasonId: string, matchId: string) {
-      if (this.timerInterval) return
-
-      this.timerInterval = setInterval(() => {
-        const match = this.selectedMatch
-        if (!match || match.ended || match.paused || !match.running) {
-          this.stopTimer()
-          return
-        }
-
-        // Increment Firestore timer
-        const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-        updateDoc(matchRef, {
-          durationMinutes: increment(1),
-        })
-      }, 60000)
-    },
-
-    stopTimer() {
-      if (this.timerInterval) {
-        clearInterval(this.timerInterval)
-        this.timerInterval = null
-      }
-    },
-
-    endMatch(seasonId: string, matchId: string) {
-      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-
-      this.stopTimer()
-
-      return updateDoc(matchRef, {
-        ended: true,
-        running: false,
+        paused: false,
+        startTime: now,
+        pausedDuration: 0,
+        pausedAt: null,
       })
     },
 
     pauseMatch(seasonId: string, matchId: string) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-      this.stopTimer()
+      const now = Date.now()
 
-      return updateDoc(matchRef, {
+      updateDoc(matchRef, {
         paused: true,
         running: false,
+        pausedAt: now,
       })
     },
 
     resumeMatch(seasonId: string, matchId: string) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+      const now = Date.now()
+      const match = this.selectedMatch
+      const pausedDuration = match?.pausedDuration ?? 0
+      const pausedAt = match?.pausedAt ?? now
 
       updateDoc(matchRef, {
         paused: false,
         running: true,
+        pausedDuration: pausedDuration + (now - pausedAt),
+        pausedAt: null,
       })
+    },
 
-      this.startTimer(seasonId, matchId)
+    endMatch(seasonId: string, matchId: string) {
+      const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
+      return updateDoc(matchRef, {
+        ended: true,
+        running: false,
+        paused: false,
+      })
     },
 
     /** -----------------------------
      *  APPEARANCES
      * ----------------------------- */
-
     fetchAppearances(seasonId: string, matchId?: string) {
       this.appearancesLoaded = false
-
       const q = matchId
         ? collection(db, `seasons/${seasonId}/matches/${matchId}/appearances`)
         : query(collectionGroup(db, 'appearances'), where('seasonId', '==', seasonId))
@@ -201,13 +173,8 @@ export const useMatchStore = defineStore('matchStore', {
       )
     },
 
-    /** -----------------------------
-     *  GOALS
-     * ----------------------------- */
-
     updateMatchGoals(seasonId: string, matchId: string, type: 'for' | 'against', goals: number) {
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-
       return updateDoc(matchRef, {
         [`result.${type === 'for' ? 'goalsFor' : 'goalsAgainst'}`]: goals,
       })
@@ -218,7 +185,6 @@ export const useMatchStore = defineStore('matchStore', {
         db,
         `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`,
       )
-
       return updateDoc(appearanceRef, {
         goals: increment(delta),
       })
@@ -241,6 +207,20 @@ export const useMatchStore = defineStore('matchStore', {
           ...a,
           playerName: playerStore.getPlayerById(a.playerId)?.name ?? '',
         }))
+    },
+
+    getMatchDuration: () => (match: Match) => {
+      if (!match.startTime) return 0
+      const now = Date.now()
+      let elapsed = now - match.startTime
+
+      if (match.paused && match.pausedAt) {
+        elapsed -= (match.pausedDuration ?? 0) + (now - match.pausedAt)
+      } else {
+        elapsed -= match.pausedDuration ?? 0
+      }
+
+      return Math.floor(elapsed / 60000) // minutes
     },
   },
 })

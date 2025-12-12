@@ -18,6 +18,9 @@ export interface Match {
   durationMinutes: number
   running: boolean
   paused: boolean
+  startTime?: number
+  pausedAt?: number
+  pausedDuration?: number
 }
 
 export interface NewMatch {

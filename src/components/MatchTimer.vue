@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
@@ -15,7 +15,39 @@ const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
 
-const durationMinutes = computed(() => matchStore.selectedMatch?.durationMinutes ?? 0)
+const now = ref(Date.now())
+
+let timer: ReturnType<typeof setInterval>
+
+onMounted(() => {
+  timer = setInterval(() => {
+    now.value = Date.now()
+  }, 1000) // update every second
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
+
+const duration = computed(() => {
+  const match = matchStore.selectedMatch
+  if (!match?.startTime) return '0:00'
+
+  let elapsed = now.value - match.startTime
+
+  if (match.paused && match.pausedAt) {
+    elapsed -= (match.pausedDuration ?? 0) + (now.value - match.pausedAt)
+  } else {
+    elapsed -= match.pausedDuration ?? 0
+  }
+
+  const totalSeconds = Math.floor(elapsed / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+})
+
 const isRunning = computed(() => matchStore.selectedMatch?.running)
 const isPaused = computed(() => matchStore.selectedMatch?.paused)
 const isEnded = computed(() => matchStore.selectedMatch?.ended)
@@ -65,7 +97,7 @@ const endMatch = async () => {
     <div class="w-full md:w-auto">
       <div v-if="!isEnded" class="text-2xl font-bold flex items-center gap-3">
         <span v-if="isRunning" class="block w-3 h-3 rounded-full bg-red-500" />
-        {{ `${durationMinutes}e minuut` }}
+        {{ duration }}
       </div>
 
       <div v-if="isRunning" class="text-green-600 font-semibold mt-1">
@@ -79,7 +111,7 @@ const endMatch = async () => {
       </div>
     </div>
 
-    <div v-if="matchStore.selectedMatch" class="flex gap-2 mt-4 md:mt-0">
+    <div class="flex gap-2 mt-4 md:mt-0">
       <Button
         v-if="!isRunning && !isPaused && !isEnded"
         :label="t('common.start')"
