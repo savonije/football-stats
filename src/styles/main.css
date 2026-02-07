@@ -41,3 +41,7 @@ label {
 .p-dialog {
   @apply max-w-[95%];
 }
+
+.p-toast {
+  @apply max-w-[90%] left-[10px];
+}

@@ -49,10 +49,10 @@ const updateGoals = async (delta: 1 | -1) => {
 
   if (delta > 0) {
     toast.add({
-      severity: 'success',
-      summary: t('common.success'),
+      severity: 'info',
+      summary: t('common.goal'),
       detail: t(`match.goalTypes.${props.type}`),
-      life: 3000,
+      life: 20000,
     })
   }
 }

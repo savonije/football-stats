@@ -10,8 +10,8 @@ export default {
   game: 'Wedstrijd | Wedstrijden',
   goalScorer: 'Doelpuntenmaker',
   goalTypes: {
-    for: 'Doelpunt voor Apollo!',
-    against: 'Doelpunt voor de tegenstander :(',
+    for: 'Doelpunt voor Apollo! 🥳',
+    against: 'Doelpunt voor de tegenstander 😔',
   },
   goalsAgainst: 'Doelpunten tegen',
   goalsFor: 'Doelpunten voor',
