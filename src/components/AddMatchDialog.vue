@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
 import { Dialog, DatePicker, InputText, MultiSelect, Select, Button } from 'primevue'
@@ -75,11 +75,17 @@ const submitMatch = async () => {
 
 onMounted(async () => {
   await playerStore.fetchPlayers()
-
-  form.players = playerStore.players
-    .filter((player) => !player.guestPlayer)
-    .map((player) => player.id)
 })
+
+watch(
+  () => playerStore.players,
+  (players) => {
+    if (!players.length) return
+
+    form.players = players.filter((player) => !player.guestPlayer).map((player) => player.id)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
