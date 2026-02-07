@@ -1,18 +1,39 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useRouter } from 'vue-router'
 
 import dayjs from 'dayjs'
-import { Button, Column, DataTable, type DataTableRowClickEvent } from 'primevue'
+import {
+  Button,
+  Column,
+  InputText,
+  InputGroup,
+  InputGroupAddon,
+  DataTable,
+  type DataTableRowClickEvent,
+} from 'primevue'
 
 import ProgressSpinner from '@/components/ProgressSpinner.vue'
 
 import { SEASON } from '@/constants'
+import { useI18n } from 'vue-i18n'
 
 const matchStore = useMatchStore()
 const seasonId = SEASON
 const router = useRouter()
+
+const { t } = useI18n()
+
+const filteredCount = ref(0)
+
+const filters = ref({
+  global: { value: null, matchMode: 'contains' },
+})
+
+const onFilter = (event: { filteredValue: string }) => {
+  filteredCount.value = event.filteredValue?.length ?? matchStore.matches.length
+}
 
 onMounted(() => {
   matchStore.fetchMatches(seasonId)
@@ -24,36 +45,62 @@ const onRowClick = (event: DataTableRowClickEvent) => {
 </script>
 
 <template>
+  <div class="mb-4 flex justify-end">
+    <InputGroup>
+      <InputGroupAddon>
+        <i class="pi pi-search"></i>
+      </InputGroupAddon>
+      <InputText
+        v-model="filters.global.value"
+        icon="pi-search"
+        :placeholder="t('common.searchOpponent')"
+        class="w-full sm:w-64"
+      />
+    </InputGroup>
+  </div>
+
+  <div class="flex justify-end mb-3">
+    <span v-if="matchStore.matchesLoaded" class="font-bold text-gray-500">
+      {{ filteredCount }} / {{ matchStore.matches.length }}
+      {{ t('match.game', 2) }}
+    </span>
+  </div>
+
   <DataTable
     v-if="matchStore.matchesLoaded && matchStore.matches.length"
+    v-model:filters="filters"
     :value="matchStore.matches"
     :loading="!matchStore.matchesLoaded"
+    :global-filter-fields="['opponent']"
     data-key="id"
     class="shadow-lg rounded-2xl"
+    paginator
+    :rows="10"
     striped-rows
     sort-field="date"
     :sort-order="-1"
     @row-click="onRowClick"
+    @filter="onFilter"
   >
-    <Column field="date" :header="$t('common.date')" sortable>
+    <Column field="date" :header="t('common.date')" sortable>
       <template #body="{ data }">
         {{ data.date ? dayjs(data.date.toDate()).format('DD-MM-YYYY') : '-' }}
       </template>
     </Column>
 
-    <Column field="opponent" :header="$t('common.opponent')">
+    <Column field="opponent" :header="t('common.opponent')" sortable>
       <template #body="{ data }">
         {{ data.opponent }}
       </template>
     </Column>
 
-    <Column :header="$t('common.homeOrAway')" class="hidden sm:table-cell">
+    <Column :header="t('common.homeOrAway')" class="hidden sm:table-cell">
       <template #body="{ data }">
-        {{ data.home ? $t('common.home') : $t('common.away') }}
+        {{ data.home ? t('common.home') : t('common.away') }}
       </template>
     </Column>
 
-    <Column :header="$t('common.result')">
+    <Column :header="t('common.result')">
       <template #body="{ data }">
         <span
           class="font-bold"
@@ -79,7 +126,7 @@ const onRowClick = (event: DataTableRowClickEvent) => {
           size="small"
           :to="{ name: 'matchDetail', params: { id: data.id } }"
           icon="pi pi-chevron-right"
-          :aria-label="$t('match.viewMatchDetails')"
+          :aria-label="t('match.viewMatchDetails')"
         />
       </template>
     </Column>
@@ -89,5 +136,5 @@ const onRowClick = (event: DataTableRowClickEvent) => {
     <ProgressSpinner />
   </div>
 
-  <h1 v-else>{{ $t('match.noMatches') }}</h1>
+  <h1 v-else>{{ t('match.noMatches') }}</h1>
 </template>

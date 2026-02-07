@@ -25,6 +25,7 @@ export default {
   resume: 'Hervatten',
   required: 'Verplicht',
   save: 'Opslaan',
+  searchOpponent: 'Zoek tegenstander',
   score: 'Score',
   start: 'Start',
   success: 'Succes',
