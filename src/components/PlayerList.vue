@@ -31,7 +31,15 @@ const onRowClick = (event: DataTableRowClickEvent) => {
     @row-click="onRowClick"
   >
     <Column field="name" :header="$t('common.name')" sortable>
-      <template #body="{ data }">{{ data.name }}</template>
+      <template #body="{ data }">
+        <span
+          :class="{
+            'text-gray-300': data.guestPlayer,
+          }"
+        >
+          {{ data.name }}
+        </span>
+      </template>
     </Column>
 
     <Column class="!text-right">
@@ -39,6 +47,9 @@ const onRowClick = (event: DataTableRowClickEvent) => {
         <Button
           as="router-link"
           size="small"
+          :class="{
+            'opacity-50': data.guestPlayer,
+          }"
           :to="{ name: 'playerDetail', params: { id: data.id } }"
           icon="pi pi-chevron-right"
           :aria-label="$t('player.viewPlayerDetails')"

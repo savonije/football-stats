@@ -167,6 +167,10 @@ onMounted(async () => {
           <dt class="font-medium">{{ $t('common.hasBag') }}:</dt>
           <dd v-if="!loading">{{ player?.hasBag ? $t('common.yes') : $t('common.no') }}</dd>
           <dd v-else><Skeleton height="20px" width="40px" /></dd>
+
+          <dt class="font-medium">{{ $t('player.guestPlayer') }}:</dt>
+          <dd v-if="!loading">{{ player?.guestPlayer ? $t('common.yes') : $t('common.no') }}</dd>
+          <dd v-else><Skeleton height="20px" width="40px" /></dd>
         </dl>
       </template>
     </Card>
@@ -204,6 +208,11 @@ onMounted(async () => {
       <div class="flex items-center gap-2">
         <Checkbox v-model="editForm.hasBag" binary input-id="hasBag" />
         <label for="hasBag">{{ $t('common.hasBag') }}</label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <Checkbox v-model="editForm.guestPlayer" binary input-id="hasBag" />
+        <label for="guestPlayer">{{ $t('player.guestPlayer') }}</label>
       </div>
     </div>
 

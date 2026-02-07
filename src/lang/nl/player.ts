@@ -1,6 +1,7 @@
 export default {
   deletePlayer: 'Speler verwijderen',
   editPlayer: 'Speler bewerken',
+  guestPlayer: 'Gastspeler',
   noPlayers: 'Geen spelers gevonden...',
   messages: {
     playerEditted: 'Speler succesvol bewerkt',

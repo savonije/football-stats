@@ -49,4 +49,5 @@ export interface Player {
   clothingSize?: string
   hasJacket?: boolean
   hasBag?: boolean
+  guestPlayer?: boolean
 }
