@@ -75,6 +75,10 @@ const submitMatch = async () => {
 
 onMounted(async () => {
   await playerStore.fetchPlayers()
+
+  form.players = playerStore.players
+    .filter((player) => !player.guestPlayer)
+    .map((player) => player.id)
 })
 </script>
 
