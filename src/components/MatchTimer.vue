@@ -94,7 +94,7 @@ const endMatch = async () => {
     v-if="matchStore.selectedMatch"
     class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50 shadow"
   >
-    <div class="w-full md:w-auto">
+    <div class="w-full md:w-auto flex items-center">
       <div v-if="!isEnded" class="text-2xl font-bold flex items-center gap-3">
         <span v-if="isRunning" class="block w-3 h-3 rounded-full bg-red-500" />
         {{ duration }}
@@ -111,7 +111,7 @@ const endMatch = async () => {
       </div>
     </div>
 
-    <div class="flex gap-2 mt-4 md:mt-0">
+    <div v-if="isRunning || isPaused || !isEnded" class="flex gap-2 mt-4 md:mt-0">
       <Button
         v-if="!isRunning && !isPaused && !isEnded"
         :label="t('common.start')"
