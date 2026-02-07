@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
-import { Button, useConfirm } from 'primevue'
+import { Button, useConfirm, Tag } from 'primevue'
 import { TOAST_LIFE } from '@/constants'
 
 interface Props {
@@ -91,42 +91,54 @@ const endMatch = async () => {
 </script>
 
 <template>
-  <div
-    v-if="matchStore.selectedMatch"
-    class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50 shadow"
-  >
-    <div class="w-full md:w-auto flex items-center">
-      <div v-if="!isEnded" class="text-2xl font-bold flex items-center gap-3">
-        <span v-if="isRunning" class="block w-3 h-3 rounded-full bg-red-500" />
-        {{ duration }}
+  <div v-if="matchStore.selectedMatch">
+    <div
+      v-if="!isEnded"
+      class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50 shadow"
+    >
+      <div class="w-full md:w-auto flex items-center">
+        <div v-if="!isEnded" class="text-2xl font-bold flex items-center gap-3">
+          <span v-if="isRunning" class="block w-3 h-3 rounded-full bg-red-500" />
+          {{ duration }}
+        </div>
+
+        <div v-if="isRunning" class="text-green-600 font-semibold mt-1">
+          {{ t('match.running') }}
+        </div>
+        <div v-else-if="isPaused" class="text-gray-500 font-semibold mt-1">
+          {{ t('match.isPaused') }}
+        </div>
       </div>
 
-      <div v-if="isRunning" class="text-green-600 font-semibold mt-1">
-        {{ t('match.running') }}
-      </div>
-      <div v-else-if="isPaused" class="text-gray-500 font-semibold mt-1">
-        {{ t('match.isPaused') }}
-      </div>
-      <div v-else-if="isEnded" class="text-gray-500 font-semibold mt-1">
-        {{ t('match.isEnded') }}
+      <div v-if="isRunning || isPaused || !isEnded" class="flex gap-2 mt-4 md:mt-0">
+        <Button
+          v-if="!isRunning && !isPaused && !isEnded"
+          :label="t('common.start')"
+          severity="success"
+          @click="startMatch"
+        />
+        <Button
+          v-if="isRunning"
+          :label="t('common.pause')"
+          severity="warning"
+          @click="pauseMatch"
+        />
+        <Button
+          v-if="isPaused"
+          :label="t('common.resume')"
+          severity="success"
+          @click="resumeMatch"
+        />
+        <Button
+          v-if="isRunning || isPaused"
+          :label="t('match.endMatch')"
+          severity="danger"
+          @click="endMatch"
+        />
       </div>
     </div>
-
-    <div v-if="isRunning || isPaused || !isEnded" class="flex gap-2 mt-4 md:mt-0">
-      <Button
-        v-if="!isRunning && !isPaused && !isEnded"
-        :label="t('common.start')"
-        severity="success"
-        @click="startMatch"
-      />
-      <Button v-if="isRunning" :label="t('common.pause')" severity="warning" @click="pauseMatch" />
-      <Button v-if="isPaused" :label="t('common.resume')" severity="success" @click="resumeMatch" />
-      <Button
-        v-if="isRunning || isPaused"
-        :label="t('match.endMatch')"
-        severity="danger"
-        @click="endMatch"
-      />
+    <div class="flex justify-end" v-else>
+      <Tag class="text-gray-500 mb-6 italic" :value="t('match.isEnded')" />
     </div>
   </div>
 </template>
