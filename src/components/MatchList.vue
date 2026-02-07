@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import {
   Button,
+  Tag,
   Column,
   InputText,
   InputGroup,
@@ -60,10 +61,10 @@ const onRowClick = (event: DataTableRowClickEvent) => {
   </div>
 
   <div class="flex justify-end mb-3">
-    <span v-if="matchStore.matchesLoaded" class="font-bold text-gray-500">
+    <Tag v-if="matchStore.matchesLoaded">
       {{ filteredCount }} / {{ matchStore.matches.length }}
       {{ t('match.game', 2) }}
-    </span>
+    </Tag>
   </div>
 
   <DataTable
