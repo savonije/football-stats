@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { useMatchStore } from '@/stores/matchStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
-import { SEASON } from '@/constants'
+import { SEASON, TOAST_LIFE } from '@/constants'
 import { useToast } from 'primevue/usetoast'
 
 import { Avatar, Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
@@ -68,7 +68,7 @@ const savePlayer = async () => {
     severity: 'success',
     summary: t('common.messages.success'),
     detail: t('player.messages.playerEditted'),
-    life: 3000,
+    life: TOAST_LIFE,
   })
 }
 

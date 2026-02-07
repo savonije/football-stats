@@ -23,6 +23,7 @@ export default {
   position: 'Positie',
   result: 'Uitslag',
   resume: 'Hervatten',
+  required: 'Verplicht',
   save: 'Opslaan',
   score: 'Score',
   start: 'Start',

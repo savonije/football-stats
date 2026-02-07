@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useStoreAuth } from '@/stores/authStore'
-import { SEASON } from '@/constants'
+import { SEASON, TOAST_LIFE } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
 import { ToggleButton, Button, useConfirm } from 'primevue'
 import { useToast } from 'primevue/usetoast'
@@ -43,7 +43,7 @@ const saveAll = async () => {
     severity: 'success',
     summary: t('common.success'),
     detail: t('common.changesSaved'),
-    life: 3000,
+    life: TOAST_LIFE,
   })
 }
 
@@ -54,7 +54,7 @@ const confirmDeleteMatch = async () => {
     severity: 'success',
     summary: t('common.success'),
     detail: t('match.deleteMatchSuccess'),
-    life: 3000,
+    life: TOAST_LIFE,
   })
 
   router.push({ name: 'home' })

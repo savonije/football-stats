@@ -6,7 +6,7 @@ import { Dialog, DatePicker, InputText, MultiSelect, Select, Button } from 'prim
 import type { NewMatch } from '@/types'
 import { addMatch } from '@/services/matchService'
 import { usePlayerStore } from '@/stores/playerStore'
-import { SEASON } from '@/constants'
+import { SEASON, TOAST_LIFE } from '@/constants'
 
 const model = defineModel<boolean>('visible')
 const { t } = useI18n()
@@ -44,7 +44,7 @@ const submitMatch = async () => {
       severity: 'warn',
       summary: t('common.validation.warning'),
       detail: t('common.validation.fillAll'),
-      life: 3000,
+      life: TOAST_LIFE,
     })
     return
   }
@@ -57,7 +57,7 @@ const submitMatch = async () => {
       severity: 'success',
       summary: t('common.messages.success'),
       detail: t('match.messages.matchAdded'),
-      life: 3000,
+      life: TOAST_LIFE,
     })
     closeDialog()
   } catch (err) {
@@ -66,7 +66,7 @@ const submitMatch = async () => {
       severity: 'error',
       summary: t('common.messages.error'),
       detail: t('match.messages.matchAddError'),
-      life: 3000,
+      life: TOAST_LIFE,
     })
   } finally {
     loading.value = false
@@ -89,7 +89,9 @@ onMounted(async () => {
   >
     <div class="flex flex-col gap-3">
       <div>
-        <label>{{ t('common.opponent') }}*</label>
+        <label
+          >{{ t('common.opponent') }} <small>({{ t('common.required') }})</small></label
+        >
         <InputText v-model="form.opponent" fluid required />
       </div>
 

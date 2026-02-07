@@ -4,6 +4,7 @@ import { useMatchStore } from '@/stores/matchStore'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
 import { Button, useConfirm } from 'primevue'
+import { TOAST_LIFE } from '@/constants'
 
 interface Props {
   seasonId: string
@@ -82,7 +83,7 @@ const endMatch = async () => {
         severity: 'success',
         summary: t('common.success'),
         detail: t('match.endMatchSuccess'),
-        life: 3000,
+        life: TOAST_LIFE,
       })
     },
   })

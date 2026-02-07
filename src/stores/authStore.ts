@@ -1,6 +1,7 @@
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import type { ToastServiceMethods } from 'primevue/toastservice'
+import { TOAST_LIFE } from '@/constants'
 
 import { auth } from '@/firebase'
 
@@ -43,7 +44,7 @@ export const useStoreAuth = defineStore('storeAuth', {
             severity: 'success',
             summary: t('auth.logoutSuccess'),
             detail: t('auth.logoutMessage'),
-            life: 3000,
+            life: TOAST_LIFE,
           })
         })
         .catch((error) => {
@@ -51,7 +52,7 @@ export const useStoreAuth = defineStore('storeAuth', {
             severity: 'error',
             summary: t('error.generic'),
             detail: error.message,
-            life: 3000,
+            life: TOAST_LIFE,
           })
         })
     },
