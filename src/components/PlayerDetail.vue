@@ -198,7 +198,7 @@ onMounted(async () => {
 
   <Card class="mt-6">
     <template #title>
-      <h2>{{ $t('player.goalsAllMatches') }}</h2>
+      <h2>{{ $t('player.goalsTimeline') }}</h2>
     </template>
     <template #content>
       <Skeleton v-if="loading" height="160px" />
