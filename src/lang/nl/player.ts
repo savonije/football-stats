@@ -1,4 +1,5 @@
 export default {
+  addPlayer: 'Speler toevoegen',
   deletePlayer: 'Speler verwijderen',
   editPlayer: 'Speler bewerken',
   guestPlayer: 'Gastspeler',
@@ -6,6 +7,7 @@ export default {
   noMatchData: 'Geen wedstrijddata beschikbaar',
   noPlayers: 'Geen spelers gevonden...',
   messages: {
+    playerAdded: 'Speler succesvol toegevoegd',
     playerEditted: 'Speler succesvol bewerkt',
   },
   player: 'Speler | Spelers',
