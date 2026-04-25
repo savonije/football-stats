@@ -10,6 +10,7 @@ import { useToast } from 'primevue/usetoast'
 import { Avatar, Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
 import type { Player } from '@/types'
 import { useI18n } from 'vue-i18n'
+import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue'
 
 const matchStore = useMatchStore()
 const playerStore = usePlayerStore()
@@ -49,6 +50,25 @@ const goalsPerMatch = computed(() =>
 
 const attendancePercentage = computed(() =>
   totalMatches.value > 0 ? Math.round((totalAppearances.value / totalMatches.value) * 100) : 0,
+)
+
+const goalsChartData = computed(() =>
+  matchStore.appearances
+    .filter((a) => a.playerId === playerId.value && a.present)
+    .map((a) => {
+      const match = matchStore.matches.find((m) => m.id === a.matchId)
+      if (!match) return null
+      return {
+        goals: a.goals || 0,
+        opponent: match.opponent,
+        dateSeconds: match.date?.seconds ?? 0,
+      }
+    })
+    .filter(
+      (item): item is { goals: number; opponent: string; dateSeconds: number } => item !== null,
+    )
+    .sort((a, b) => a.dateSeconds - b.dateSeconds)
+    .map(({ goals, opponent }) => ({ goals, opponent })),
 )
 
 const openEditDialog = () => {
@@ -175,6 +195,16 @@ onMounted(async () => {
       </template>
     </Card>
   </div>
+
+  <Card class="mt-6">
+    <template #title>
+      <h2>{{ $t('player.goalsAllMatches') }}</h2>
+    </template>
+    <template #content>
+      <Skeleton v-if="loading" height="160px" />
+      <PlayerGoalsChart v-else :data="goalsChartData" />
+    </template>
+  </Card>
 
   <Dialog
     v-model:visible="editVisible"

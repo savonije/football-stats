@@ -138,7 +138,7 @@ export const useMatchStore = defineStore('matchStore', {
             id: doc.id,
             playerId: data.playerId,
             seasonId: data.seasonId,
-            matchId: data.matchId,
+            matchId: matchId ?? doc.ref.parent.parent?.id ?? data.matchId,
             present: data.present ?? false,
             goals: data.goals ?? 0,
             isGoalkeeper: data.isGoalkeeper ?? false,

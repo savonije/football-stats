@@ -2,6 +2,8 @@ export default {
   deletePlayer: 'Speler verwijderen',
   editPlayer: 'Speler bewerken',
   guestPlayer: 'Gastspeler',
+  goalsTimeline: 'Doelpunten tijdlijn',
+  noMatchData: 'Geen wedstrijddata beschikbaar',
   noPlayers: 'Geen spelers gevonden...',
   messages: {
     playerEditted: 'Speler succesvol bewerkt',
