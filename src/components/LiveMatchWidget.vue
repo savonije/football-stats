@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useI18n } from 'vue-i18n'
 import { Card } from 'primevue'
+import { RouterLink } from 'vue-router'
 
 const matchStore = useMatchStore()
 const { t } = useI18n()
@@ -41,6 +42,10 @@ const currentMinute = computed(() => {
 <template>
   <Card v-if="liveMatch" class="mb-6">
     <template #content>
+      <RouterLink
+        :to="{ name: 'matchDetail', params: { id: liveMatch.id } }"
+        class="block no-underline text-inherit"
+      >
       <div class="flex items-center justify-between">
         <div>
           <div class="flex items-center gap-2 mb-2">
@@ -64,6 +69,7 @@ const currentMinute = computed(() => {
           <p class="text-sm text-gray-500 mt-1">{{ currentMinute }}'</p>
         </div>
       </div>
+      </RouterLink>
     </template>
   </Card>
 </template>
