@@ -53,8 +53,8 @@ const areaPoints = computed(() => {
     {{ t('player.noMatchData') }}
   </div>
 
-  <div v-else class="overflow-x-auto mt-2">
-    <svg :width="svgWidth" :height="H" :viewBox="`0 0 ${svgWidth} ${H}`" role="img">
+  <div v-else class="overflow-x-auto mt-2 [direction:rtl]">
+    <svg :width="svgWidth" :height="H" :viewBox="`0 0 ${svgWidth} ${H}`" role="img" class="[direction:ltr]">
       <polygon :points="areaPoints" fill="var(--color-primary-100)" opacity="0.6" />
 
       <polyline
