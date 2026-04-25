@@ -17,6 +17,7 @@ export default {
   goalsFor: 'Doelpunten voor',
   isPaused: 'Wedstrijd gepauzeerd',
   isEnded: 'Wedstrijd beëindigd',
+  live: 'Live',
   messages: {
     matchAdded: 'Wedstrijd succesvol toegevoegd',
     matchAddError: 'Kon de wedstrijd niet toevoegen',

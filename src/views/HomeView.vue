@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MatchList from '@/components/MatchList.vue'
 import MatchResultsChart from '@/components/MatchResultsChart.vue'
 import AddMatchDialog from '@/components/AddMatchDialog.vue'
+import LiveMatchWidget from '@/components/LiveMatchWidget.vue'
 import { Button, Card } from 'primevue'
 
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -45,6 +46,10 @@ const recentMatchData = computed(() => {
     </div>
 
     <AddMatchDialog v-model:visible="showAddMatchDialog" />
+
+    <div class="md:w-1/3">
+      <LiveMatchWidget />
+    </div>
 
     <Card>
       <template #title>
