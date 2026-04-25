@@ -96,9 +96,15 @@ const endMatch = async () => {
       v-if="!isEnded"
       class="flex flex-col md:flex-row items-center justify-between mt-4 mb-6 p-4 rounded-lg bg-gray-50 shadow"
     >
-      <div class="w-full md:w-auto flex items-center">
+      <div class="w-full md:w-auto flex items-center gap-3">
         <div v-if="!isEnded" class="text-2xl font-bold flex items-center gap-3">
-          <span v-if="isRunning" class="block w-3 h-3 rounded-full bg-red-500" />
+          <span v-if="isRunning" class="relative flex h-3 w-3">
+            <span
+              aria-hidden="true"
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"
+            />
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+          </span>
           {{ duration }}
         </div>
 

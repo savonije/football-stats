@@ -46,29 +46,30 @@ const currentMinute = computed(() => {
         :to="{ name: 'matchDetail', params: { id: liveMatch.id } }"
         class="block no-underline text-inherit"
       >
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="relative flex h-3 w-3">
-              <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"
-              />
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
-            </span>
-            <span class="text-red-500 font-semibold text-sm uppercase tracking-wide">
-              {{ t('match.live') }}
-            </span>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="relative flex h-3 w-3">
+                <span
+                  aria-hidden="true"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"
+                />
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+              </span>
+              <span class="text-red-500 font-semibold text-sm uppercase tracking-wide">
+                {{ t('match.live') }}
+              </span>
+            </div>
+            <p class="text-xl font-bold">{{ liveMatch.opponent }}</p>
           </div>
-          <p class="text-xl font-bold">{{ liveMatch.opponent }}</p>
-        </div>
 
-        <div class="text-right">
-          <p class="text-4xl font-bold tabular-nums">
-            {{ liveMatch.result?.goalsFor ?? 0 }} – {{ liveMatch.result?.goalsAgainst ?? 0 }}
-          </p>
-          <p class="text-sm text-gray-500 mt-1">{{ currentMinute }}'</p>
+          <div class="text-right">
+            <p class="text-4xl font-bold tabular-nums">
+              {{ liveMatch.result?.goalsFor ?? 0 }} – {{ liveMatch.result?.goalsAgainst ?? 0 }}
+            </p>
+            <p class="text-sm text-gray-500 mt-1">{{ currentMinute }}'</p>
+          </div>
         </div>
-      </div>
       </RouterLink>
     </template>
   </Card>
