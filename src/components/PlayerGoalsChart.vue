@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const COL_WIDTH = 60
+const COL_WIDTH = 100
 const H = 230
 const PAD_L = 30
 const PAD_R = 30
@@ -54,7 +54,13 @@ const areaPoints = computed(() => {
   </div>
 
   <div v-else class="overflow-x-auto mt-2 [direction:rtl]">
-    <svg :width="svgWidth" :height="H" :viewBox="`0 0 ${svgWidth} ${H}`" role="img" class="[direction:ltr]">
+    <svg
+      :width="svgWidth"
+      :height="H"
+      :viewBox="`0 0 ${svgWidth} ${H}`"
+      role="img"
+      class="[direction:ltr]"
+    >
       <polygon :points="areaPoints" fill="var(--color-primary-100)" opacity="0.6" />
 
       <polyline
@@ -71,7 +77,7 @@ const areaPoints = computed(() => {
           :x="p.x"
           :y="p.y - 10"
           text-anchor="middle"
-          font-size="12"
+          font-size="16"
           font-weight="600"
           fill="var(--color-primary-700)"
         >
@@ -90,7 +96,8 @@ const areaPoints = computed(() => {
         <text
           :transform="`translate(${p.x}, ${PAD_T + chartH + 14}) rotate(-35)`"
           text-anchor="end"
-          font-size="10"
+          font-size="12"
+          font-weight="600"
           fill="#6b7280"
         >
           {{ p.opponent }}
