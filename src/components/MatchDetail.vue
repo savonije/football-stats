@@ -2,7 +2,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
 import { useStoreAuth } from '@/stores/authStore'
-import { SEASON, TOAST_LIFE } from '@/constants'
+import { useSeasonStore } from '@/stores/seasonStore'
+import { TOAST_LIFE } from '@/constants'
 import { useRoute, useRouter } from 'vue-router'
 import { ToggleButton, Button, useConfirm } from 'primevue'
 import { useToast } from 'primevue/usetoast'
@@ -17,7 +18,7 @@ const toast = useToast()
 const router = useRouter()
 const matchStore = useMatchStore()
 const authStore = useStoreAuth()
-const seasonId = SEASON
+const seasonStore = useSeasonStore()
 const route = useRoute()
 const matchId = computed(() => route.params.id as string)
 const confirm = useConfirm()
@@ -30,7 +31,7 @@ const appearancesWithName = computed(() => matchStore.presentPlayersWithNames)
 const saveAll = async () => {
   await Promise.all(
     appearancesWithName.value.map((appearance) =>
-      matchStore.updateAppearance(seasonId, matchId.value, appearance.id, {
+      matchStore.updateAppearance(seasonStore.currentSeason, matchId.value, appearance.id, {
         goals: appearance.goals,
         isGoalkeeper: appearance.isGoalkeeper,
       }),
@@ -48,7 +49,7 @@ const saveAll = async () => {
 }
 
 const confirmDeleteMatch = async () => {
-  await matchStore.deleteMatch(seasonId, matchId.value)
+  await matchStore.deleteMatch(seasonStore.currentSeason, matchId.value)
 
   toast.add({
     severity: 'success',
@@ -61,7 +62,7 @@ const confirmDeleteMatch = async () => {
 }
 
 onMounted(() => {
-  matchStore.fetchMatchDetails(seasonId, matchId.value)
+  matchStore.fetchMatchDetails(seasonStore.currentSeason, matchId.value)
 })
 </script>
 
@@ -69,7 +70,7 @@ onMounted(() => {
   <div class="w-[800px] max-w-full mx-auto sm:p-4" v-if="matchStore.selectedMatch">
     <MatchHeader :match="matchStore.selectedMatch" />
 
-    <MatchTimer :season-id="SEASON" />
+    <MatchTimer :season-id="seasonStore.currentSeason" />
 
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold mb-2">{{ t('player.player', 2) }}</h2>

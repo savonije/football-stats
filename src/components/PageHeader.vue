@@ -1,13 +1,21 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
+import Select from 'primevue/select'
 
 import { useStoreAuth } from '@/stores/authStore'
+import { useSeasonStore } from '@/stores/seasonStore'
 
-import { SEASON, CLUBNAME, TEAMNAME } from '@/constants'
+import { CLUBNAME, TEAMNAME } from '@/constants'
 
 const storeAuth = useStoreAuth()
+const seasonStore = useSeasonStore()
 const toast = useToast()
+
+onMounted(() => {
+  seasonStore.fetchSeasons()
+})
 </script>
 
 <template>
@@ -22,10 +30,21 @@ const toast = useToast()
           />
         </Router-Link>
 
-        <Router-Link :to="{ name: 'home' }" variant="text">
-          <h1 class="text-lg lg:text-2xl text-white mb-0">{{ CLUBNAME }} - {{ TEAMNAME }}</h1>
-          <span class="text-white text-xs">{{ SEASON }}</span>
-        </Router-Link>
+        <div>
+          <Router-Link :to="{ name: 'home' }" variant="text">
+            <h1 class="text-lg lg:text-2xl text-white mb-0">{{ CLUBNAME }} - {{ TEAMNAME }}</h1>
+          </Router-Link>
+          <Select
+            v-if="seasonStore.seasonsLoaded"
+            :model-value="seasonStore.currentSeason"
+            :options="seasonStore.seasons"
+            size="small"
+            class="text-xs!"
+            disabled
+            @update:model-value="seasonStore.setSeason"
+          />
+          <span v-else class="text-white text-xs">{{ seasonStore.currentSeason }}</span>
+        </div>
       </div>
 
       <div class="items-center justify-end gap-6 flex">

@@ -6,12 +6,13 @@ import { Dialog, DatePicker, InputText, MultiSelect, Select, Button } from 'prim
 import type { NewMatch } from '@/types'
 import { addMatch } from '@/services/matchService'
 import { usePlayerStore } from '@/stores/playerStore'
-import { SEASON, TOAST_LIFE } from '@/constants'
+import { useSeasonStore } from '@/stores/seasonStore'
+import { TOAST_LIFE } from '@/constants'
 
 const model = defineModel<boolean>('visible')
 const { t } = useI18n()
 const toast = useToast()
-const seasonId = SEASON
+const seasonStore = useSeasonStore()
 const loading = ref(false)
 
 const form = reactive<NewMatch & { date: Date | null; players?: string[] }>({
@@ -51,7 +52,7 @@ const submitMatch = async () => {
 
   loading.value = true
   try {
-    await addMatch(seasonId, { ...form, playerIds: form.players })
+    await addMatch(seasonStore.currentSeason, { ...form, playerIds: form.players })
 
     toast.add({
       severity: 'success',

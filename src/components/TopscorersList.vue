@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useMatchStore } from '@/stores/matchStore'
-import { SEASON } from '@/constants'
+import { useSeasonStore } from '@/stores/seasonStore'
 import { DataTable, Column, type DataTableRowClickEvent } from 'primevue'
 
 import router from '@/router'
 
 const playerStore = usePlayerStore()
 const matchStore = useMatchStore()
+const seasonStore = useSeasonStore()
 
 const playerTotalStats = computed(() => {
   if (!playerStore.playersLoaded || !matchStore.appearancesLoaded) return []
@@ -34,7 +35,11 @@ const onRowClick = (event: DataTableRowClickEvent) => {
 
 onMounted(() => {
   playerStore.fetchPlayers()
-  matchStore.fetchAppearances(SEASON)
+  matchStore.fetchAppearances(seasonStore.currentSeason)
+})
+
+watch(() => seasonStore.currentSeason, (seasonId) => {
+  matchStore.fetchAppearances(seasonId)
 })
 </script>
 

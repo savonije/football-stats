@@ -3,7 +3,7 @@ import { InputNumber, Checkbox, Button, Skeleton, useConfirm } from 'primevue'
 import type { Appearance } from '@/types'
 import { useI18n } from 'vue-i18n'
 import { useMatchStore } from '@/stores/matchStore'
-import { SEASON } from '@/constants'
+import { useSeasonStore } from '@/stores/seasonStore'
 import { useRoute } from 'vue-router'
 
 type AppearanceWithName = Appearance & { playerName: string }
@@ -15,7 +15,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const confirm = useConfirm()
 const matchStore = useMatchStore()
-const seasonId = SEASON
+const seasonStore = useSeasonStore()
 const route = useRoute()
 const matchId = route.params.id as string
 
@@ -32,7 +32,7 @@ const handleDelete = () => {
     acceptLabel: t('common.delete'),
     acceptClass: 'p-button-danger',
     accept: async () => {
-      await matchStore.deleteAppearance(seasonId, matchId, appearance.value!.id)
+      await matchStore.deleteAppearance(seasonStore.currentSeason, matchId, appearance.value!.id)
     },
   })
 }

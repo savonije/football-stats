@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMatchStore } from '@/stores/matchStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useStoreAuth } from '@/stores/authStore'
-import { SEASON, TOAST_LIFE } from '@/constants'
+import { useSeasonStore } from '@/stores/seasonStore'
+import { TOAST_LIFE } from '@/constants'
 import { useToast } from 'primevue/usetoast'
 
 import { Avatar, Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'primevue'
@@ -15,11 +16,11 @@ import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue'
 const matchStore = useMatchStore()
 const playerStore = usePlayerStore()
 const AuthStore = useStoreAuth()
+const seasonStore = useSeasonStore()
 const route = useRoute()
 const toast = useToast()
 const { t } = useI18n()
 
-const seasonId = SEASON
 const playerId = computed(() => route.params.id as string)
 const player = ref<Player | null>(null)
 
@@ -96,10 +97,15 @@ onMounted(async () => {
   const p = await playerStore.fetchPlayer(playerId.value)
   player.value = p ?? null
 
-  matchStore.fetchMatches(seasonId)
-  matchStore.fetchAppearances(seasonId)
+  matchStore.fetchMatches(seasonStore.currentSeason)
+  matchStore.fetchAppearances(seasonStore.currentSeason)
 
   loading.value = false
+})
+
+watch(() => seasonStore.currentSeason, (seasonId) => {
+  matchStore.fetchMatches(seasonId)
+  matchStore.fetchAppearances(seasonId)
 })
 </script>
 

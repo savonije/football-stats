@@ -25,6 +25,7 @@ export default {
   resume: 'Hervatten',
   required: 'Verplicht',
   save: 'Opslaan',
+  season: 'Seizoen',
   searchOpponent: 'Zoek tegenstander',
   score: 'Score',
   start: 'Start',

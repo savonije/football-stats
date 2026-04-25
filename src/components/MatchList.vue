@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useMatchStore } from '@/stores/matchStore'
+import { useSeasonStore } from '@/stores/seasonStore'
 import { useRouter } from 'vue-router'
 
 import dayjs from 'dayjs'
@@ -17,11 +18,10 @@ import {
 
 import ProgressSpinner from '@/components/ProgressSpinner.vue'
 
-import { SEASON } from '@/constants'
 import { useI18n } from 'vue-i18n'
 
 const matchStore = useMatchStore()
-const seasonId = SEASON
+const seasonStore = useSeasonStore()
 const router = useRouter()
 
 const { t } = useI18n()
@@ -37,6 +37,10 @@ const onFilter = (event: { filteredValue: string }) => {
 }
 
 onMounted(() => {
+  matchStore.fetchMatches(seasonStore.currentSeason)
+})
+
+watch(() => seasonStore.currentSeason, (seasonId) => {
   matchStore.fetchMatches(seasonId)
 })
 

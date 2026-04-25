@@ -3,7 +3,7 @@ import { Button, Dialog, useToast, Select } from 'primevue'
 import type { Match } from '@/types'
 import { useStoreAuth } from '@/stores/authStore'
 import { useMatchStore } from '@/stores/matchStore'
-import { SEASON } from '@/constants'
+import { useSeasonStore } from '@/stores/seasonStore'
 import { useI18n } from 'vue-i18n'
 import { computed, onMounted, ref } from 'vue'
 import { usePlayerStore } from '@/stores/playerStore'
@@ -18,11 +18,10 @@ const modal = defineModel<boolean>('visible')
 
 const authStore = useStoreAuth()
 const matchStore = useMatchStore()
+const seasonStore = useSeasonStore()
 const playerStore = usePlayerStore()
 const toast = useToast()
 const { t } = useI18n()
-
-const seasonId = SEASON
 
 const players = computed(() => matchStore.presentPlayersWithNames)
 
@@ -41,7 +40,7 @@ const updateGoals = async (delta: 1 | -1) => {
 
   if (newGoals < 0) return
 
-  await matchStore.updateMatchGoals(seasonId, matchId, props.type, newGoals)
+  await matchStore.updateMatchGoals(seasonStore.currentSeason, matchId, props.type, newGoals)
 
   if (props.type === 'for') {
     modal.value = true
@@ -67,7 +66,7 @@ const saveGoal = async () => {
   )
   if (!appearance) return
 
-  await matchStore.incrementPlayerGoals(seasonId, matchId, appearance.id, 1)
+  await matchStore.incrementPlayerGoals(seasonStore.currentSeason, matchId, appearance.id, 1)
 
   modal.value = false
   selectedPlayer.value = null

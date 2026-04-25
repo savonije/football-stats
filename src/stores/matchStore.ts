@@ -16,6 +16,10 @@ import { db } from '@/firebase'
 import type { Match, Appearance } from '@/types'
 import { usePlayerStore } from '@/stores/playerStore'
 
+let _unsubscribeMatches: (() => void) | null = null
+let _unsubscribeMatchDetails: (() => void) | null = null
+let _unsubscribeAppearances: (() => void) | null = null
+
 export const useMatchStore = defineStore('matchStore', {
   state: (): {
     matches: Match[]
@@ -36,22 +40,22 @@ export const useMatchStore = defineStore('matchStore', {
      *  MATCHES
      * ----------------------------- */
     fetchMatches(seasonId: string) {
+      _unsubscribeMatches?.()
+      this.matchesLoaded = false
       const matchesRef = collection(db, `seasons/${seasonId}/matches`)
-      onSnapshot(matchesRef, (snapshot) => {
-        this.matchesLoaded = false
+      _unsubscribeMatches = onSnapshot(matchesRef, (snapshot) => {
         this.matches = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Match)
         this.matchesLoaded = true
       })
     },
 
     fetchMatchDetails(seasonId: string, matchId: string) {
+      _unsubscribeMatchDetails?.()
       const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`)
-
-      onSnapshot(matchRef, (snap) => {
+      _unsubscribeMatchDetails = onSnapshot(matchRef, (snap) => {
         const match = snap.exists() ? ({ id: snap.id, ...snap.data() } as Match) : null
         this.selectedMatch = match
       })
-
       this.fetchAppearances(seasonId, matchId)
     },
 
@@ -126,12 +130,13 @@ export const useMatchStore = defineStore('matchStore', {
      *  APPEARANCES
      * ----------------------------- */
     fetchAppearances(seasonId: string, matchId?: string) {
+      _unsubscribeAppearances?.()
       this.appearancesLoaded = false
       const q = matchId
         ? collection(db, `seasons/${seasonId}/matches/${matchId}/appearances`)
         : query(collectionGroup(db, 'appearances'), where('seasonId', '==', seasonId))
 
-      onSnapshot(q, (snapshot) => {
+      _unsubscribeAppearances = onSnapshot(q, (snapshot) => {
         this.appearances = snapshot.docs.map((doc) => {
           const data = doc.data() as Appearance
           return {
