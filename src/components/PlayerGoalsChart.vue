@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Tooltip from 'primevue/tooltip'
 
 interface DataPoint {
   goals: number
@@ -13,12 +14,14 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const COL_WIDTH = 100
+const vTooltip = Tooltip
+
+const COL_WIDTH = 90
 const H = 230
 const PAD_L = 30
 const PAD_R = 30
 const PAD_T = 30
-const PAD_B = 60
+const PAD_B = 20
 
 const chartH = H - PAD_T - PAD_B
 
@@ -85,23 +88,22 @@ const areaPoints = computed(() => {
         </text>
 
         <circle
+          v-tooltip.top="p.opponent"
+          :cx="p.x"
+          :cy="p.y"
+          r="10"
+          fill="transparent"
+          style="cursor: pointer"
+        />
+        <circle
           :cx="p.x"
           :cy="p.y"
           r="4"
           fill="var(--color-primary-500)"
           stroke="white"
           stroke-width="2"
+          style="pointer-events: none"
         />
-
-        <text
-          :transform="`translate(${p.x}, ${PAD_T + chartH + 14}) rotate(-35)`"
-          text-anchor="end"
-          font-size="12"
-          font-weight="600"
-          fill="#6b7280"
-        >
-          {{ p.opponent }}
-        </text>
       </g>
     </svg>
   </div>
