@@ -22,6 +22,7 @@ export default {
     matchAddError: 'Kon de wedstrijd niet toevoegen',
   },
   noMatches: 'Geen wedstrijden gevonden...',
+  recentResults: 'Recente resultaten',
   running: 'Wedstrijd is bezig...',
   viewMatchDetails: 'Bekijk wedstrijd details',
 }
