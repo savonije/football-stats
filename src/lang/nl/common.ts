@@ -16,6 +16,8 @@ export default {
   home: 'Thuis',
   homeOrAway: 'Uit of thuis',
   loadingData: 'Data wordt geladen...',
+  menu: 'Menu',
+  moreOptions: 'Meer opties',
   name: 'Naam',
   no: 'Nee',
   opponent: 'Tegenstander',

@@ -2,16 +2,12 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MatchList from '@/components/MatchList.vue'
 import MatchResultsChart from '@/components/MatchResultsChart.vue'
-import AddMatchDialog from '@/components/AddMatchDialog.vue'
 import LiveMatchWidget from '@/components/LiveMatchWidget.vue'
-import { Button, Card } from 'primevue'
+import { Card } from 'primevue'
 
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { useStoreAuth } from '@/stores/authStore'
 import { useMatchStore } from '@/stores/matchStore'
 
-const showAddMatchDialog = ref(false)
-const storeAuth = useStoreAuth()
 const matchStore = useMatchStore()
 
 const isMobile = ref(window.innerWidth < 640)
@@ -41,12 +37,6 @@ const recentMatchData = computed(() => {
 
 <template>
   <DefaultLayout>
-    <div class="mb-6 text-right" v-if="storeAuth.user?.id">
-      <Button :label="$t('match.addMatch')" icon="pi pi-plus" @click="showAddMatchDialog = true" />
-    </div>
-
-    <AddMatchDialog v-model:visible="showAddMatchDialog" />
-
     <div class="md:w-1/3">
       <LiveMatchWidget />
     </div>
