@@ -12,6 +12,7 @@ import { Skeleton, Card, Dialog, InputText, Checkbox, Select, Button } from 'pri
 import type { Player } from '@/types'
 import { useI18n } from 'vue-i18n'
 import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue'
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 
 const matchStore = useMatchStore()
 const playerStore = usePlayerStore()
@@ -115,6 +116,8 @@ watch(
 </script>
 
 <template>
+  <AppBreadcrumb :label="player?.name" />
+
   <!-- Hero banner -->
   <div class="player-hero mb-6">
     <div class="hero-texture" />

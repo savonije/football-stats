@@ -1,4 +1,16 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationRaw } from 'vue-router'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    title?: string
+    breadcrumb?: Array<{
+      labelKey: string
+      count?: number
+      to: RouteLocationRaw
+      icon?: string
+    }>
+  }
+}
 
 const routes = [
   {
@@ -7,18 +19,25 @@ const routes = [
     component: () => import('@/views/HomeView.vue'),
     meta: { title: "Home - Apollo '69 JO9" },
   },
-
   {
     path: '/match/:id',
     name: 'matchDetail',
     component: () => import('@/views/MatchView.vue'),
-    meta: { title: "Wedstrijddetails - Apollo '69 JO9" },
+    meta: {
+      title: "Wedstrijddetails - Apollo '69 JO9",
+      breadcrumb: [{ labelKey: 'match.game', count: 2, to: { name: 'home' }, icon: 'pi pi-home' }],
+    },
   },
   {
     path: '/player/:id',
     name: 'playerDetail',
     component: () => import('@/views/PlayerView.vue'),
-    meta: { title: "Spelerdetails - Apollo '69 JO9" },
+    meta: {
+      title: "Spelerdetails - Apollo '69 JO9",
+      breadcrumb: [
+        { labelKey: 'player.player', count: 2, to: { name: 'players' }, icon: 'pi pi-users' },
+      ],
+    },
   },
   {
     path: '/players',

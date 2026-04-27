@@ -12,6 +12,7 @@ import MatchHeader from '@/components/MatchHeader.vue'
 import PlayerAppearanceItem from '@/components/PlayerAppearanceItem.vue'
 import ProgressSpinner from '@/components/ProgressSpinner.vue'
 import MatchTimer from '@/components/MatchTimer.vue'
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import { useI18n } from 'vue-i18n'
 
 const toast = useToast()
@@ -67,6 +68,8 @@ onMounted(() => {
 </script>
 
 <template>
+  <AppBreadcrumb :label="matchStore.selectedMatch?.opponent" />
+
   <div class="w-[800px] max-w-full mx-auto sm:p-4" v-if="matchStore.selectedMatch">
     <MatchHeader :match="matchStore.selectedMatch" />
 
