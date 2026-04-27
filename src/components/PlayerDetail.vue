@@ -103,10 +103,13 @@ onMounted(async () => {
   loading.value = false
 })
 
-watch(() => seasonStore.currentSeason, (seasonId) => {
-  matchStore.fetchMatches(seasonId)
-  matchStore.fetchAppearances(seasonId)
-})
+watch(
+  () => seasonStore.currentSeason,
+  (seasonId) => {
+    matchStore.fetchMatches(seasonId)
+    matchStore.fetchAppearances(seasonId)
+  },
+)
 </script>
 
 <template>

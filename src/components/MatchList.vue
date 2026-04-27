@@ -40,9 +40,12 @@ onMounted(() => {
   matchStore.fetchMatches(seasonStore.currentSeason)
 })
 
-watch(() => seasonStore.currentSeason, (seasonId) => {
-  matchStore.fetchMatches(seasonId)
-})
+watch(
+  () => seasonStore.currentSeason,
+  (seasonId) => {
+    matchStore.fetchMatches(seasonId)
+  },
+)
 
 const onRowClick = (event: DataTableRowClickEvent) => {
   router.push({ name: 'matchDetail', params: { id: event.data.id } })

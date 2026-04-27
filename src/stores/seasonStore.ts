@@ -19,7 +19,10 @@ export const useSeasonStore = defineStore('seasonStore', {
   actions: {
     async fetchSeasons() {
       const snapshot = await getDocs(collection(db, 'seasons'))
-      this.seasons = snapshot.docs.map((doc) => doc.id).sort().reverse()
+      this.seasons = snapshot.docs
+        .map((doc) => doc.id)
+        .sort()
+        .reverse()
       this.seasonsLoaded = true
       if (this.seasons.length && !this.seasons.includes(this.currentSeason)) {
         this.setSeason(this.seasons[0]!)

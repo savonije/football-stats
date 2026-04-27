@@ -38,9 +38,12 @@ onMounted(() => {
   matchStore.fetchAppearances(seasonStore.currentSeason)
 })
 
-watch(() => seasonStore.currentSeason, (seasonId) => {
-  matchStore.fetchAppearances(seasonId)
-})
+watch(
+  () => seasonStore.currentSeason,
+  (seasonId) => {
+    matchStore.fetchAppearances(seasonId)
+  },
+)
 </script>
 
 <template>
