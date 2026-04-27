@@ -51,7 +51,7 @@ onMounted(() => {
 
       <Button
         icon="pi pi-bars"
-        class="text-white!"
+        class="text-white! hover:text-primary!"
         text
         rounded
         :aria-label="t('common.menu')"
