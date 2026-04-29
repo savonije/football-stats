@@ -13,6 +13,7 @@ import type { Player } from '@/types'
 import { useI18n } from 'vue-i18n'
 import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+import PlayerInfoRow from '@/components/PlayerInfoRow.vue'
 
 const matchStore = useMatchStore()
 const playerStore = usePlayerStore()
@@ -119,10 +120,16 @@ watch(
   <AppBreadcrumb :label="player?.name" />
 
   <!-- Hero banner -->
-  <div class="player-hero mb-6">
-    <div class="hero-texture" />
-    <div class="hero-body">
-      <div class="hero-avatar">
+  <div
+    class="relative overflow-hidden rounded-2xl shadow-[0_8px_32px_rgba(17,26,54,0.3)] [background:linear-gradient(135deg,#111a36_0%,#1d2e5d_30%,#27428a_60%,#2f529f_80%,#4067b9_100%)] mb-6"
+  >
+    <div
+      class="absolute inset-0 pointer-events-none [background:repeating-linear-gradient(-55deg,transparent,transparent_20px,rgba(255,255,255,0.015)_20px,rgba(255,255,255,0.015)_40px)]"
+    />
+    <div class="relative z-10 flex items-center gap-5 p-6 flex-wrap">
+      <div
+        class="w-[72px] h-[72px] rounded-full bg-white/12 border-[3px] border-white/25 flex items-center justify-center text-[1.75rem] font-black text-white shrink-0"
+      >
         <span v-if="player">{{ player.name.charAt(0).toUpperCase() }}</span>
         <i v-else class="pi pi-user" />
       </div>
@@ -132,12 +139,19 @@ watch(
         <h1 v-else class="text-3xl lg:text-4xl font-black text-white mb-0 truncate">
           {{ player.name }}
         </h1>
-        <span v-if="!loading && player?.guestPlayer" class="hero-badge">
+        <span
+          v-if="!loading && player?.guestPlayer"
+          class="inline-block bg-white/12 border border-white/25 text-white/75 text-[0.65rem] font-bold tracking-[0.08em] uppercase py-0.5 px-2 rounded-full mt-1"
+        >
           {{ $t('player.guestPlayer') }}
         </span>
       </div>
 
-      <button v-if="player && AuthStore.user?.id" class="hero-edit-btn" @click="openEditDialog">
+      <button
+        v-if="player && AuthStore.user?.id"
+        class="flex items-center gap-1.5 py-2 px-4 rounded-lg border border-white/30 bg-white/12 text-white text-sm font-semibold cursor-pointer shrink-0 transition-[background,border-color] duration-[180ms] ease-in-out hover:bg-white/22 hover:border-white/50"
+        @click="openEditDialog"
+      >
         <i class="pi pi-pencil" />
         {{ $t('common.edit') }}
       </button>
@@ -146,51 +160,98 @@ watch(
 
   <!-- Stat tiles -->
   <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-    <div class="stat-tile" style="--accent: linear-gradient(135deg, #f59e0b, #b45309)">
-      <div class="stat-icon"><i class="pi pi-trophy" /></div>
-      <Skeleton v-if="loading" height="44px" width="56px" class="my-1" />
-      <div v-else class="stat-value">{{ totalGoals }}</div>
-      <div class="stat-label">{{ $t('player.totalGoals') }}</div>
-    </div>
-
-    <div class="stat-tile" style="--accent: linear-gradient(135deg, #3b82f6, #1d4ed8)">
-      <div class="stat-icon"><i class="pi pi-calendar" /></div>
-      <Skeleton v-if="loading" height="44px" width="80px" class="my-1" />
-      <div v-else class="stat-value">
-        {{ totalAppearances }}<span class="stat-sub">/{{ totalMatches }}</span>
+    <div
+      class="bg-white rounded-[14px] p-5 flex flex-col gap-1 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)] hover:-translate-y-0.5"
+    >
+      <div
+        class="w-9 h-9 rounded-lg flex items-center justify-center text-white text-base mb-2 shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#f59e0b,#b45309)]"
+      >
+        <i class="pi pi-trophy" />
       </div>
-      <div class="stat-label">{{ $t('player.totalAppearances') }}</div>
-    </div>
-
-    <div class="stat-tile" style="--accent: linear-gradient(135deg, #14b8a6, #0f766e)">
-      <div class="stat-icon"><i class="pi pi-shield" /></div>
       <Skeleton v-if="loading" height="44px" width="56px" class="my-1" />
-      <div v-else class="stat-value">{{ totalKeeper }}</div>
-      <div class="stat-label">{{ $t('player.totalKeeper') }}</div>
-    </div>
-
-    <div class="stat-tile" style="--accent: linear-gradient(135deg, #a855f7, #7e22ce)">
-      <div class="stat-icon"><i class="pi pi-chart-line" /></div>
-      <Skeleton v-if="loading" height="44px" width="72px" class="my-1" />
-      <div v-else class="stat-value">{{ goalsPerMatch }}</div>
-      <div class="stat-label">{{ $t('common.goalsPerMatch') }}</div>
+      <div v-else class="text-[2.25rem] font-black text-[#1d2e5d] leading-none">
+        {{ totalGoals }}
+      </div>
+      <div class="text-[0.7rem] font-bold text-[#6285d1] uppercase tracking-[0.06em] mt-1.5">
+        {{ $t('player.totalGoals') }}
+      </div>
     </div>
 
     <div
-      class="stat-tile col-span-2 lg:col-span-1"
-      style="--accent: linear-gradient(135deg, #22c55e, #15803d)"
+      class="bg-white rounded-[14px] p-5 flex flex-col gap-1 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)] hover:-translate-y-0.5"
     >
-      <div class="stat-icon"><i class="pi pi-check-circle" /></div>
+      <div
+        class="w-9 h-9 rounded-lg flex items-center justify-center text-white text-base mb-2 shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#3b82f6,#1d4ed8)]"
+      >
+        <i class="pi pi-calendar" />
+      </div>
+      <Skeleton v-if="loading" height="44px" width="80px" class="my-1" />
+      <div v-else class="text-[2.25rem] font-black text-[#1d2e5d] leading-none">
+        {{ totalAppearances
+        }}<span class="text-[1.1rem] font-medium text-[#8da7df]">/{{ totalMatches }}</span>
+      </div>
+      <div class="text-[0.7rem] font-bold text-[#6285d1] uppercase tracking-[0.06em] mt-1.5">
+        {{ $t('player.totalAppearances') }}
+      </div>
+    </div>
+
+    <div
+      class="bg-white rounded-[14px] p-5 flex flex-col gap-1 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)] hover:-translate-y-0.5"
+    >
+      <div
+        class="w-9 h-9 rounded-lg flex items-center justify-center text-white text-base mb-2 shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#14b8a6,#0f766e)]"
+      >
+        <i class="pi pi-shield" />
+      </div>
+      <Skeleton v-if="loading" height="44px" width="56px" class="my-1" />
+      <div v-else class="text-[2.25rem] font-black text-[#1d2e5d] leading-none">
+        {{ totalKeeper }}
+      </div>
+      <div class="text-[0.7rem] font-bold text-[#6285d1] uppercase tracking-[0.06em] mt-1.5">
+        {{ $t('player.totalKeeper') }}
+      </div>
+    </div>
+
+    <div
+      class="bg-white rounded-[14px] p-5 flex flex-col gap-1 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)] hover:-translate-y-0.5"
+    >
+      <div
+        class="w-9 h-9 rounded-lg flex items-center justify-center text-white text-base mb-2 shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#a855f7,#7e22ce)]"
+      >
+        <i class="pi pi-chart-line" />
+      </div>
+      <Skeleton v-if="loading" height="44px" width="72px" class="my-1" />
+      <div v-else class="text-[2.25rem] font-black text-[#1d2e5d] leading-none">
+        {{ goalsPerMatch }}
+      </div>
+      <div class="text-[0.7rem] font-bold text-[#6285d1] uppercase tracking-[0.06em] mt-1.5">
+        {{ $t('common.goalsPerMatch') }}
+      </div>
+    </div>
+
+    <div
+      class="col-span-2 lg:col-span-1 bg-white rounded-[14px] p-5 flex flex-col gap-1 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)] hover:-translate-y-0.5"
+    >
+      <div
+        class="w-9 h-9 rounded-lg flex items-center justify-center text-white text-base mb-2 shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#22c55e,#15803d)]"
+      >
+        <i class="pi pi-check-circle" />
+      </div>
       <Skeleton v-if="loading" height="44px" width="56px" class="my-1" />
       <template v-else>
-        <div class="stat-value">
-          {{ attendancePercentage }}<span class="stat-sub">%</span>
+        <div class="text-[2.25rem] font-black text-[#1d2e5d] leading-none">
+          {{ attendancePercentage }}<span class="text-[1.1rem] font-medium text-[#8da7df]">%</span>
         </div>
-        <div class="attendance-bar">
-          <div class="attendance-fill" :style="{ width: `${animatedBarWidth}%` }" />
+        <div class="h-1 bg-[rgba(39,66,138,0.1)] rounded-full mt-2 overflow-hidden">
+          <div
+            class="h-full bg-gradient-to-r from-green-500 to-green-700 rounded-full transition-[width] duration-[900ms] [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
+            :style="{ width: `${animatedBarWidth}%` }"
+          />
         </div>
       </template>
-      <div class="stat-label">{{ $t('common.attendancePercentage') }}</div>
+      <div class="text-[0.7rem] font-bold text-[#6285d1] uppercase tracking-[0.06em] mt-1.5">
+        {{ $t('common.attendancePercentage') }}
+      </div>
     </div>
   </div>
 
@@ -202,53 +263,34 @@ watch(
       </template>
       <template #content>
         <Skeleton v-if="loading" height="120px" />
-        <ul v-else class="info-list">
-          <li>
-            <span
-              class="info-icon"
-              style="background: linear-gradient(135deg, #3b82f6, #1d4ed8)"
-            >
-              <i class="pi pi-tag" />
-            </span>
-            <span class="info-key">{{ $t('common.clothingSize') }}</span>
-            <span class="info-val">{{ player?.clothingSize ?? '-' }}</span>
-          </li>
-          <li>
-            <span
-              class="info-icon"
-              style="background: linear-gradient(135deg, #f59e0b, #b45309)"
-            >
-              <i class="pi pi-user" />
-            </span>
-            <span class="info-key">{{ $t('common.hasJacket') }}</span>
-            <span class="info-val" :class="player?.hasJacket ? 'yes' : 'no'">
-              {{ player?.hasJacket ? $t('common.yes') : $t('common.no') }}
-            </span>
-          </li>
-          <li>
-            <span
-              class="info-icon"
-              style="background: linear-gradient(135deg, #14b8a6, #0f766e)"
-            >
-              <i class="pi pi-briefcase" />
-            </span>
-            <span class="info-key">{{ $t('common.hasBag') }}</span>
-            <span class="info-val" :class="player?.hasBag ? 'yes' : 'no'">
-              {{ player?.hasBag ? $t('common.yes') : $t('common.no') }}
-            </span>
-          </li>
-          <li>
-            <span
-              class="info-icon"
-              style="background: linear-gradient(135deg, #a855f7, #7e22ce)"
-            >
-              <i class="pi pi-users" />
-            </span>
-            <span class="info-key">{{ $t('player.guestPlayer') }}</span>
-            <span class="info-val" :class="player?.guestPlayer ? 'yes' : 'no'">
-              {{ player?.guestPlayer ? $t('common.yes') : $t('common.no') }}
-            </span>
-          </li>
+        <ul v-else class="list-none p-0 m-0 flex flex-col gap-2.5">
+          <PlayerInfoRow
+            icon="pi pi-tag"
+            gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)"
+            :label="$t('common.clothingSize')"
+            :value="player?.clothingSize ?? '-'"
+          />
+          <PlayerInfoRow
+            icon="pi pi-user"
+            gradient="linear-gradient(135deg, #f59e0b, #b45309)"
+            :label="$t('common.hasJacket')"
+            :value="player?.hasJacket ? $t('common.yes') : $t('common.no')"
+            :value-class="player?.hasJacket ? 'text-green-700' : 'text-red-700'"
+          />
+          <PlayerInfoRow
+            icon="pi pi-briefcase"
+            gradient="linear-gradient(135deg, #14b8a6, #0f766e)"
+            :label="$t('common.hasBag')"
+            :value="player?.hasBag ? $t('common.yes') : $t('common.no')"
+            :value-class="player?.hasBag ? 'text-green-700' : 'text-red-700'"
+          />
+          <PlayerInfoRow
+            icon="pi pi-users"
+            gradient="linear-gradient(135deg, #a855f7, #7e22ce)"
+            :label="$t('player.guestPlayer')"
+            :value="player?.guestPlayer ? $t('common.yes') : $t('common.no')"
+            :value-class="player?.guestPlayer ? 'text-green-700' : 'text-red-700'"
+          />
         </ul>
       </template>
     </Card>
@@ -314,216 +356,3 @@ watch(
     </template>
   </Dialog>
 </template>
-
-<style scoped>
-/* ── Hero ── */
-.player-hero {
-  background: linear-gradient(
-    135deg,
-    #111a36 0%,
-    #1d2e5d 30%,
-    #27428a 60%,
-    #2f529f 80%,
-    #4067b9 100%
-  );
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(17, 26, 54, 0.3);
-}
-
-.hero-texture {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    -55deg,
-    transparent,
-    transparent 20px,
-    rgba(255, 255, 255, 0.015) 20px,
-    rgba(255, 255, 255, 0.015) 40px
-  );
-  pointer-events: none;
-}
-
-.hero-body {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.hero-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  border: 3px solid rgba(255, 255, 255, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  font-weight: 900;
-  color: white;
-  flex-shrink: 0;
-}
-
-.hero-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 999px;
-  margin-top: 4px;
-}
-
-.hero-edit-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.18s ease,
-    border-color 0.18s ease;
-  flex-shrink: 0;
-}
-
-.hero-edit-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-/* ── Stat tiles ── */
-.stat-tile {
-  background: white;
-  border-radius: 14px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 2px 12px rgba(39, 66, 138, 0.08);
-  transition:
-    box-shadow 0.22s ease,
-    transform 0.22s ease;
-}
-
-.stat-tile:hover {
-  box-shadow: 0 8px 28px rgba(39, 66, 138, 0.18);
-  transform: translateY(-2px);
-}
-
-.stat-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1rem;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.stat-value {
-  font-size: 2.25rem;
-  font-weight: 900;
-  color: #1d2e5d;
-  line-height: 1;
-}
-
-.stat-sub {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #8da7df;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #6285d1;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-top: 6px;
-}
-
-/* Attendance progress bar */
-.attendance-bar {
-  height: 4px;
-  background: rgba(39, 66, 138, 0.1);
-  border-radius: 999px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-
-.attendance-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #22c55e, #15803d);
-  border-radius: 999px;
-  transition: width 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* ── Info list ── */
-.info-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.info-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.info-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.72rem;
-  flex-shrink: 0;
-}
-
-.info-key {
-  flex: 1;
-  font-size: 0.85rem;
-  color: #4067b9;
-  font-weight: 500;
-}
-
-.info-val {
-  font-weight: 700;
-  font-size: 0.875rem;
-  color: #1d2e5d;
-}
-
-.info-val.yes {
-  color: #15803d;
-}
-
-.info-val.no {
-  color: #b91c1c;
-}
-</style>
