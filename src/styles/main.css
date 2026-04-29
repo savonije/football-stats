@@ -4,20 +4,20 @@
 @import 'primeicons/primeicons.css';
 
 @theme {
-  --color-primary-50: #f2f5fb;
-  --color-primary-100: #dbe3f5;
-  --color-primary-200: #b6c7ea;
-  --color-primary-300: #8da7df;
-  --color-primary-400: #6285d1;
-  --color-primary-500: #4067b9;
-  --color-primary-600: #2f529f;
-  --color-primary-700: #27428a;
-  --color-primary-800: #213672;
-  --color-primary-900: #1d2e5d;
-  --color-primary-950: #111a36;
-  --color-primary: #27428a;
+    --color-primary-50: #f2f5fb;
+    --color-primary-100: #dbe3f5;
+    --color-primary-200: #b6c7ea;
+    --color-primary-300: #8da7df;
+    --color-primary-400: #6285d1;
+    --color-primary-500: #4067b9;
+    --color-primary-600: #2f529f;
+    --color-primary-700: #27428a;
+    --color-primary-800: #213672;
+    --color-primary-900: #1d2e5d;
+    --color-primary-950: #111a36;
+    --color-primary: #27428a;
 
-  --font-display: 'Roboto', sans-serif;
+    --font-display: 'Roboto', sans-serif;
 }
 
 @import '@/styles/base.css';
@@ -26,83 +26,91 @@
 
 html,
 body {
-  @apply font-display overflow-x-clip p-6 text-black bg-primary-50;
-  background-image: radial-gradient(rgba(39, 66, 138, 0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
+    @apply font-display bg-primary-50 overflow-x-clip p-6 text-black;
+    background-image: radial-gradient(
+        rgba(39, 66, 138, 0.07) 1px,
+        transparent 1px
+    );
+    background-size: 28px 28px;
 }
 
 .container {
-  @apply mx-auto w-full max-w-[1440px] px-6 lg:px-10;
+    @apply mx-auto w-full max-w-[1440px] px-6 lg:px-10;
 }
 
 label {
-  @apply font-bold mb-0 block text-sm;
+    @apply mb-0 block text-sm font-bold;
 }
 
 /* PrimeVue dialog customization */
 .p-dialog {
-  @apply max-w-[95%];
+    @apply max-w-[95%];
 }
 
 .p-toast {
-  @apply max-w-[90%] left-[10px];
+    @apply left-[10px] max-w-[90%];
 }
 
 /* Card hover lift */
 .p-card {
-  transition:
-    box-shadow 0.25s ease,
-    transform 0.25s ease !important;
+    transition:
+        box-shadow 0.25s ease,
+        transform 0.25s ease !important;
 }
 
 .p-card:hover {
-  box-shadow: 0 12px 40px rgba(39, 66, 138, 0.16) !important;
-  transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(39, 66, 138, 0.16) !important;
+    transform: translateY(-3px);
 }
 
 /* DataTable header gradient */
 .p-datatable .p-datatable-thead > tr > th {
-  background: linear-gradient(180deg, #dbe3f5 0%, #edf1fa 100%) !important;
-  color: #213672 !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.02em;
+    background: linear-gradient(180deg, #dbe3f5 0%, #edf1fa 100%) !important;
+    color: #213672 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
 }
 
 /* DataTable row hover transition */
 .p-datatable .p-datatable-tbody > tr {
-  transition: background-color 0.15s ease !important;
-  cursor: pointer;
+    transition: background-color 0.15s ease !important;
+    cursor: pointer;
 }
 
 /* NavDrawer - dark gradient shell (teleported to body, must be global) */
 .p-drawer {
-  background: linear-gradient(160deg, #111a36 0%, #1d2e5d 40%, #27428a 100%) !important;
-  box-shadow: -8px 0 40px rgba(17, 26, 54, 0.6) !important;
+    background: linear-gradient(
+        160deg,
+        #111a36 0%,
+        #1d2e5d 40%,
+        #27428a 100%
+    ) !important;
+    box-shadow: -8px 0 40px rgba(17, 26, 54, 0.6) !important;
 }
 
 .p-drawer .p-drawer-header {
-  background: rgba(255, 255, 255, 0.04) !important;
-  color: white !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .p-drawer .p-drawer-title {
-  color: white !important;
-  font-size: 0.7rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
 }
 
 .p-drawer .p-drawer-close-button {
-  color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
 }
 
 .p-drawer .p-drawer-close-button:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: white !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
 }
 
 .p-drawer .p-drawer-content {
-  background: transparent !important;
+    background: transparent !important;
 }

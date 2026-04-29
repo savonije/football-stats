@@ -1,71 +1,87 @@
-import { createRouter, createWebHistory, type RouteLocationRaw } from 'vue-router'
+import {
+    createRouter,
+    createWebHistory,
+    type RouteLocationRaw,
+} from 'vue-router';
 
 declare module 'vue-router' {
-  interface RouteMeta {
-    title?: string
-    breadcrumb?: Array<{
-      labelKey: string
-      count?: number
-      to: RouteLocationRaw
-      icon?: string
-    }>
-  }
+    interface RouteMeta {
+        title?: string;
+        breadcrumb?: Array<{
+            labelKey: string;
+            count?: number;
+            to: RouteLocationRaw;
+            icon?: string;
+        }>;
+    }
 }
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: () => import('@/views/HomeView.vue'),
-    meta: { title: "Home - Apollo '69 JO9" },
-  },
-  {
-    path: '/match/:id',
-    name: 'matchDetail',
-    component: () => import('@/views/MatchView.vue'),
-    meta: {
-      title: "Wedstrijddetails - Apollo '69 JO9",
-      breadcrumb: [{ labelKey: 'match.game', count: 2, to: { name: 'home' }, icon: 'pi pi-home' }],
+    {
+        path: '/',
+        name: 'home',
+        component: () => import('@/views/HomeView.vue'),
+        meta: { title: "Home - Apollo '69 JO9" },
     },
-  },
-  {
-    path: '/player/:id',
-    name: 'playerDetail',
-    component: () => import('@/views/PlayerView.vue'),
-    meta: {
-      title: "Spelerdetails - Apollo '69 JO9",
-      breadcrumb: [
-        { labelKey: 'player.player', count: 2, to: { name: 'players' }, icon: 'pi pi-users' },
-      ],
+    {
+        path: '/match/:id',
+        name: 'matchDetail',
+        component: () => import('@/views/MatchView.vue'),
+        meta: {
+            title: "Wedstrijddetails - Apollo '69 JO9",
+            breadcrumb: [
+                {
+                    labelKey: 'match.game',
+                    count: 2,
+                    to: { name: 'home' },
+                    icon: 'pi pi-home',
+                },
+            ],
+        },
     },
-  },
-  {
-    path: '/players',
-    name: 'players',
-    component: () => import('@/views/PlayersView.vue'),
-    meta: { title: "Spelers - Apollo '69 JO9" },
-  },
-  {
-    path: '/topscorers',
-    name: 'topscorers',
-    component: () => import('@/views/TopScorersView.vue'),
-    meta: { title: "Topscorers - Apollo '69 JO9" },
-  },
-  {
-    path: '/login',
-    name: 'auth',
-    component: () => import('@/views/AuthView.vue'),
-    meta: { title: "Login -  Apollo '69 JO9" },
-  },
-]
+    {
+        path: '/player/:id',
+        name: 'playerDetail',
+        component: () => import('@/views/PlayerView.vue'),
+        meta: {
+            title: "Spelerdetails - Apollo '69 JO9",
+            breadcrumb: [
+                {
+                    labelKey: 'player.player',
+                    count: 2,
+                    to: { name: 'players' },
+                    icon: 'pi pi-users',
+                },
+            ],
+        },
+    },
+    {
+        path: '/players',
+        name: 'players',
+        component: () => import('@/views/PlayersView.vue'),
+        meta: { title: "Spelers - Apollo '69 JO9" },
+    },
+    {
+        path: '/topscorers',
+        name: 'topscorers',
+        component: () => import('@/views/TopScorersView.vue'),
+        meta: { title: "Topscorers - Apollo '69 JO9" },
+    },
+    {
+        path: '/login',
+        name: 'auth',
+        component: () => import('@/views/AuthView.vue'),
+        meta: { title: "Login -  Apollo '69 JO9" },
+    },
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) return savedPosition
-    return { top: 0 }
-  },
-  routes,
-})
+    history: createWebHistory(import.meta.env.BASE_URL),
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) return savedPosition;
+        return { top: 0 };
+    },
+    routes,
+});
 
-export default router
+export default router;

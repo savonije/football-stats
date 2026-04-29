@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import MatchDetail from '@/components/MatchDetail.vue'
+    import MatchDetail from '@/components/MatchDetail.vue';
 
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
+    import DefaultLayout from '@/layouts/DefaultLayout.vue';
 </script>
 
 <template>
-  <DefaultLayout>
-    <MatchDetail />
-  </DefaultLayout>
+    <DefaultLayout>
+        <MatchDetail />
+    </DefaultLayout>
 </template>

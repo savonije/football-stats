@@ -1,7 +1,7 @@
 export default {
-  login: 'Inloggen',
-  logout: 'Uitloggen',
-  logoutMessage: 'Je bent uitgelogd',
-  logoutSuccess: 'Uitloggen succesvol',
-  password: 'Wachtwoord',
-}
+    login: 'Inloggen',
+    logout: 'Uitloggen',
+    logoutMessage: 'Je bent uitgelogd',
+    logoutSuccess: 'Uitloggen succesvol',
+    password: 'Wachtwoord',
+};

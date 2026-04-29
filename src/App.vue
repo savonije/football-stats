@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { Toast, ConfirmDialog } from 'primevue'
-import { RouterView } from 'vue-router'
+    import { Toast, ConfirmDialog } from 'primevue';
+    import { RouterView } from 'vue-router';
 
-import { useStoreAuth } from '@/stores/authStore'
-import { onMounted } from 'vue'
+    import { useStoreAuth } from '@/stores/authStore';
+    import { onMounted } from 'vue';
 
-const storeAuth = useStoreAuth()
+    const storeAuth = useStoreAuth();
 
-onMounted(() => {
-  storeAuth.init()
-})
+    onMounted(() => {
+        storeAuth.init();
+    });
 </script>
 
 <template>
-  <RouterView />
-  <ConfirmDialog />
-  <Toast />
+    <RouterView />
+    <ConfirmDialog />
+    <Toast />
 </template>

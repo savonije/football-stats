@@ -1,60 +1,68 @@
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
-import { defineStore } from 'pinia'
-import type { ToastServiceMethods } from 'primevue/toastservice'
-import { TOAST_LIFE } from '@/constants'
+import {
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signOut,
+} from 'firebase/auth';
+import { defineStore } from 'pinia';
+import type { ToastServiceMethods } from 'primevue/toastservice';
 
-import { auth } from '@/firebase'
+import { TOAST_LIFE } from '@/constants';
+import { auth } from '@/firebase';
 
 export const useStoreAuth = defineStore('storeAuth', {
-  state: (): { user: { id: string; email: string | null } | null } => {
-    return {
-      user: null,
-    }
-  },
-  actions: {
-    init() {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          this.user = {
-            id: user.uid,
-            email: user.email,
-          }
+    state: (): { user: { id: string; email: string | null } | null } => {
+        return {
+            user: null,
+        };
+    },
+    actions: {
+        init() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    this.user = {
+                        id: user.uid,
+                        email: user.email,
+                    };
 
-          if (this.router.currentRoute.value.name === 'auth') {
-            this.router.push('/')
-          }
-        } else {
-          this.user = null
-        }
-      })
+                    if (this.router.currentRoute.value.name === 'auth') {
+                        this.router.push('/');
+                    }
+                } else {
+                    this.user = null;
+                }
+            });
+        },
+        loginUser(credentials: { email: string; password: string }) {
+            signInWithEmailAndPassword(
+                auth,
+                credentials.email,
+                credentials.password,
+            )
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                })
+                .catch((error) => {
+                    console.log(error.message);
+                });
+        },
+        logoutUser(toast: ToastServiceMethods, t: (key: string) => string) {
+            signOut(auth)
+                .then(() => {
+                    toast.add({
+                        severity: 'success',
+                        summary: t('auth.logoutSuccess'),
+                        detail: t('auth.logoutMessage'),
+                        life: TOAST_LIFE,
+                    });
+                })
+                .catch((error) => {
+                    toast.add({
+                        severity: 'error',
+                        summary: t('error.generic'),
+                        detail: error.message,
+                        life: TOAST_LIFE,
+                    });
+                });
+        },
     },
-    loginUser(credentials: { email: string; password: string }) {
-      signInWithEmailAndPassword(auth, credentials.email, credentials.password)
-        .then((userCredential) => {
-          const user = userCredential.user
-        })
-        .catch((error) => {
-          console.log(error.message)
-        })
-    },
-    logoutUser(toast: ToastServiceMethods, t: (key: string) => string) {
-      signOut(auth)
-        .then(() => {
-          toast.add({
-            severity: 'success',
-            summary: t('auth.logoutSuccess'),
-            detail: t('auth.logoutMessage'),
-            life: TOAST_LIFE,
-          })
-        })
-        .catch((error) => {
-          toast.add({
-            severity: 'error',
-            summary: t('error.generic'),
-            detail: error.message,
-            life: TOAST_LIFE,
-          })
-        })
-    },
-  },
-})
+});

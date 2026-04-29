@@ -1,247 +1,327 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useToast } from 'primevue'
-import Drawer from 'primevue/drawer'
-import { useI18n } from 'vue-i18n'
+    import { ref, watch } from 'vue';
+    import { useToast } from 'primevue';
+    import Drawer from 'primevue/drawer';
+    import { useI18n } from 'vue-i18n';
 
-import { useStoreAuth } from '@/stores/authStore'
+    import { useStoreAuth } from '@/stores/authStore';
 
-import AddMatchDialog from '@/components/AddMatchDialog.vue'
-import AddPlayerDialog from '@/components/AddPlayerDialog.vue'
+    import AddMatchDialog from '@/components/AddMatchDialog.vue';
+    import AddPlayerDialog from '@/components/AddPlayerDialog.vue';
 
-const storeAuth = useStoreAuth()
-const toast = useToast()
-const { t } = useI18n()
+    const storeAuth = useStoreAuth();
+    const toast = useToast();
+    const { t } = useI18n();
 
-const drawerVisible = ref(false)
-const navAnimated = ref(false)
-const showAddMatchDialog = ref(false)
-const showAddPlayerDialog = ref(false)
+    const drawerVisible = ref(false);
+    const navAnimated = ref(false);
+    const showAddMatchDialog = ref(false);
+    const showAddPlayerDialog = ref(false);
 
-watch(drawerVisible, (val) => {
-  if (val) {
-    setTimeout(() => {
-      navAnimated.value = true
-    }, 120)
-  } else {
-    navAnimated.value = false
-  }
-})
+    watch(drawerVisible, (val) => {
+        if (val) {
+            setTimeout(() => {
+                navAnimated.value = true;
+            }, 120);
+        } else {
+            navAnimated.value = false;
+        }
+    });
 
-const openAddMatch = () => {
-  drawerVisible.value = false
-  showAddMatchDialog.value = true
-}
+    const openAddMatch = () => {
+        drawerVisible.value = false;
+        showAddMatchDialog.value = true;
+    };
 
-const openAddPlayer = () => {
-  drawerVisible.value = false
-  showAddPlayerDialog.value = true
-}
+    const openAddPlayer = () => {
+        drawerVisible.value = false;
+        showAddPlayerDialog.value = true;
+    };
 
-const logout = () => {
-  drawerVisible.value = false
-  storeAuth.logoutUser(toast, t)
-}
+    const logout = () => {
+        drawerVisible.value = false;
+        storeAuth.logoutUser(toast, t);
+    };
 
-defineExpose({
-  open: () => {
-    drawerVisible.value = true
-  },
-})
+    defineExpose({
+        open: () => {
+            drawerVisible.value = true;
+        },
+    });
 </script>
 
 <template>
-  <Drawer v-model:visible="drawerVisible" position="right" :header="t('common.menu')">
-    <div class="drawer-body" :class="{ animated: navAnimated }">
-      <p class="section-label">{{ t('common.navigation') }}</p>
-      <nav class="nav-list">
-        <Router-Link
-          :to="{ name: 'home' }"
-          class="nav-item"
-          style="--i: 0"
-          @click="drawerVisible = false"
-        >
-          <span class="nav-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8)">
-            <i class="pi pi-home" />
-          </span>
-          <span>{{ t('match.game', 2) }}</span>
-          <i class="pi pi-chevron-right nav-chevron" />
-        </Router-Link>
+    <Drawer
+        v-model:visible="drawerVisible"
+        position="right"
+        :header="t('common.menu')"
+    >
+        <div class="drawer-body" :class="{ animated: navAnimated }">
+            <p class="section-label">{{ t('common.navigation') }}</p>
+            <nav class="nav-list">
+                <Router-Link
+                    class="nav-item"
+                    :to="{ name: 'home' }"
+                    style="--i: 0"
+                    @click="drawerVisible = false"
+                >
+                    <span
+                        class="nav-icon"
+                        style="
+                            background: linear-gradient(
+                                135deg,
+                                #3b82f6,
+                                #1d4ed8
+                            );
+                        "
+                    >
+                        <i class="pi pi-home" />
+                    </span>
+                    <span>{{ t('match.game', 2) }}</span>
+                    <i class="pi pi-chevron-right nav-chevron" />
+                </Router-Link>
 
-        <Router-Link
-          :to="{ name: 'topscorers' }"
-          class="nav-item"
-          style="--i: 1"
-          @click="drawerVisible = false"
-        >
-          <span class="nav-icon" style="background: linear-gradient(135deg, #f59e0b, #b45309)">
-            <i class="pi pi-chart-bar" />
-          </span>
-          <span>{{ t('common.toplist') }}</span>
-          <i class="pi pi-chevron-right nav-chevron" />
-        </Router-Link>
+                <Router-Link
+                    class="nav-item"
+                    :to="{ name: 'topscorers' }"
+                    style="--i: 1"
+                    @click="drawerVisible = false"
+                >
+                    <span
+                        class="nav-icon"
+                        style="
+                            background: linear-gradient(
+                                135deg,
+                                #f59e0b,
+                                #b45309
+                            );
+                        "
+                    >
+                        <i class="pi pi-chart-bar" />
+                    </span>
+                    <span>{{ t('common.toplist') }}</span>
+                    <i class="pi pi-chevron-right nav-chevron" />
+                </Router-Link>
 
-        <Router-Link
-          :to="{ name: 'players' }"
-          class="nav-item"
-          style="--i: 2"
-          @click="drawerVisible = false"
-        >
-          <span class="nav-icon" style="background: linear-gradient(135deg, #14b8a6, #0f766e)">
-            <i class="pi pi-users" />
-          </span>
-          <span>{{ t('player.player', 2) }}</span>
-          <i class="pi pi-chevron-right nav-chevron" />
-        </Router-Link>
-      </nav>
+                <Router-Link
+                    class="nav-item"
+                    :to="{ name: 'players' }"
+                    style="--i: 2"
+                    @click="drawerVisible = false"
+                >
+                    <span
+                        class="nav-icon"
+                        style="
+                            background: linear-gradient(
+                                135deg,
+                                #14b8a6,
+                                #0f766e
+                            );
+                        "
+                    >
+                        <i class="pi pi-users" />
+                    </span>
+                    <span>{{ t('player.player', 2) }}</span>
+                    <i class="pi pi-chevron-right nav-chevron" />
+                </Router-Link>
+            </nav>
 
-      <template v-if="storeAuth.user?.id">
-        <p class="section-label mt-8">{{ t('common.manage') }}</p>
-        <nav class="nav-list">
-          <button class="nav-item" style="--i: 3" @click="openAddMatch">
-            <span class="nav-icon" style="background: linear-gradient(135deg, #22c55e, #15803d)">
-              <i class="pi pi-plus" />
-            </span>
-            <span>{{ t('match.addMatch') }}</span>
-            <i class="pi pi-chevron-right nav-chevron" />
-          </button>
-          <button class="nav-item" style="--i: 4" @click="openAddPlayer">
-            <span class="nav-icon" style="background: linear-gradient(135deg, #a855f7, #7e22ce)">
-              <i class="pi pi-user-plus" />
-            </span>
-            <span>{{ t('player.addPlayer') }}</span>
-            <i class="pi pi-chevron-right nav-chevron" />
-          </button>
-        </nav>
+            <template v-if="storeAuth.user?.id">
+                <p class="section-label mt-8">{{ t('common.manage') }}</p>
+                <nav class="nav-list">
+                    <button
+                        class="nav-item"
+                        style="--i: 3"
+                        @click="openAddMatch"
+                    >
+                        <span
+                            class="nav-icon"
+                            style="
+                                background: linear-gradient(
+                                    135deg,
+                                    #22c55e,
+                                    #15803d
+                                );
+                            "
+                        >
+                            <i class="pi pi-plus" />
+                        </span>
+                        <span>{{ t('match.addMatch') }}</span>
+                        <i class="pi pi-chevron-right nav-chevron" />
+                    </button>
+                    <button
+                        class="nav-item"
+                        style="--i: 4"
+                        @click="openAddPlayer"
+                    >
+                        <span
+                            class="nav-icon"
+                            style="
+                                background: linear-gradient(
+                                    135deg,
+                                    #a855f7,
+                                    #7e22ce
+                                );
+                            "
+                        >
+                            <i class="pi pi-user-plus" />
+                        </span>
+                        <span>{{ t('player.addPlayer') }}</span>
+                        <i class="pi pi-chevron-right nav-chevron" />
+                    </button>
+                </nav>
 
-        <div class="mt-10">
-          <button class="nav-item nav-item--danger" style="--i: 5" @click="logout">
-            <span class="nav-icon" style="background: linear-gradient(135deg, #ef4444, #b91c1c)">
-              <i class="pi pi-sign-out" />
-            </span>
-            <span>{{ t('auth.logout') }}</span>
-          </button>
+                <div class="mt-10">
+                    <button
+                        class="nav-item nav-item--danger"
+                        style="--i: 5"
+                        @click="logout"
+                    >
+                        <span
+                            class="nav-icon"
+                            style="
+                                background: linear-gradient(
+                                    135deg,
+                                    #ef4444,
+                                    #b91c1c
+                                );
+                            "
+                        >
+                            <i class="pi pi-sign-out" />
+                        </span>
+                        <span>{{ t('auth.logout') }}</span>
+                    </button>
+                </div>
+            </template>
+
+            <template v-else>
+                <div class="mt-10">
+                    <Router-Link
+                        class="nav-item"
+                        :to="{ name: 'auth' }"
+                        style="--i: 3"
+                        @click="drawerVisible = false"
+                    >
+                        <span
+                            class="nav-icon"
+                            style="
+                                background: linear-gradient(
+                                    135deg,
+                                    #22c55e,
+                                    #15803d
+                                );
+                            "
+                        >
+                            <i class="pi pi-sign-in" />
+                        </span>
+                        <span>{{ t('auth.login') }}</span>
+                        <i class="pi pi-chevron-right nav-chevron" />
+                    </Router-Link>
+                </div>
+            </template>
         </div>
-      </template>
+    </Drawer>
 
-      <template v-else>
-        <div class="mt-10">
-          <Router-Link
-            :to="{ name: 'auth' }"
-            class="nav-item"
-            style="--i: 3"
-            @click="drawerVisible = false"
-          >
-            <span class="nav-icon" style="background: linear-gradient(135deg, #22c55e, #15803d)">
-              <i class="pi pi-sign-in" />
-            </span>
-            <span>{{ t('auth.login') }}</span>
-            <i class="pi pi-chevron-right nav-chevron" />
-          </Router-Link>
-        </div>
-      </template>
-    </div>
-  </Drawer>
-
-  <AddMatchDialog v-model:visible="showAddMatchDialog" />
-  <AddPlayerDialog v-model:visible="showAddPlayerDialog" />
+    <AddMatchDialog v-model:visible="showAddMatchDialog" />
+    <AddPlayerDialog v-model:visible="showAddPlayerDialog" />
 </template>
 
 <style scoped>
-.drawer-body {
-  display: flex;
-  flex-direction: column;
-  padding-top: 2rem;
-}
+    .drawer-body {
+        display: flex;
+        flex-direction: column;
+        padding-top: 2rem;
+    }
 
-.section-label {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 6px;
-}
+    .section-label {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 6px;
+    }
 
-.nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+    .nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
 
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  width: 100%;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-decoration: none;
-  text-align: left;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
-  opacity: 0;
-  transform: translateX(16px);
-}
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        width: 100%;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: left;
+        transition:
+            background 0.18s ease,
+            color 0.18s ease;
+        opacity: 0;
+        transform: translateX(16px);
+    }
 
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
+    .nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
 
-.nav-item:hover .nav-chevron {
-  transform: translateX(3px);
-}
+    .nav-item:hover .nav-chevron {
+        transform: translateX(3px);
+    }
 
-.nav-item--danger {
-  color: rgba(252, 165, 165, 0.85);
-}
+    .nav-item--danger {
+        color: rgba(252, 165, 165, 0.85);
+    }
 
-.nav-item--danger:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: rgb(252, 165, 165);
-}
+    .nav-item--danger:hover {
+        background: rgba(239, 68, 68, 0.15);
+        color: rgb(252, 165, 165);
+    }
 
-.nav-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-  color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
+    .nav-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
 
-.nav-chevron {
-  margin-left: auto;
-  font-size: 0.65rem;
-  opacity: 0.4;
-  transition: transform 0.18s ease;
-}
+    .nav-chevron {
+        margin-left: auto;
+        font-size: 0.65rem;
+        opacity: 0.4;
+        transition: transform 0.18s ease;
+    }
 
-/* Staggered entrance via CSS custom property --i */
-.animated .nav-item {
-  animation: nav-slide-in 0.3s ease-out calc(0.05s + var(--i, 0) * 0.07s) forwards;
-}
+    /* Staggered entrance via CSS custom property --i */
+    .animated .nav-item {
+        animation: nav-slide-in 0.3s ease-out calc(0.05s + var(--i, 0) * 0.07s)
+            forwards;
+    }
 
-@keyframes nav-slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+    @keyframes nav-slide-in {
+        from {
+            opacity: 0;
+            transform: translateX(16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 </style>

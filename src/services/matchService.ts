@@ -1,66 +1,76 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  serverTimestamp,
-  Timestamp,
-  updateDoc,
-} from 'firebase/firestore'
-import { db } from '@/firebase'
-import type { Appearance, Match, NewMatch } from '@/types'
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    serverTimestamp,
+    Timestamp,
+    updateDoc,
+} from 'firebase/firestore';
+
+import { db } from '@/firebase';
+import type { Appearance, Match, NewMatch } from '@/types';
 
 export async function getMatches(seasonId: string): Promise<Match[]> {
-  const matchesRef = collection(db, 'seasons', seasonId, 'matches')
-  const snapshot = await getDocs(matchesRef)
+    const matchesRef = collection(db, 'seasons', seasonId, 'matches');
+    const snapshot = await getDocs(matchesRef);
 
-  return snapshot.docs.map(
-    (doc) =>
-      ({
-        id: doc.id,
-        ...doc.data(),
-      }) as Match,
-  )
+    return snapshot.docs.map(
+        (doc) =>
+            ({
+                id: doc.id,
+                ...doc.data(),
+            }) as Match,
+    );
 }
 
 export const addMatch = async (seasonId: string, match: NewMatch) => {
-  const date = match.date instanceof Timestamp ? match.date.toDate() : new Date(match.date)
-  const matchRef = await addDoc(collection(db, 'seasons', seasonId, 'matches'), {
-    opponent: match.opponent,
-    date,
-    home: match.home,
-    result: match.result || null,
-    createdAt: serverTimestamp(),
-    durationMinutes: 0,
-    running: false,
-    ended: false,
-    paused: false,
-  })
+    const date =
+        match.date instanceof Timestamp
+            ? match.date.toDate()
+            : new Date(match.date);
+    const matchRef = await addDoc(
+        collection(db, 'seasons', seasonId, 'matches'),
+        {
+            opponent: match.opponent,
+            date,
+            home: match.home,
+            result: match.result || null,
+            createdAt: serverTimestamp(),
+            durationMinutes: 0,
+            running: false,
+            ended: false,
+            paused: false,
+        },
+    );
 
-  const playerIds = match.playerIds || []
+    const playerIds = match.playerIds || [];
 
-  if (playerIds.length) {
-    const appearancesCollection = collection(matchRef, 'appearances')
-    for (const playerId of playerIds) {
-      await addDoc(appearancesCollection, {
-        playerId,
-        present: true,
-        isGoalkeeper: false,
-        goals: 0,
-        seasonId,
-      })
+    if (playerIds.length) {
+        const appearancesCollection = collection(matchRef, 'appearances');
+        for (const playerId of playerIds) {
+            await addDoc(appearancesCollection, {
+                playerId,
+                present: true,
+                isGoalkeeper: false,
+                goals: 0,
+                seasonId,
+            });
+        }
     }
-  }
 
-  return matchRef
-}
+    return matchRef;
+};
 
 export async function updateAppearance(
-  seasonId: string,
-  matchId: string,
-  appearanceId: string,
-  data: Partial<Appearance>,
+    seasonId: string,
+    matchId: string,
+    appearanceId: string,
+    data: Partial<Appearance>,
 ) {
-  const ref = doc(db, `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`)
-  await updateDoc(ref, data)
+    const ref = doc(
+        db,
+        `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`,
+    );
+    await updateDoc(ref, data);
 }
