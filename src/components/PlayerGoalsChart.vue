@@ -96,7 +96,7 @@
                 </text>
 
                 <circle
-                    v-tooltip.top="p.opponent"
+                    v-tooltip.top.focus="p.opponent"
                     :cx="p.x"
                     :cy="p.y"
                     r="10"
