@@ -50,3 +50,9 @@ PrimeVue (Aura preset) handles UI components. The primary color palette is sourc
 ### i18n
 
 All UI strings are in Dutch (`nl`), split by domain under `src/lang/nl/`. The `$t()` helper is globally injected — use it in every component for any user-facing text.
+
+## Styling
+
+- **Always use Tailwind CSS.** Never use `<style>` blocks, CSS modules, or CSS-in-JS.
+- Include dark mode variants (`dark:`) on color-bearing elements.
+- Use Tailwind breakpoints (`sm`, `md`, `lg`, `xl`) for responsive layout.
