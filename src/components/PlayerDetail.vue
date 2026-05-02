@@ -22,6 +22,7 @@
     import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue';
     import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
     import PlayerInfoRow from '@/components/PlayerInfoRow.vue';
+    import PlayerStatTile from '@/components/PlayerStatTile.vue';
 
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
@@ -195,116 +196,68 @@
 
     <!-- Stat tiles -->
     <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <div
-            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
+        <PlayerStatTile
+            icon="pi-trophy"
+            gradient="linear-gradient(135deg,#f59e0b,#b45309)"
+            :label="$t('player.totalGoals')"
+            :loading="loading"
         >
-            <div
-                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#f59e0b,#b45309)]"
-            >
-                <i class="pi pi-trophy" />
-            </div>
-            <Skeleton v-if="loading" class="my-1" height="44px" width="56px" />
-            <div
-                v-else
-                class="text-primary-900 text-4xl leading-none font-black"
-            >
+            <div class="text-primary-900 text-4xl leading-none font-black">
                 {{ totalGoals }}
             </div>
-            <div
-                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
-            >
-                {{ $t('player.totalGoals') }}
-            </div>
-        </div>
+        </PlayerStatTile>
 
-        <div
-            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
+        <PlayerStatTile
+            icon="pi-calendar"
+            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+            :label="$t('player.totalAppearances')"
+            :loading="loading"
+            skeleton-width="80px"
         >
-            <div
-                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#3b82f6,#1d4ed8)]"
-            >
-                <i class="pi pi-calendar" />
-            </div>
-            <Skeleton v-if="loading" class="my-1" height="44px" width="80px" />
-            <div
-                v-else
-                class="text-primary-900 text-4xl leading-none font-black"
-            >
+            <div class="text-primary-900 text-4xl leading-none font-black">
                 {{ totalAppearances
                 }}<span class="text-primary-300 text-lg font-medium"
                     >/{{ totalMatches }}</span
                 >
             </div>
-            <div
-                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
-            >
-                {{ $t('player.totalAppearances') }}
-            </div>
-        </div>
+        </PlayerStatTile>
 
-        <div
-            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
+        <PlayerStatTile
+            icon="pi-shield"
+            gradient="linear-gradient(135deg,#14b8a6,#0f766e)"
+            :label="$t('player.totalKeeper')"
+            :loading="loading"
         >
-            <div
-                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#14b8a6,#0f766e)]"
-            >
-                <i class="pi pi-shield" />
-            </div>
-            <Skeleton v-if="loading" class="my-1" height="44px" width="56px" />
-            <div
-                v-else
-                class="text-primary-900 text-4xl leading-none font-black"
-            >
+            <div class="text-primary-900 text-4xl leading-none font-black">
                 {{ totalKeeper }}
             </div>
-            <div
-                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
-            >
-                {{ $t('player.totalKeeper') }}
-            </div>
-        </div>
+        </PlayerStatTile>
 
-        <div
-            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
+        <PlayerStatTile
+            icon="pi-chart-line"
+            gradient="linear-gradient(135deg,#a855f7,#7e22ce)"
+            :label="$t('common.goalsPerMatch')"
+            :loading="loading"
+            skeleton-width="72px"
         >
-            <div
-                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#a855f7,#7e22ce)]"
-            >
-                <i class="pi pi-chart-line" />
-            </div>
-            <Skeleton v-if="loading" class="my-1" height="44px" width="72px" />
-            <div
-                v-else
-                class="text-primary-900 text-4xl leading-none font-black"
-            >
+            <div class="text-primary-900 text-4xl leading-none font-black">
                 {{ goalsPerMatch }}
             </div>
-            <div
-                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
-            >
-                {{ $t('common.goalsPerMatch') }}
-            </div>
-        </div>
+        </PlayerStatTile>
 
-        <div
-            class="shadow-card hover:shadow-card-hover col-span-2 flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5 lg:col-span-1"
+        <PlayerStatTile
+            icon="pi-check-circle"
+            gradient="linear-gradient(135deg,#22c55e,#15803d)"
+            :label="$t('common.attendancePercentage')"
+            :loading="loading"
+            :col-span="true"
         >
-            <div
-                class="shadow-icon mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#22c55e,#15803d)]"
-            >
-                <i class="pi pi-check-circle" />
+            <div class="text-primary-900 text-4xl leading-none font-black">
+                {{ attendancePercentage }}
+                <span class="text-primary-300 text-lg font-medium">%</span>
             </div>
-            <Skeleton v-if="loading" class="my-1" height="44px" width="56px" />
-            <template v-else>
-                <div class="text-primary-900 text-4xl leading-none font-black">
-                    {{ attendancePercentage }}
-                    <span class="text-primary-300 text-lg font-medium">
-                        %
-                    </span>
-                </div>
-                <div
-                    class="bg-primary-700/10 mt-2 h-1 overflow-hidden rounded-full"
-                >
+            <template #extra>
+                <div class="bg-primary-700/10 mt-2 h-1 overflow-hidden rounded-full">
                     <div
                         class="h-full rounded-full bg-gradient-to-r from-green-500 to-green-700 transition-[width] duration-900 [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
                         aria-hidden="true"
@@ -312,12 +265,7 @@
                     />
                 </div>
             </template>
-            <div
-                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
-            >
-                {{ $t('common.attendancePercentage') }}
-            </div>
-        </div>
+        </PlayerStatTile>
     </div>
 
     <!-- Info + chart -->
