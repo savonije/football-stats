@@ -130,7 +130,7 @@
 
             <g v-for="(bar, i) in bars" :key="i">
                 <rect
-                    v-tooltip="bar.opponent"
+                    v-tooltip.focus="bar.opponent"
                     :x="bar.barX"
                     :y="bar.barY"
                     :width="bar.barW"
