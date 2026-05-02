@@ -257,7 +257,9 @@
                 <span class="text-primary-300 text-lg font-medium">%</span>
             </div>
             <template #extra>
-                <div class="bg-primary-700/10 mt-2 h-1 overflow-hidden rounded-full">
+                <div
+                    class="bg-primary-700/10 mt-2 h-1 overflow-hidden rounded-full"
+                >
                     <div
                         class="h-full rounded-full bg-gradient-to-r from-green-500 to-green-700 transition-[width] duration-900 [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
                         aria-hidden="true"
@@ -270,7 +272,7 @@
 
     <!-- Info + chart -->
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card>
+        <Card v-if="AuthStore.user?.id">
             <template #title>
                 <h2>{{ $t('player.playerInfo') }}</h2>
             </template>
@@ -341,6 +343,7 @@
 
     <!-- Edit dialog -->
     <Dialog
+        v-if="AuthStore.user?.id"
         v-model:visible="editVisible"
         class="w-[400px]"
         modal
