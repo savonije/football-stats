@@ -145,18 +145,19 @@
 
     <!-- Hero banner -->
     <div
-        class="relative mb-6 overflow-hidden rounded-2xl shadow-[0_8px_32px_rgba(17,26,54,0.3)] [background:linear-gradient(135deg,#111a36_0%,#1d2e5d_30%,#27428a_60%,#2f529f_80%,#4067b9_100%)]"
+        class="shadow-hero relative mb-6 overflow-hidden rounded-2xl [background:linear-gradient(135deg,#111a36_0%,#1d2e5d_30%,#27428a_60%,#2f529f_80%,#4067b9_100%)]"
     >
         <div
             class="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(-55deg,transparent,transparent_20px,rgba(255,255,255,0.015)_20px,rgba(255,255,255,0.015)_40px)]"
+            aria-hidden="true"
         />
         <div class="relative z-10 flex flex-wrap items-center gap-5 p-6">
             <div
-                class="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full border-[3px] border-white/25 bg-white/12 text-[1.75rem] font-black text-white"
+                class="flex size-18 shrink-0 items-center justify-center rounded-full border-[3px] border-white/25 bg-white/12 text-3xl font-black text-white"
             >
-                <span v-if="player">{{
-                    player.name.charAt(0).toUpperCase()
-                }}</span>
+                <span v-if="player">
+                    {{ player.name.charAt(0).toUpperCase() }}
+                </span>
                 <i v-else class="pi pi-user" />
             </div>
 
@@ -175,7 +176,7 @@
                 </h1>
                 <span
                     v-if="!loading && player?.guestPlayer"
-                    class="mt-1 inline-block rounded-full border border-white/25 bg-white/12 px-2 py-0.5 text-[0.65rem] font-bold tracking-[0.08em] text-white/75 uppercase"
+                    class="text-xxs tracking-badge mt-1 inline-block rounded-full border border-white/25 bg-white/12 px-2 py-0.5 font-bold text-white/75 uppercase"
                 >
                     {{ $t('player.guestPlayer') }}
                 </span>
@@ -183,7 +184,7 @@
 
             <button
                 v-if="player && AuthStore.user?.id"
-                class="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-white/30 bg-white/12 px-4 py-2 text-sm font-semibold text-white transition-[background,border-color] duration-[180ms] ease-in-out hover:border-white/50 hover:bg-white/22"
+                class="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-white/30 bg-white/12 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 ease-in-out hover:border-white/50 hover:bg-white/22"
                 @click="openEditDialog"
             >
                 <i class="pi pi-pencil" />
@@ -195,125 +196,124 @@
     <!-- Stat tiles -->
     <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
         <div
-            class="flex flex-col gap-1 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)]"
+            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
         >
             <div
-                class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#f59e0b,#b45309)]"
+                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#f59e0b,#b45309)]"
             >
                 <i class="pi pi-trophy" />
             </div>
             <Skeleton v-if="loading" class="my-1" height="44px" width="56px" />
             <div
                 v-else
-                class="text-[2.25rem] leading-none font-black text-[#1d2e5d]"
+                class="text-primary-900 text-4xl leading-none font-black"
             >
                 {{ totalGoals }}
             </div>
             <div
-                class="mt-1.5 text-[0.7rem] font-bold tracking-[0.06em] text-[#6285d1] uppercase"
+                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
             >
                 {{ $t('player.totalGoals') }}
             </div>
         </div>
 
         <div
-            class="flex flex-col gap-1 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)]"
+            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
         >
             <div
-                class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#3b82f6,#1d4ed8)]"
+                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#3b82f6,#1d4ed8)]"
             >
                 <i class="pi pi-calendar" />
             </div>
             <Skeleton v-if="loading" class="my-1" height="44px" width="80px" />
             <div
                 v-else
-                class="text-[2.25rem] leading-none font-black text-[#1d2e5d]"
+                class="text-primary-900 text-4xl leading-none font-black"
             >
                 {{ totalAppearances
-                }}<span class="text-[1.1rem] font-medium text-[#8da7df]"
+                }}<span class="text-primary-300 text-lg font-medium"
                     >/{{ totalMatches }}</span
                 >
             </div>
             <div
-                class="mt-1.5 text-[0.7rem] font-bold tracking-[0.06em] text-[#6285d1] uppercase"
+                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
             >
                 {{ $t('player.totalAppearances') }}
             </div>
         </div>
 
         <div
-            class="flex flex-col gap-1 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)]"
+            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
         >
             <div
-                class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#14b8a6,#0f766e)]"
+                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#14b8a6,#0f766e)]"
             >
                 <i class="pi pi-shield" />
             </div>
             <Skeleton v-if="loading" class="my-1" height="44px" width="56px" />
             <div
                 v-else
-                class="text-[2.25rem] leading-none font-black text-[#1d2e5d]"
+                class="text-primary-900 text-4xl leading-none font-black"
             >
                 {{ totalKeeper }}
             </div>
             <div
-                class="mt-1.5 text-[0.7rem] font-bold tracking-[0.06em] text-[#6285d1] uppercase"
+                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
             >
                 {{ $t('player.totalKeeper') }}
             </div>
         </div>
 
         <div
-            class="flex flex-col gap-1 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)]"
+            class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
         >
             <div
-                class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#a855f7,#7e22ce)]"
+                class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#a855f7,#7e22ce)]"
             >
                 <i class="pi pi-chart-line" />
             </div>
             <Skeleton v-if="loading" class="my-1" height="44px" width="72px" />
             <div
                 v-else
-                class="text-[2.25rem] leading-none font-black text-[#1d2e5d]"
+                class="text-primary-900 text-4xl leading-none font-black"
             >
                 {{ goalsPerMatch }}
             </div>
             <div
-                class="mt-1.5 text-[0.7rem] font-bold tracking-[0.06em] text-[#6285d1] uppercase"
+                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
             >
                 {{ $t('common.goalsPerMatch') }}
             </div>
         </div>
 
         <div
-            class="col-span-2 flex flex-col gap-1 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(39,66,138,0.08)] transition-[box-shadow,transform] duration-[220ms] ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(39,66,138,0.18)] lg:col-span-1"
+            class="shadow-card hover:shadow-card-hover col-span-2 flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5 lg:col-span-1"
         >
             <div
-                class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] [background:linear-gradient(135deg,#22c55e,#15803d)]"
+                class="shadow-icon mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base text-white [background:linear-gradient(135deg,#22c55e,#15803d)]"
             >
                 <i class="pi pi-check-circle" />
             </div>
             <Skeleton v-if="loading" class="my-1" height="44px" width="56px" />
             <template v-else>
-                <div
-                    class="text-[2.25rem] leading-none font-black text-[#1d2e5d]"
-                >
-                    {{ attendancePercentage
-                    }}<span class="text-[1.1rem] font-medium text-[#8da7df]"
-                        >%</span
-                    >
+                <div class="text-primary-900 text-4xl leading-none font-black">
+                    {{ attendancePercentage }}
+                    <span class="text-primary-300 text-lg font-medium">
+                        %
+                    </span>
                 </div>
                 <div
-                    class="mt-2 h-1 overflow-hidden rounded-full bg-[rgba(39,66,138,0.1)]"
+                    class="bg-primary-700/10 mt-2 h-1 overflow-hidden rounded-full"
                 >
                     <div
-                        class="h-full rounded-full bg-gradient-to-r from-green-500 to-green-700 transition-[width] duration-[900ms] [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
+                        class="h-full rounded-full bg-gradient-to-r from-green-500 to-green-700 transition-[width] duration-900 [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
+                        aria-hidden="true"
                         :style="{ width: `${animatedBarWidth}%` }"
                     />
                 </div>
             </template>
             <div
-                class="mt-1.5 text-[0.7rem] font-bold tracking-[0.06em] text-[#6285d1] uppercase"
+                class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
             >
                 {{ $t('common.attendancePercentage') }}
             </div>
@@ -394,9 +394,9 @@
     <!-- Edit dialog -->
     <Dialog
         v-model:visible="editVisible"
+        class="w-[400px]"
         modal
         :header="t('player.editPlayer')"
-        :style="{ width: '400px' }"
         :draggable="false"
     >
         <div class="flex flex-col gap-4">
@@ -422,11 +422,15 @@
                     binary
                     input-id="hasJacket"
                 />
-                <label for="hasJacket">{{ $t('common.hasJacket') }}</label>
+                <label for="hasJacket">
+                    {{ $t('common.hasJacket') }}
+                </label>
             </div>
             <div class="flex items-center gap-2">
                 <Checkbox v-model="editForm.hasBag" binary input-id="hasBag" />
-                <label for="hasBag">{{ $t('common.hasBag') }}</label>
+                <label for="hasBag">
+                    {{ $t('common.hasBag') }}
+                </label>
             </div>
             <div class="flex items-center gap-2">
                 <Checkbox
@@ -434,7 +438,9 @@
                     binary
                     input-id="guestPlayer"
                 />
-                <label for="guestPlayer">{{ $t('player.guestPlayer') }}</label>
+                <label for="guestPlayer">
+                    {{ $t('player.guestPlayer') }}
+                </label>
             </div>
         </div>
 

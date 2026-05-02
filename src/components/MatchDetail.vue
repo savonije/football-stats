@@ -79,7 +79,7 @@
 
     <div
         v-if="matchStore.selectedMatch"
-        class="mx-auto w-[800px] max-w-full sm:p-4"
+        class="mx-auto w-200 max-w-full sm:p-4"
     >
         <MatchHeader :match="matchStore.selectedMatch" />
 

@@ -18,6 +18,20 @@
     --color-primary: #27428a;
 
     --font-display: 'Roboto', sans-serif;
+
+    --shadow-hero: 0 8px 32px rgba(17, 26, 54, 0.3);
+    --shadow-card: 0 2px 12px rgba(39, 66, 138, 0.08);
+    --shadow-card-hover: 0 8px 28px rgba(39, 66, 138, 0.18);
+    --shadow-icon: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    --text-xxs: 0.65rem;
+
+    --tracking-label: 0.06em;
+    --tracking-badge: 0.08em;
+
+    --max-width-8xl: 90rem;
+
+    --duration-900: 900ms;
 }
 
 @import '@/styles/base.css';

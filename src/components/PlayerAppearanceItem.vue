@@ -54,7 +54,7 @@
     <div
         v-if="appearance && appearance.playerName"
         :class="{
-            'flex min-h-[70px] items-center justify-between rounded bg-white p-4 shadow': true,
+            'flex min-h-18 items-center justify-between rounded bg-white p-4 shadow': true,
             'flex-col items-start gap-2 md:flex-row': editing,
         }"
     >

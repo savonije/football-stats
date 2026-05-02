@@ -37,7 +37,7 @@
 
 <template>
     <div
-        class="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#0b1226] via-[#1d2e5d] to-[#2f529f] p-6"
+        class="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-950 via-primary-900 to-primary-600 p-6"
     >
         <div
             class="w-full max-w-md rounded-2xl bg-white px-8 py-10 shadow-2xl"
