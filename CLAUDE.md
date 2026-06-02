@@ -54,5 +54,5 @@ All UI strings are in Dutch (`nl`), split by domain under `src/lang/nl/`. The `$
 ## Styling
 
 - **Always use Tailwind CSS.** Never use `<style>` blocks, CSS modules, or CSS-in-JS.
-- Include dark mode variants (`dark:`) on color-bearing elements.
+- Dark mode is not enabled (PrimeVue `darkModeSelector: false`), so don't add `dark:` variants — they have no effect. Revisit only if dark mode is turned on.
 - Use Tailwind breakpoints (`sm`, `md`, `lg`, `xl`) for responsive layout.
