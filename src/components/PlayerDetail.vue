@@ -146,7 +146,7 @@
 
     <!-- Hero banner -->
     <div
-        class="shadow-hero relative mb-6 overflow-hidden rounded-2xl [background:linear-gradient(135deg,#111a36_0%,#1d2e5d_30%,#27428a_60%,#2f529f_80%,#4067b9_100%)]"
+        class="shadow-hero relative mb-6 overflow-hidden rounded-2xl [background:var(--gradient-brand)]"
     >
         <div
             class="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(-55deg,transparent,transparent_20px,rgba(255,255,255,0.015)_20px,rgba(255,255,255,0.015)_40px)]"
@@ -200,7 +200,7 @@
     <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
         <PlayerStatTile
             icon="pi-trophy"
-            gradient="linear-gradient(135deg,#f59e0b,#b45309)"
+            gradient="var(--gradient-accent-amber)"
             :label="$t('player.totalGoals')"
             :loading="loading"
         >
@@ -211,7 +211,7 @@
 
         <PlayerStatTile
             icon="pi-calendar"
-            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+            gradient="var(--gradient-accent-blue)"
             :label="$t('player.totalAppearances')"
             :loading="loading"
             skeleton-width="80px"
@@ -226,7 +226,7 @@
 
         <PlayerStatTile
             icon="pi-shield"
-            gradient="linear-gradient(135deg,#14b8a6,#0f766e)"
+            gradient="var(--gradient-accent-teal)"
             :label="$t('player.totalKeeper')"
             :loading="loading"
         >
@@ -237,7 +237,7 @@
 
         <PlayerStatTile
             icon="pi-chart-line"
-            gradient="linear-gradient(135deg,#a855f7,#7e22ce)"
+            gradient="var(--gradient-accent-purple)"
             :label="$t('common.goalsPerMatch')"
             :loading="loading"
             skeleton-width="72px"
@@ -249,7 +249,7 @@
 
         <PlayerStatTile
             icon="pi-check-circle"
-            gradient="linear-gradient(135deg,#22c55e,#15803d)"
+            gradient="var(--gradient-accent-green)"
             :label="$t('common.attendancePercentage')"
             :loading="loading"
             :col-span="true"
@@ -283,13 +283,13 @@
                 <ul v-else class="m-0 flex list-none flex-col gap-2.5 p-0">
                     <PlayerInfoRow
                         icon="pi pi-tag"
-                        gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)"
+                        gradient="var(--gradient-accent-blue)"
                         :label="$t('common.clothingSize')"
                         :value="player?.clothingSize ?? '-'"
                     />
                     <PlayerInfoRow
                         icon="pi pi-user"
-                        gradient="linear-gradient(135deg, #f59e0b, #b45309)"
+                        gradient="var(--gradient-accent-amber)"
                         :label="$t('common.hasJacket')"
                         :value="
                             player?.hasJacket
@@ -304,7 +304,7 @@
                     />
                     <PlayerInfoRow
                         icon="pi pi-briefcase"
-                        gradient="linear-gradient(135deg, #14b8a6, #0f766e)"
+                        gradient="var(--gradient-accent-teal)"
                         :label="$t('common.hasBag')"
                         :value="
                             player?.hasBag ? $t('common.yes') : $t('common.no')
@@ -315,7 +315,7 @@
                     />
                     <PlayerInfoRow
                         icon="pi pi-users"
-                        gradient="linear-gradient(135deg, #a855f7, #7e22ce)"
+                        gradient="var(--gradient-accent-purple)"
                         :label="$t('player.guestPlayer')"
                         :value="
                             player?.guestPlayer

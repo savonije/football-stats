@@ -28,12 +28,19 @@
         >
             <i :class="['pi', icon]" />
         </div>
-        <Skeleton v-if="loading" class="my-1" height="44px" :width="skeletonWidth" />
+        <Skeleton
+            v-if="loading"
+            class="my-1"
+            height="44px"
+            :width="skeletonWidth"
+        />
         <template v-else>
             <slot />
             <slot name="extra" />
         </template>
-        <div class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase">
+        <div
+            class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
+        >
             {{ label }}
         </div>
     </div>

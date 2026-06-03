@@ -23,10 +23,10 @@
     .footer-root {
         background: linear-gradient(
             135deg,
-            #4067b9 0%,
-            #27428a 40%,
-            #1d2e5d 70%,
-            #111a36 100%
+            var(--color-primary-500) 0%,
+            var(--color-primary-700) 40%,
+            var(--color-primary-900) 70%,
+            var(--color-primary-950) 100%
         );
         border-top: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 -4px 24px rgba(17, 26, 54, 0.3);

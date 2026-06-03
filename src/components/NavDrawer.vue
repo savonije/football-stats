@@ -67,13 +67,7 @@
                 >
                     <span
                         class="nav-icon"
-                        style="
-                            background: linear-gradient(
-                                135deg,
-                                #3b82f6,
-                                #1d4ed8
-                            );
-                        "
+                        style="background: var(--gradient-accent-blue)"
                     >
                         <i class="pi pi-home" />
                     </span>
@@ -89,13 +83,7 @@
                 >
                     <span
                         class="nav-icon"
-                        style="
-                            background: linear-gradient(
-                                135deg,
-                                #f59e0b,
-                                #b45309
-                            );
-                        "
+                        style="background: var(--gradient-accent-amber)"
                     >
                         <i class="pi pi-chart-bar" />
                     </span>
@@ -111,13 +99,7 @@
                 >
                     <span
                         class="nav-icon"
-                        style="
-                            background: linear-gradient(
-                                135deg,
-                                #14b8a6,
-                                #0f766e
-                            );
-                        "
+                        style="background: var(--gradient-accent-teal)"
                     >
                         <i class="pi pi-users" />
                     </span>
@@ -136,13 +118,7 @@
                     >
                         <span
                             class="nav-icon"
-                            style="
-                                background: linear-gradient(
-                                    135deg,
-                                    #22c55e,
-                                    #15803d
-                                );
-                            "
+                            style="background: var(--gradient-accent-green)"
                         >
                             <i class="pi pi-plus" />
                         </span>
@@ -156,13 +132,7 @@
                     >
                         <span
                             class="nav-icon"
-                            style="
-                                background: linear-gradient(
-                                    135deg,
-                                    #a855f7,
-                                    #7e22ce
-                                );
-                            "
+                            style="background: var(--gradient-accent-purple)"
                         >
                             <i class="pi pi-user-plus" />
                         </span>
@@ -179,13 +149,7 @@
                     >
                         <span
                             class="nav-icon"
-                            style="
-                                background: linear-gradient(
-                                    135deg,
-                                    #ef4444,
-                                    #b91c1c
-                                );
-                            "
+                            style="background: var(--gradient-accent-red)"
                         >
                             <i class="pi pi-sign-out" />
                         </span>
@@ -204,13 +168,7 @@
                     >
                         <span
                             class="nav-icon"
-                            style="
-                                background: linear-gradient(
-                                    135deg,
-                                    #22c55e,
-                                    #15803d
-                                );
-                            "
+                            style="background: var(--gradient-accent-green)"
                         >
                             <i class="pi pi-sign-in" />
                         </span>

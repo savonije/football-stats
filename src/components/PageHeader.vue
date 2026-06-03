@@ -84,14 +84,7 @@
 
 <style scoped>
     .header-root {
-        background: linear-gradient(
-            135deg,
-            #111a36 0%,
-            #1d2e5d 30%,
-            #27428a 60%,
-            #2f529f 80%,
-            #4067b9 100%
-        );
+        background: var(--gradient-brand);
         box-shadow:
             0 4px 24px rgba(17, 26, 54, 0.45),
             0 1px 0 rgba(255, 255, 255, 0.07) inset;

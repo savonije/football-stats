@@ -24,6 +24,24 @@
     --shadow-card-hover: 0 8px 28px rgba(39, 66, 138, 0.18);
     --shadow-icon: 0 2px 8px rgba(0, 0, 0, 0.15);
 
+    /* brand banner gradient (page header / player hero) */
+    --gradient-brand: linear-gradient(
+        135deg,
+        var(--color-primary-950) 0%,
+        var(--color-primary-900) 30%,
+        var(--color-primary-700) 60%,
+        var(--color-primary-600) 80%,
+        var(--color-primary-500) 100%
+    );
+
+    /* accent gradients for stat-tile / nav icons */
+    --gradient-accent-blue: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    --gradient-accent-amber: linear-gradient(135deg, #f59e0b, #b45309);
+    --gradient-accent-teal: linear-gradient(135deg, #14b8a6, #0f766e);
+    --gradient-accent-purple: linear-gradient(135deg, #a855f7, #7e22ce);
+    --gradient-accent-green: linear-gradient(135deg, #22c55e, #15803d);
+    --gradient-accent-red: linear-gradient(135deg, #ef4444, #b91c1c);
+
     --text-xxs: 0.65rem;
 
     --tracking-label: 0.06em;
