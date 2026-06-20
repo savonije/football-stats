@@ -18,6 +18,7 @@
         Button,
     } from 'primevue';
     import type { Player } from '@/types';
+    import { isGuestInSeason, playerSeasonInfo } from '@/utils/playerSeason';
     import { useI18n } from 'vue-i18n';
     import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue';
     import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -37,6 +38,13 @@
     const loading = ref(true);
     const editVisible = ref(false);
     const editForm = ref<Partial<Player>>({});
+    const editSeason = ref({ active: true, guestPlayer: false });
+
+    const isGuest = computed(() =>
+        player.value
+            ? isGuestInSeason(player.value, seasonStore.currentSeason)
+            : false,
+    );
 
     const playerAppearances = computed(() =>
         matchStore.appearances.filter((a) => a.playerId === playerId.value),
@@ -106,15 +114,36 @@
 
     const openEditDialog = () => {
         if (player.value) {
-            editForm.value = { ...player.value };
+            const { seasons, ...identity } = player.value;
+            void seasons;
+            editForm.value = { ...identity };
+            const info = playerSeasonInfo(
+                player.value,
+                seasonStore.currentSeason,
+            );
+            editSeason.value = {
+                active: info?.active ?? true,
+                guestPlayer: info?.guestPlayer ?? false,
+            };
             editVisible.value = true;
         }
     };
 
     const savePlayer = async () => {
         if (!player.value) return;
+        const seasonId = seasonStore.currentSeason;
+        const seasonInfo = { ...editSeason.value };
         await playerStore.updatePlayer(player.value.id, editForm.value);
-        player.value = { ...player.value, ...editForm.value } as Player;
+        await playerStore.setPlayerSeasonStatus(
+            player.value.id,
+            seasonId,
+            seasonInfo,
+        );
+        player.value = {
+            ...player.value,
+            ...editForm.value,
+            seasons: { ...player.value.seasons, [seasonId]: seasonInfo },
+        } as Player;
         editVisible.value = false;
         toast.add({
             severity: 'success',
@@ -176,7 +205,7 @@
                     {{ player.name }}
                 </h1>
                 <span
-                    v-if="!loading && player?.guestPlayer"
+                    v-if="!loading && isGuest"
                     class="text-xxs tracking-badge mt-1 inline-block rounded-full border border-white/25 bg-white/12 px-2 py-0.5 font-bold text-white/75 uppercase"
                 >
                     {{ $t('player.guestPlayer') }}
@@ -317,15 +346,9 @@
                         icon="pi pi-users"
                         gradient="var(--gradient-accent-purple)"
                         :label="$t('player.guestPlayer')"
-                        :value="
-                            player?.guestPlayer
-                                ? $t('common.yes')
-                                : $t('common.no')
-                        "
+                        :value="isGuest ? $t('common.yes') : $t('common.no')"
                         :value-class="
-                            player?.guestPlayer
-                                ? 'text-green-700'
-                                : 'text-red-700'
+                            isGuest ? 'text-green-700' : 'text-red-700'
                         "
                     />
                 </ul>
@@ -385,15 +408,35 @@
                     {{ $t('common.hasBag') }}
                 </label>
             </div>
-            <div class="flex items-center gap-2">
-                <Checkbox
-                    v-model="editForm.guestPlayer"
-                    binary
-                    input-id="guestPlayer"
-                />
-                <label for="guestPlayer">
-                    {{ $t('player.guestPlayer') }}
-                </label>
+
+            <div
+                class="mt-1 flex flex-col gap-3 rounded-lg border border-gray-200 p-3"
+            >
+                <p
+                    class="text-xs font-bold tracking-wide text-gray-500 uppercase"
+                >
+                    {{ seasonStore.currentSeason }}
+                </p>
+                <div class="flex items-center gap-2">
+                    <Checkbox
+                        v-model="editSeason.active"
+                        binary
+                        input-id="seasonActive"
+                    />
+                    <label for="seasonActive">
+                        {{ $t('player.activeThisSeason') }}
+                    </label>
+                </div>
+                <div class="flex items-center gap-2">
+                    <Checkbox
+                        v-model="editSeason.guestPlayer"
+                        binary
+                        input-id="guestPlayer"
+                    />
+                    <label for="guestPlayer">
+                        {{ $t('player.guestPlayer') }}
+                    </label>
+                </div>
             </div>
         </div>
 

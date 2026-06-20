@@ -1,6 +1,8 @@
 <script setup lang="ts">
-    import { onMounted } from 'vue';
+    import { computed, onMounted } from 'vue';
     import { usePlayerStore } from '@/stores/playerStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
 
     import {
         Button,
@@ -14,6 +16,11 @@
     import router from '@/router';
 
     const playerStore = usePlayerStore();
+    const seasonStore = useSeasonStore();
+
+    const seasonPlayers = computed(() =>
+        playerStore.playersInSeason(seasonStore.currentSeason),
+    );
 
     onMounted(() => {
         playerStore.fetchPlayers();
@@ -26,9 +33,9 @@
 
 <template>
     <DataTable
-        v-if="playerStore.playersLoaded && playerStore.players.length"
+        v-if="playerStore.playersLoaded && seasonPlayers.length"
         class="rounded-2xl shadow-lg"
-        :value="playerStore.players"
+        :value="seasonPlayers"
         striped-rows
         :sort-field="'name'"
         :sort-order="1"
@@ -39,7 +46,10 @@
             <template #body="{ data }">
                 <span
                     :class="{
-                        'text-gray-300': data.guestPlayer,
+                        'text-gray-300': isGuestInSeason(
+                            data,
+                            seasonStore.currentSeason,
+                        ),
                     }"
                 >
                     {{ data.name }}
@@ -51,7 +61,10 @@
             <template #body="{ data }">
                 <Button
                     :class="{
-                        'opacity-50': data.guestPlayer,
+                        'opacity-50': isGuestInSeason(
+                            data,
+                            seasonStore.currentSeason,
+                        ),
                     }"
                     as="router-link"
                     size="small"

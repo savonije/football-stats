@@ -34,8 +34,7 @@ export const useSeasonStore = defineStore('seasonStore', {
         },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
-                (season) =>
-                    season.active && season.id === state.currentSeason,
+                (season) => season.active && season.id === state.currentSeason,
             );
         },
     },
