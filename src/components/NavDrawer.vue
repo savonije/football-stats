@@ -5,11 +5,14 @@
     import { useI18n } from 'vue-i18n';
 
     import { useStoreAuth } from '@/stores/authStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
 
     import AddMatchDialog from '@/components/AddMatchDialog.vue';
     import AddPlayerDialog from '@/components/AddPlayerDialog.vue';
+    import ManageSeasonsDialog from '@/components/ManageSeasonsDialog.vue';
 
     const storeAuth = useStoreAuth();
+    const seasonStore = useSeasonStore();
     const toast = useToast();
     const { t } = useI18n();
 
@@ -17,6 +20,7 @@
     const navAnimated = ref(false);
     const showAddMatchDialog = ref(false);
     const showAddPlayerDialog = ref(false);
+    const showManageSeasonsDialog = ref(false);
 
     watch(drawerVisible, (val) => {
         if (val) {
@@ -36,6 +40,11 @@
     const openAddPlayer = () => {
         drawerVisible.value = false;
         showAddPlayerDialog.value = true;
+    };
+
+    const openManageSeasons = () => {
+        drawerVisible.value = false;
+        showManageSeasonsDialog.value = true;
     };
 
     const logout = () => {
@@ -112,6 +121,7 @@
                 <p class="section-label mt-8">{{ t('common.manage') }}</p>
                 <nav class="nav-list">
                     <button
+                        v-if="seasonStore.isCurrentSeasonActive"
                         class="nav-item"
                         style="--i: 3"
                         @click="openAddMatch"
@@ -139,12 +149,26 @@
                         <span>{{ t('player.addPlayer') }}</span>
                         <i class="pi pi-chevron-right nav-chevron" />
                     </button>
+                    <button
+                        class="nav-item"
+                        style="--i: 5"
+                        @click="openManageSeasons"
+                    >
+                        <span
+                            class="nav-icon"
+                            style="background: var(--gradient-accent-teal)"
+                        >
+                            <i class="pi pi-calendar" />
+                        </span>
+                        <span>{{ t('seasons.manageSeasons') }}</span>
+                        <i class="pi pi-chevron-right nav-chevron" />
+                    </button>
                 </nav>
 
                 <div class="mt-10">
                     <button
                         class="nav-item nav-item--danger"
-                        style="--i: 5"
+                        style="--i: 6"
                         @click="logout"
                     >
                         <span
@@ -182,6 +206,7 @@
 
     <AddMatchDialog v-model:visible="showAddMatchDialog" />
     <AddPlayerDialog v-model:visible="showAddPlayerDialog" />
+    <ManageSeasonsDialog v-model:visible="showManageSeasonsDialog" />
 </template>
 
 <style scoped>

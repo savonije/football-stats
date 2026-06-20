@@ -3,6 +3,7 @@ import common from '@/lang/nl/common';
 import errors from '@/lang/nl/errors';
 import match from '@/lang/nl/match';
 import player from '@/lang/nl/player';
+import seasons from '@/lang/nl/seasons';
 
 export default {
     auth,
@@ -10,4 +11,5 @@ export default {
     errors,
     match,
     player,
+    seasons,
 };

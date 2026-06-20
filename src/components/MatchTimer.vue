@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { computed, onMounted, onUnmounted, ref } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
     import { useI18n } from 'vue-i18n';
     import { useToast } from 'primevue/usetoast';
     import { Button, useConfirm, Tag } from 'primevue';
@@ -12,6 +13,7 @@
 
     const props = defineProps<Props>();
     const matchStore = useMatchStore();
+    const seasonStore = useSeasonStore();
     const toast = useToast();
     const confirm = useConfirm();
     const { t } = useI18n();
@@ -129,7 +131,10 @@
             </div>
 
             <div
-                v-if="isRunning || isPaused || !isEnded"
+                v-if="
+                    seasonStore.isCurrentSeasonActive &&
+                    (isRunning || isPaused || !isEnded)
+                "
                 class="mt-4 flex gap-2 md:mt-0"
             >
                 <Button

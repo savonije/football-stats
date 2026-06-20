@@ -58,8 +58,9 @@
                         class="mt-1 text-xs!"
                         :model-value="seasonStore.currentSeason"
                         :options="seasonStore.seasons"
+                        option-label="id"
+                        option-value="id"
                         size="small"
-                        disabled
                         @update:model-value="seasonStore.setSeason"
                     />
                     <span v-else class="text-xs text-white/70">{{
