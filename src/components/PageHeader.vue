@@ -110,14 +110,11 @@
     }
 
     .logo-link img {
-        transition:
-            filter 0.3s ease,
-            transform 0.3s ease;
+        transition: filter 0.3s ease;
     }
 
     .logo-link:hover img {
         filter: drop-shadow(0 0 10px rgba(96, 133, 209, 0.85));
-        transform: scale(1.05) rotate(-1deg);
     }
 
     @keyframes header-shimmer {
