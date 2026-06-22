@@ -133,7 +133,6 @@
                         id="newSeason"
                         v-model="newSeason"
                         :placeholder="t('seasons.newSeasonPlaceholder')"
-                        fluid
                         @keyup.enter="addSeason"
                     />
                     <Button
