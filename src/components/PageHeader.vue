@@ -8,7 +8,7 @@
 
     import NavDrawer from '@/components/NavDrawer.vue';
 
-    import { CLUBNAME, TEAMNAME } from '@/constants';
+    import { CLUBNAME } from '@/constants';
 
     const seasonStore = useSeasonStore();
     const { t } = useI18n();
@@ -35,7 +35,7 @@
                     <img
                         class="max-h-14"
                         src="/images/logo.webp"
-                        :alt="`${CLUBNAME} ${TEAMNAME} logo`"
+                        :alt="`${CLUBNAME} ${seasonStore.currentTeamName} logo`"
                     />
                 </Router-Link>
 
@@ -49,7 +49,7 @@
                                 >|</span
                             >
                             <span class="text-primary-200 font-semibold">{{
-                                TEAMNAME
+                                seasonStore.currentTeamName
                             }}</span>
                         </h1>
                     </Router-Link>

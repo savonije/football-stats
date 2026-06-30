@@ -11,7 +11,7 @@
     import { useI18n } from 'vue-i18n';
 
     import { useStoreAuth } from '@/stores/authStore';
-    import { CLUBNAME, TEAMNAME } from '@/constants';
+    import { CLUBNAME } from '@/constants';
 
     const { t } = useI18n();
     const storeAuth = useStoreAuth();
@@ -55,7 +55,7 @@
                 <p
                     class="m-0 text-xs font-medium tracking-widest text-gray-500 uppercase"
                 >
-                    {{ TEAMNAME }} &mdash; Statistieken
+                    Statistieken
                 </p>
             </div>
 

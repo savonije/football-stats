@@ -3,11 +3,12 @@ import {
     doc,
     getDocs,
     setDoc,
+    updateDoc,
     writeBatch,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
-import { SEASON } from '@/constants';
+import { SEASON, TEAMNAME } from '@/constants';
 import { db } from '@/firebase';
 
 const STORAGE_KEY = 'selectedSeason';
@@ -15,6 +16,7 @@ const STORAGE_KEY = 'selectedSeason';
 export interface Season {
     id: string;
     active: boolean;
+    teamname?: string;
 }
 
 export const useSeasonStore = defineStore('seasonStore', {
@@ -32,6 +34,12 @@ export const useSeasonStore = defineStore('seasonStore', {
         activeSeasonId(state): string | undefined {
             return state.seasons.find((season) => season.active)?.id;
         },
+        currentTeamName(state): string {
+            const season = state.seasons.find(
+                (s) => s.id === state.currentSeason,
+            );
+            return season?.teamname || TEAMNAME;
+        },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
                 (season) => season.active && season.id === state.currentSeason,
@@ -46,7 +54,11 @@ export const useSeasonStore = defineStore('seasonStore', {
             const snapshot = await getDocs(collection(db, 'seasons'));
 
             this.seasons = snapshot.docs
-                .map((d) => ({ id: d.id, active: d.data().active === true }))
+                .map((d) => ({
+                    id: d.id,
+                    active: d.data().active === true,
+                    teamname: d.data().teamname,
+                }))
                 .sort((a, b) => b.id.localeCompare(a.id));
             this.seasonsLoaded = true;
 
@@ -79,11 +91,20 @@ export const useSeasonStore = defineStore('seasonStore', {
             // and deactivate every other one in a single atomic batch.
             const batch = writeBatch(db);
             this.seasons.forEach((season) => {
-                batch.set(doc(db, 'seasons', season.id), {
-                    active: season.id === id,
-                });
+                batch.set(
+                    doc(db, 'seasons', season.id),
+                    { active: season.id === id },
+                    { merge: true },
+                );
             });
             await batch.commit();
+            await this.fetchSeasons();
+        },
+
+        async setTeamName(id: string, teamname: string) {
+            await updateDoc(doc(db, 'seasons', id), {
+                teamname: teamname.trim(),
+            });
             await this.fetchSeasons();
         },
     },

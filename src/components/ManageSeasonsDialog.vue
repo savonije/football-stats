@@ -14,6 +14,8 @@
     const newSeason = ref('');
     const addLoading = ref(false);
     const activatingId = ref<string | null>(null);
+    const teamNames = ref<Record<string, string>>({});
+    const savingTeamNameId = ref<string | null>(null);
 
     const isValidFormat = (value: string): boolean => {
         const match = value.match(/^(\d{4})-(\d{4})$/);
@@ -63,6 +65,30 @@
         }
     };
 
+    const saveTeamName = async (id: string) => {
+        const season = seasonStore.seasons.find((s) => s.id === id);
+        const value = (teamNames.value[id] ?? season?.teamname ?? '').trim();
+
+        savingTeamNameId.value = id;
+        try {
+            await seasonStore.setTeamName(id, value);
+            toast.add({
+                severity: 'success',
+                summary: t('common.success'),
+                detail: t('seasons.messages.teamNameChanged'),
+                life: TOAST_LIFE,
+            });
+        } catch {
+            toast.add({
+                severity: 'error',
+                summary: t('common.messages.error'),
+                life: TOAST_LIFE,
+            });
+        } finally {
+            savingTeamNameId.value = null;
+        }
+    };
+
     const setActive = async (id: string) => {
         activatingId.value = id;
         try {
@@ -104,24 +130,49 @@
                     <li
                         v-for="season in seasonStore.seasons"
                         :key="season.id"
-                        class="flex items-center justify-between rounded border border-gray-200 px-3 py-2"
+                        class="flex flex-col gap-2 rounded border border-gray-200 px-3 py-2"
                     >
-                        <span class="flex items-center gap-2 font-medium">
-                            {{ season.id }}
-                            <Tag
-                                v-if="season.active"
-                                :value="t('seasons.active')"
-                                severity="success"
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-2 font-medium">
+                                {{ season.id }}
+                                <Tag
+                                    v-if="season.active"
+                                    :value="t('seasons.active')"
+                                    severity="success"
+                                />
+                            </span>
+                            <Button
+                                v-if="!season.active"
+                                :label="t('seasons.setActive')"
+                                size="small"
+                                severity="secondary"
+                                :loading="activatingId === season.id"
+                                @click="setActive(season.id)"
                             />
-                        </span>
-                        <Button
-                            v-if="!season.active"
-                            :label="t('seasons.setActive')"
-                            size="small"
-                            severity="secondary"
-                            :loading="activatingId === season.id"
-                            @click="setActive(season.id)"
-                        />
+                        </div>
+                        <div class="flex gap-2">
+                            <InputText
+                                :model-value="
+                                    teamNames[season.id] ?? season.teamname ?? ''
+                                "
+                                class="flex-1"
+                                size="small"
+                                :placeholder="t('seasons.teamNamePlaceholder')"
+                                :aria-label="t('seasons.teamName')"
+                                @update:model-value="
+                                    teamNames[season.id] = $event ?? ''
+                                "
+                                @keyup.enter="saveTeamName(season.id)"
+                            />
+                            <Button
+                                icon="pi pi-check"
+                                size="small"
+                                severity="secondary"
+                                :aria-label="t('common.save')"
+                                :loading="savingTeamNameId === season.id"
+                                @click="saveTeamName(season.id)"
+                            />
+                        </div>
                     </li>
                 </ul>
             </div>
