@@ -8,7 +8,7 @@ test.describe('Players page', () => {
 
   test('shows players heading', async ({ page }) => {
     await page.goto('/players')
-    await expect(page.getByRole('heading', { name: 'Spelers' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Spelers', exact: true })).toBeVisible()
   })
 
   test('shows loading state or player list', async ({ page }) => {
