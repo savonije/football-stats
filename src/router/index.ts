@@ -21,14 +21,14 @@ const routes = [
         path: '/',
         name: 'home',
         component: () => import('@/views/HomeView.vue'),
-        meta: { title: "Home - Apollo '69 JO9" },
+        meta: { title: "Home - Apollo '69" },
     },
     {
         path: '/match/:id',
         name: 'matchDetail',
         component: () => import('@/views/MatchView.vue'),
         meta: {
-            title: "Wedstrijddetails - Apollo '69 JO9",
+            title: "Wedstrijddetails - Apollo '69",
             breadcrumb: [
                 {
                     labelKey: 'match.game',
@@ -44,7 +44,7 @@ const routes = [
         name: 'playerDetail',
         component: () => import('@/views/PlayerView.vue'),
         meta: {
-            title: "Spelerdetails - Apollo '69 JO9",
+            title: "Spelerdetails - Apollo '69",
             breadcrumb: [
                 {
                     labelKey: 'player.player',
@@ -59,19 +59,19 @@ const routes = [
         path: '/players',
         name: 'players',
         component: () => import('@/views/PlayersView.vue'),
-        meta: { title: "Spelers - Apollo '69 JO9" },
+        meta: { title: "Spelers - Apollo '69" },
     },
     {
         path: '/topscorers',
         name: 'topscorers',
         component: () => import('@/views/TopScorersView.vue'),
-        meta: { title: "Topscorers - Apollo '69 JO9" },
+        meta: { title: "Topscorers - Apollo '69" },
     },
     {
         path: '/login',
         name: 'auth',
         component: () => import('@/views/AuthView.vue'),
-        meta: { title: "Login -  Apollo '69 JO9" },
+        meta: { title: "Login -  Apollo '69" },
     },
 ];
 

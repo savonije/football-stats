@@ -1,5 +1,9 @@
 export default {
     addPlayer: 'Speler toevoegen',
+    activeThisSeason: 'Actief dit seizoen',
+    allPlayersActive: 'Alle spelers zijn al actief dit seizoen',
+    existingPlayer: 'Bestaande speler',
+    newPlayer: 'Nieuwe speler',
     deletePlayer: 'Speler verwijderen',
     editPlayer: 'Speler bewerken',
     guestPlayer: 'Gastspeler',
@@ -8,6 +12,7 @@ export default {
     noPlayers: 'Geen spelers gevonden...',
     messages: {
         playerAdded: 'Speler succesvol toegevoegd',
+        playerAddedToSeason: 'Speler toegevoegd aan seizoen',
         playerEditted: 'Speler succesvol bewerkt',
     },
     player: 'Speler | Spelers',

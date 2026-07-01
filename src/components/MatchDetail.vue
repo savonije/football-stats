@@ -103,7 +103,9 @@
 
                 <template
                     v-if="
-                        authStore.user?.id && !matchStore.selectedMatch?.ended
+                        authStore.user?.id &&
+                        seasonStore.isCurrentSeasonActive &&
+                        !matchStore.selectedMatch?.ended
                     "
                 >
                     <ToggleButton
@@ -125,7 +127,10 @@
             />
         </div>
 
-        <div v-if="authStore.user?.id" class="mt-12 flex justify-between gap-6">
+        <div
+            v-if="authStore.user?.id && seasonStore.isCurrentSeasonActive"
+            class="mt-12 flex justify-between gap-6"
+        >
             <Button
                 :label="t('match.deleteMatch')"
                 severity="danger"

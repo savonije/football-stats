@@ -8,7 +8,7 @@
 
     import NavDrawer from '@/components/NavDrawer.vue';
 
-    import { CLUBNAME, TEAMNAME } from '@/constants';
+    import { CLUBNAME } from '@/constants';
 
     const seasonStore = useSeasonStore();
     const { t } = useI18n();
@@ -35,7 +35,7 @@
                     <img
                         class="max-h-14"
                         src="/images/logo.webp"
-                        :alt="`${CLUBNAME} ${TEAMNAME} logo`"
+                        :alt="`${CLUBNAME} ${seasonStore.currentTeamName} logo`"
                     />
                 </Router-Link>
 
@@ -49,7 +49,7 @@
                                 >|</span
                             >
                             <span class="text-primary-200 font-semibold">{{
-                                TEAMNAME
+                                seasonStore.currentTeamName
                             }}</span>
                         </h1>
                     </Router-Link>
@@ -58,8 +58,9 @@
                         class="mt-1 text-xs!"
                         :model-value="seasonStore.currentSeason"
                         :options="seasonStore.seasons"
+                        option-label="id"
+                        option-value="id"
                         size="small"
-                        disabled
                         @update:model-value="seasonStore.setSeason"
                     />
                     <span v-else class="text-xs text-white/70">{{
@@ -109,14 +110,11 @@
     }
 
     .logo-link img {
-        transition:
-            filter 0.3s ease,
-            transform 0.3s ease;
+        transition: filter 0.3s ease;
     }
 
     .logo-link:hover img {
         filter: drop-shadow(0 0 10px rgba(96, 133, 209, 0.85));
-        transform: scale(1.05) rotate(-1deg);
     }
 
     @keyframes header-shimmer {
