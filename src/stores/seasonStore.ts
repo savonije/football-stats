@@ -72,7 +72,6 @@ export const useSeasonStore = defineStore('seasonStore', {
             if (!currentExists) {
                 this.setSeason(this.activeSeasonId ?? this.seasons[0]!.id);
             } else if (!hadStoredSelection && this.activeSeasonId) {
-                // First visit with no stored choice: default to the active season.
                 this.setSeason(this.activeSeasonId);
             }
         },
@@ -88,8 +87,6 @@ export const useSeasonStore = defineStore('seasonStore', {
         },
 
         async setActiveSeason(id: string) {
-            // Enforce the single-active invariant: activate the chosen season
-            // and deactivate every other one in a single atomic batch.
             const batch = writeBatch(db);
             this.seasons.forEach((season) => {
                 batch.set(
