@@ -43,11 +43,16 @@ export interface Appearance {
     seasonId: string;
     matchId: string;
 }
+export interface PlayerSeasonInfo {
+    active: boolean;
+    guestPlayer: boolean;
+}
+
 export interface Player {
     id: string;
     name: string;
     clothingSize?: string;
     hasJacket?: boolean;
     hasBag?: boolean;
-    guestPlayer?: boolean;
+    seasons?: Record<string, PlayerSeasonInfo>;
 }

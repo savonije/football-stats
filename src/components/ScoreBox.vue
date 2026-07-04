@@ -93,7 +93,11 @@
 <template>
     <div class="flex" :class="reversed ? 'flex-row' : 'flex-row-reverse'">
         <div
-            v-if="authStore.user?.id && !match.ended"
+            v-if="
+                authStore.user?.id &&
+                seasonStore.isCurrentSeasonActive &&
+                !match.ended
+            "
             class="mx-6 flex flex-col justify-between gap-3"
         >
             <Button

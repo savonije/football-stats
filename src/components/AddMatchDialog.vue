@@ -14,6 +14,7 @@
     import { addMatch } from '@/services/matchService';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
     import { TOAST_LIFE } from '@/constants';
 
     const model = defineModel<boolean>('visible');
@@ -39,8 +40,12 @@
 
     const playerStore = usePlayerStore();
 
+    const seasonPlayers = computed(() =>
+        playerStore.playersInSeason(seasonStore.currentSeason),
+    );
+
     const playerOptions = computed(() =>
-        playerStore.players.map((player) => ({
+        seasonPlayers.value.map((player) => ({
             label: player.name,
             value: player.id,
         })),
@@ -91,12 +96,13 @@
     });
 
     watch(
-        () => playerStore.players,
+        seasonPlayers,
         (players) => {
-            if (!players.length) return;
-
             form.players = players
-                .filter((player) => !player.guestPlayer)
+                .filter(
+                    (player) =>
+                        !isGuestInSeason(player, seasonStore.currentSeason),
+                )
                 .map((player) => player.id);
         },
         { immediate: true },

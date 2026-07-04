@@ -1,4 +1,2 @@
-export const SEASON = '2025-2026';
-export const TEAMNAME = 'JO9';
-export const CLUBNAME = "SV Apollo '69";
+export const CLUBNAME = import.meta.env.VITE_CLUBNAME;
 export const TOAST_LIFE = 3000;

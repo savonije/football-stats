@@ -15,26 +15,28 @@
         if (!playerStore.playersLoaded || !matchStore.appearancesLoaded)
             return [];
 
-        return playerStore.players.map((player) => {
-            const appearances = matchStore.appearances.filter(
-                (a) => a.playerId === player.id,
-            );
+        return playerStore
+            .playersInSeason(seasonStore.currentSeason)
+            .map((player) => {
+                const appearances = matchStore.appearances.filter(
+                    (a) => a.playerId === player.id,
+                );
 
-            const totalGoals = appearances.reduce(
-                (sum, a) => sum + (a.goals || 0),
-                0,
-            );
+                const totalGoals = appearances.reduce(
+                    (sum, a) => sum + (a.goals || 0),
+                    0,
+                );
 
-            const goalkeeperCount = appearances.filter(
-                (a) => a.isGoalkeeper,
-            ).length;
+                const goalkeeperCount = appearances.filter(
+                    (a) => a.isGoalkeeper,
+                ).length;
 
-            return {
-                ...player,
-                totalGoals,
-                goalkeeperCount,
-            };
-        });
+                return {
+                    ...player,
+                    totalGoals,
+                    goalkeeperCount,
+                };
+            });
     });
 
     const onRowClick = (event: DataTableRowClickEvent) => {

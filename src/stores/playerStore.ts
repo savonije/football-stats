@@ -1,6 +1,7 @@
 import {
     collection,
     deleteDoc,
+    deleteField,
     doc,
     getDoc,
     getDocs,
@@ -9,11 +10,13 @@ import {
     setDoc,
     updateDoc,
     where,
+    writeBatch,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
-import type { Player } from '@/types';
+import type { Player, PlayerSeasonInfo } from '@/types';
+import { isActiveInSeason } from '@/utils/playerSeason';
 
 export const usePlayerStore = defineStore('playerStore', {
     state: (): {
@@ -54,6 +57,42 @@ export const usePlayerStore = defineStore('playerStore', {
             return updateDoc(doc(db, 'players', playerId), data);
         },
 
+        setPlayerSeasonStatus(
+            playerId: string,
+            seasonId: string,
+            info: PlayerSeasonInfo,
+        ) {
+            return updateDoc(doc(db, 'players', playerId), {
+                [`seasons.${seasonId}`]: info,
+            });
+        },
+
+        // TODO: REMOVE WHEN USED
+        // One-off, idempotent migration: move the legacy top-level
+        // `guestPlayer` flag into the per-season map under the launch season.
+        // Reads fresh from Firestore so it works regardless of app state.
+        // Trigger once while authenticated, then remove the trigger.
+        async migratePlayerSeasons() {
+            const launchSeason = '2025-2026';
+            const snap = await getDocs(collection(db, 'players'));
+            const batch = writeBatch(db);
+            let count = 0;
+            snap.docs.forEach((d) => {
+                const data = d.data() as Player & { guestPlayer?: boolean };
+                if (data.seasons?.[launchSeason]) return;
+                batch.update(doc(db, 'players', d.id), {
+                    [`seasons.${launchSeason}`]: {
+                        active: true,
+                        guestPlayer: data.guestPlayer ?? false,
+                    },
+                    guestPlayer: deleteField(),
+                });
+                count++;
+            });
+            if (count) await batch.commit();
+            return count;
+        },
+
         deletePlayer(playerId: string) {
             return deleteDoc(doc(db, 'players', playerId));
         },
@@ -76,5 +115,9 @@ export const usePlayerStore = defineStore('playerStore', {
             state.players.find((p) => p.id === playerId),
         playersSorted: (state) =>
             [...state.players].sort((a, b) => a.name.localeCompare(b.name)),
+        playersInSeason: (state) => (seasonId: string) =>
+            [...state.players]
+                .filter((player) => isActiveInSeason(player, seasonId))
+                .sort((a, b) => a.name.localeCompare(b.name)),
     },
 });
