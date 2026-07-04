@@ -21,7 +21,6 @@
 
     --shadow-hero: 0 8px 32px rgba(17, 26, 54, 0.3);
     --shadow-card: 0 2px 12px rgba(39, 66, 138, 0.08);
-    --shadow-card-hover: 0 8px 28px rgba(39, 66, 138, 0.18);
     --shadow-icon: 0 2px 8px rgba(0, 0, 0, 0.15);
 
     /* brand banner gradient (page header / player hero) */
@@ -81,18 +80,6 @@ label {
 
 .p-toast {
     @apply left-[10px] max-w-[90%];
-}
-
-/* Card hover lift */
-.p-card {
-    transition:
-        box-shadow 0.25s ease,
-        transform 0.25s ease !important;
-}
-
-.p-card:hover {
-    box-shadow: 0 12px 40px rgba(39, 66, 138, 0.16) !important;
-    transform: translateY(-3px);
 }
 
 /* DataTable header gradient */

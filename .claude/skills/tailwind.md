@@ -53,7 +53,7 @@ use the named utility they generate:
 ```html
 <!-- ✅ -->
 class="bg-primary-50 text-primary-400 shadow-card hover:shadow-card-hover
-       font-display tracking-label text-xxs max-w-8xl duration-900"
+font-display tracking-label text-xxs max-w-8xl duration-900"
 <!-- ❌ -->
 class="bg-[#f2f5fb] text-[#6285d1] shadow-[0_2px_12px_rgba(39,66,138,.08)]"
 ```
@@ -64,7 +64,7 @@ Currently defined custom tokens (confirm against `src/styles/main.css` before us
   Generates `bg-/text-/border-primary-*`, etc. This same scale is fed to the PrimeVue
   Aura preset in `main.ts`, so app chrome and utilities stay in sync.
 - **Font:** `font-display` (Roboto).
-- **Shadows:** `shadow-hero`, `shadow-card`, `shadow-card-hover`, `shadow-icon`.
+- **Shadows:** `shadow-hero`, `shadow-card`, `shadow-icon`.
 - **Type/spacing extras:** `text-xxs` (0.65rem), `tracking-label` (0.06em),
   `tracking-badge` (0.08em), `max-w-8xl` (90rem), `duration-900` (900ms).
 

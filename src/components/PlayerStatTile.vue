@@ -19,7 +19,7 @@
 
 <template>
     <div
-        class="shadow-card hover:shadow-card-hover flex flex-col gap-1 rounded-xl bg-white p-5 transition duration-200 ease-in-out hover:-translate-y-0.5"
+        class="shadow-card flex flex-col gap-1 rounded-xl bg-white p-5"
         :class="{ 'col-span-2 lg:col-span-1': colSpan }"
     >
         <div

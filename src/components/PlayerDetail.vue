@@ -181,6 +181,7 @@
             class="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(-55deg,transparent,transparent_20px,rgba(255,255,255,0.015)_20px,rgba(255,255,255,0.015)_40px)]"
             aria-hidden="true"
         />
+
         <div class="relative z-10 flex flex-wrap items-center gap-5 p-6">
             <div
                 class="flex size-18 shrink-0 items-center justify-center rounded-full border-[3px] border-white/25 bg-white/12 text-3xl font-black text-white"
