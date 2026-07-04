@@ -14,7 +14,6 @@ import {
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
-import { SEASON } from '@/constants';
 import { db } from '@/firebase';
 import type { Player, PlayerSeasonInfo } from '@/types';
 import { isActiveInSeason } from '@/utils/playerSeason';
@@ -74,14 +73,15 @@ export const usePlayerStore = defineStore('playerStore', {
         // Reads fresh from Firestore so it works regardless of app state.
         // Trigger once while authenticated, then remove the trigger.
         async migratePlayerSeasons() {
+            const launchSeason = '2025-2026';
             const snap = await getDocs(collection(db, 'players'));
             const batch = writeBatch(db);
             let count = 0;
             snap.docs.forEach((d) => {
                 const data = d.data() as Player & { guestPlayer?: boolean };
-                if (data.seasons?.[SEASON]) return;
+                if (data.seasons?.[launchSeason]) return;
                 batch.update(doc(db, 'players', d.id), {
-                    [`seasons.${SEASON}`]: {
+                    [`seasons.${launchSeason}`]: {
                         active: true,
                         guestPlayer: data.guestPlayer ?? false,
                     },

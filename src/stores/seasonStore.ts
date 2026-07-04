@@ -8,7 +8,6 @@ import {
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
-import { SEASON, TEAMNAME } from '@/constants';
 import { db } from '@/firebase';
 
 const STORAGE_KEY = 'selectedSeason';
@@ -25,7 +24,9 @@ export const useSeasonStore = defineStore('seasonStore', {
         seasons: Season[];
         seasonsLoaded: boolean;
     } => ({
-        currentSeason: localStorage.getItem(STORAGE_KEY) ?? SEASON,
+        // Empty until the season list loads; fetchSeasons() reconciles this
+        // against Firestore (active season, or newest) on startup.
+        currentSeason: localStorage.getItem(STORAGE_KEY) ?? '',
         seasons: [],
         seasonsLoaded: false,
     }),
@@ -38,7 +39,7 @@ export const useSeasonStore = defineStore('seasonStore', {
             const season = state.seasons.find(
                 (s) => s.id === state.currentSeason,
             );
-            return season?.teamname || TEAMNAME;
+            return season?.teamname ?? '';
         },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(

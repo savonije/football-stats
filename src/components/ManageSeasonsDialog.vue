@@ -26,6 +26,7 @@
 
     const addSeason = async () => {
         const id = newSeason.value.trim();
+
         if (seasonStore.seasons.some((season) => season.id === id)) {
             toast.add({
                 severity: 'warn',
@@ -164,6 +165,7 @@
                                 icon="pi pi-check"
                                 size="small"
                                 severity="secondary"
+                                :label="t('common.save')"
                                 :aria-label="t('common.save')"
                                 :loading="savingTeamNameId === season.id"
                                 @click="saveTeamName(season.id)"
