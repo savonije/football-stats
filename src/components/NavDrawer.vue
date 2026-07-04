@@ -5,16 +5,13 @@
     import { useI18n } from 'vue-i18n';
 
     import { useStoreAuth } from '@/stores/authStore';
-    import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { TOAST_LIFE } from '@/constants';
 
     import AddMatchDialog from '@/components/AddMatchDialog.vue';
     import AddPlayerDialog from '@/components/AddPlayerDialog.vue';
     import ManageSeasonsDialog from '@/components/ManageSeasonsDialog.vue';
 
     const storeAuth = useStoreAuth();
-    const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
     const toast = useToast();
     const { t } = useI18n();
@@ -53,30 +50,6 @@
     const logout = () => {
         drawerVisible.value = false;
         storeAuth.logoutUser(toast, t);
-    };
-
-    // TEMP: remove after the one-off per-season player migration has run.
-    const migrating = ref(false);
-    const onMigrate = async () => {
-        migrating.value = true;
-        try {
-            const count = await playerStore.migratePlayerSeasons();
-            toast.add({
-                severity: 'success',
-                summary: t('common.messages.success'),
-                detail: `Migrated ${count} players`,
-                life: TOAST_LIFE,
-            });
-        } catch (err) {
-            console.error(err);
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
-        } finally {
-            migrating.value = false;
-        }
     };
 
     defineExpose({
@@ -188,29 +161,6 @@
                             <i class="pi pi-calendar" />
                         </span>
                         <span>{{ t('seasons.manageSeasons') }}</span>
-                        <i class="pi pi-chevron-right nav-chevron" />
-                    </button>
-                    <!-- TEMP: remove after the per-season player migration -->
-                    <button
-                        class="nav-item"
-                        style="--i: 6"
-                        :disabled="migrating"
-                        @click="onMigrate"
-                    >
-                        <span
-                            class="nav-icon"
-                            style="background: var(--gradient-accent-amber)"
-                        >
-                            <i
-                                class="pi"
-                                :class="
-                                    migrating
-                                        ? 'pi-spin pi-spinner'
-                                        : 'pi-database'
-                                "
-                            />
-                        </span>
-                        <span>⚠️ Migrate players</span>
                         <i class="pi pi-chevron-right nav-chevron" />
                     </button>
                 </nav>

@@ -37,13 +37,9 @@ export const useStoreAuth = defineStore('storeAuth', {
                 auth,
                 credentials.email,
                 credentials.password,
-            )
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                })
-                .catch((error) => {
-                    console.log(error.message);
-                });
+            ).catch((error) => {
+                console.log(error.message);
+            });
         },
         logoutUser(toast: ToastServiceMethods, t: (key: string) => string) {
             signOut(auth)

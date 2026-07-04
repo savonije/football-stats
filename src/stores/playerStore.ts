@@ -1,16 +1,11 @@
 import {
     collection,
     deleteDoc,
-    deleteField,
     doc,
     getDoc,
-    getDocs,
     onSnapshot,
-    query,
     setDoc,
     updateDoc,
-    where,
-    writeBatch,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
@@ -67,45 +62,14 @@ export const usePlayerStore = defineStore('playerStore', {
             });
         },
 
-        // TODO: REMOVE WHEN USED
-        // One-off, idempotent migration: move the legacy top-level
-        // `guestPlayer` flag into the per-season map under the launch season.
-        // Reads fresh from Firestore so it works regardless of app state.
-        // Trigger once while authenticated, then remove the trigger.
-        async migratePlayerSeasons() {
-            const launchSeason = '2025-2026';
-            const snap = await getDocs(collection(db, 'players'));
-            const batch = writeBatch(db);
-            let count = 0;
-            snap.docs.forEach((d) => {
-                const data = d.data() as Player & { guestPlayer?: boolean };
-                if (data.seasons?.[launchSeason]) return;
-                batch.update(doc(db, 'players', d.id), {
-                    [`seasons.${launchSeason}`]: {
-                        active: true,
-                        guestPlayer: data.guestPlayer ?? false,
-                    },
-                    guestPlayer: deleteField(),
-                });
-                count++;
-            });
-            if (count) await batch.commit();
-            return count;
-        },
-
         deletePlayer(playerId: string) {
             return deleteDoc(doc(db, 'players', playerId));
         },
 
         async fetchPlayerName(playerId: string): Promise<string> {
-            const playerRef = doc(db, 'players', playerId);
-            const snap = await getDocs(
-                query(collection(db, 'players'), where('id', '==', playerId)),
-            );
-            if (snap.empty) return playerId;
-            const firstDoc = snap.docs[0];
-            if (!firstDoc) return playerId;
-            const docData = firstDoc.data() as Player;
+            const snap = await getDoc(doc(db, 'players', playerId));
+            if (!snap.exists()) return playerId;
+            const docData = snap.data() as Player;
             return docData.name ?? playerId;
         },
     },
