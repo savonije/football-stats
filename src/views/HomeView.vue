@@ -41,7 +41,7 @@
             <LiveMatchWidget />
         </div>
 
-        <Card>
+        <Card v-if="recentMatchData.length > 0">
             <template #title>
                 <h2 class="mb-2">{{ $t('match.recentResults') }}</h2>
             </template>
