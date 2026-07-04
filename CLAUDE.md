@@ -7,12 +7,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run dev          # dev server with hot-reload
 npm run build        # type-check + build for production
-npm run lint         # run oxlint then eslint (with --fix)
+npm run lint         # run oxlint then eslint (both with --fix)
 npm run type-check   # vue-tsc type checking
 npm run format       # prettier format src/
+npm run test:e2e     # Playwright end-to-end tests
 ```
 
-There are no tests in this project.
+Playwright tests live in `e2e/` and run against a production preview build (`playwright.config.ts` boots `npm run preview` on port 4173 as its `webServer`). Run a single spec/test:
+
+```bash
+npx playwright test e2e/home.spec.ts            # one file
+npx playwright test -g "shows top scorers"      # by test title
+```
+
+Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials plus `VITE_CLUBNAME`. There is no hardcoded config in source.
 
 Deploy after building: `firebase deploy`
 
@@ -23,12 +31,15 @@ Vue 3 SPA (Composition API + `<script setup>`) for tracking football match stats
 ### Firestore data model
 
 ```
-players/{playerId}
+seasons/{seasonId}                         # { active: bool, teamname?: string }
+players/{playerId}                         # { ..., seasons: { [seasonId]: {...} } }
 seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
 ```
 
-The active season is the `SEASON` constant in `src/constants/index.ts`. All Firestore queries are scoped to this season ID. When a new season starts, update this constant.
+Seasons are dynamic Firestore documents, not a constant. `seasonStore` fetches the season list and tracks `currentSeason`, persisted to `localStorage` (`selectedSeason`) and reconciled on startup against the `active` season doc (falling back to the newest by id). Match/appearance queries are scoped by passing `seasonStore.currentSeason` into store actions — components read it and `watch(() => seasonStore.currentSeason)` to refetch when the user switches seasons.
+
+Players are a single top-level collection but carry a per-season `seasons` map (roster membership, guest/active status per season). Use the helpers in `src/utils/playerSeason.ts` (`isActiveInSeason`, `isGuestInSeason`) and `playerStore.playersInSeason(seasonId)` rather than reading the map directly. `playerStore` also has a one-time migration action that backfills the `seasons` map for the launch season.
 
 ### Two Firebase access patterns
 
@@ -37,7 +48,9 @@ The active season is the `SEASON` constant in `src/constants/index.ts`. All Fire
 
 ### State management (Pinia)
 
-Three stores: `authStore`, `matchStore`, `playerStore`. The router is injected into every store via a Pinia plugin in `main.ts`, so stores can navigate with `this.router.push(...)`.
+Four stores: `authStore`, `matchStore`, `playerStore`, `seasonStore`. The router is injected into every store via a Pinia plugin in `main.ts`, so stores can navigate with `this.router.push(...)`.
+
+`matchStore` also drives the live match timer (`startMatch`/`pauseMatch`/`resumeMatch`/`endMatch`), which mutates the match doc directly.
 
 `authStore.init()` is called once in `App.vue` `onMounted` to subscribe to Firebase auth state — unauthenticated users are not redirected from most routes, but write operations require auth.
 
