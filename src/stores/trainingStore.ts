@@ -71,16 +71,12 @@ export const useTrainingStore = defineStore('trainingStore', {
             seasonId: string,
             trainingId: string,
             cancelled: boolean,
-            reason?: string,
         ) {
             const trainingRef = doc(
                 db,
                 `seasons/${seasonId}/trainings/${trainingId}`,
             );
-            return updateDoc(trainingRef, {
-                cancelled,
-                cancelledReason: cancelled ? reason || null : null,
-            });
+            return updateDoc(trainingRef, { cancelled });
         },
 
         async deleteTraining(seasonId: string, trainingId: string) {

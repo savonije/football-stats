@@ -5,6 +5,7 @@ import {
     serverTimestamp,
     Timestamp,
     updateDoc,
+    writeBatch,
 } from 'firebase/firestore';
 
 import { db } from '@/firebase';
@@ -39,6 +40,43 @@ export const addTraining = async (seasonId: string, training: NewTraining) => {
     }
 
     return trainingRef;
+};
+
+/**
+ * Bulk-create a training per date (each seeded with a present attendance for
+ * every player id), committed in a single batch. Firestore caps a batch at
+ * 500 writes; a month of sessions for a youth squad stays well under that.
+ */
+export const addTrainings = async (
+    seasonId: string,
+    dates: Date[],
+    playerIds: string[],
+) => {
+    if (!dates.length) return 0;
+
+    const batch = writeBatch(db);
+    const trainingsCol = collection(db, 'seasons', seasonId, 'trainings');
+
+    for (const date of dates) {
+        const trainingRef = doc(trainingsCol);
+        batch.set(trainingRef, {
+            date,
+            createdAt: serverTimestamp(),
+            cancelled: false,
+        });
+
+        const attendancesCol = collection(trainingRef, 'attendances');
+        for (const playerId of playerIds) {
+            batch.set(doc(attendancesCol), {
+                playerId,
+                present: true,
+                seasonId,
+            });
+        }
+    }
+
+    await batch.commit();
+    return dates.length;
 };
 
 export async function updateAttendance(

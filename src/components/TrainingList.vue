@@ -16,8 +16,8 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useStoreAuth } from '@/stores/authStore';
     import ProgressSpinner from '@/components/ProgressSpinner.vue';
-    import TrainingWeekCalendar from '@/components/TrainingWeekCalendar.vue';
-    import AddTrainingDialog from '@/components/AddTrainingDialog.vue';
+    import GenerateTrainingsDialog from '@/components/GenerateTrainingsDialog.vue';
+    import TrainingDaysDialog from '@/components/TrainingDaysDialog.vue';
 
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
@@ -26,7 +26,8 @@
     const router = useRouter();
     const { t } = useI18n();
 
-    const showAddDialog = ref(false);
+    const showGenerateDialog = ref(false);
+    const showTrainingDaysDialog = ref(false);
     const canEdit = computed(
         () => !!authStore.user?.id && seasonStore.isCurrentSeasonActive,
     );
@@ -36,7 +37,6 @@
             id: training.id,
             date: training.date,
             cancelled: training.cancelled ?? false,
-            cancelledReason: training.cancelledReason ?? '',
             presentCount: trainingStore.attendances.filter(
                 (a) => a.trainingId === training.id && a.present,
             ).length,
@@ -64,17 +64,25 @@
 </script>
 
 <template>
-    <TrainingWeekCalendar />
-
     <div class="mb-3 flex items-center justify-between gap-3">
         <h2 class="text-xl font-semibold">{{ t('training.allTrainings') }}</h2>
-        <Button
-            v-if="canEdit"
-            :label="t('training.addTraining')"
-            icon="pi pi-plus"
-            size="small"
-            @click="showAddDialog = true"
-        />
+        <div v-if="canEdit" class="flex items-center gap-2">
+            <Button
+                icon="pi pi-cog"
+                size="small"
+                severity="secondary"
+                text
+                rounded
+                :aria-label="t('training.trainingDays')"
+                @click="showTrainingDaysDialog = true"
+            />
+            <Button
+                :label="t('training.generate')"
+                icon="pi pi-calendar-plus"
+                size="small"
+                @click="showGenerateDialog = true"
+            />
+        </div>
     </div>
 
     <div
@@ -120,7 +128,7 @@
                 <Tag
                     v-if="data.cancelled"
                     severity="danger"
-                    :value="data.cancelledReason || t('training.cancelled')"
+                    :value="t('training.cancelled')"
                 />
                 <Tag
                     v-else
@@ -149,5 +157,6 @@
         </template>
     </DataTable>
 
-    <AddTrainingDialog v-model:visible="showAddDialog" />
+    <GenerateTrainingsDialog v-model:visible="showGenerateDialog" />
+    <TrainingDaysDialog v-model:visible="showTrainingDaysDialog" />
 </template>

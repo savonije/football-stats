@@ -50,7 +50,6 @@ export interface Training {
     date: Timestamp;
     createdAt?: Timestamp;
     cancelled?: boolean;
-    cancelledReason?: string;
 }
 
 export interface NewTraining {

@@ -4,7 +4,6 @@
         Dialog,
         InputText,
         InputMask,
-        MultiSelect,
         Button,
         Tag,
         useToast,
@@ -12,7 +11,6 @@
     import { useI18n } from 'vue-i18n';
 
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { weekdayOptions } from '@/utils/training';
     import { TOAST_LIFE } from '@/constants';
 
     const model = defineModel<boolean>('visible');
@@ -25,9 +23,6 @@
     const activatingId = ref<string | null>(null);
     const teamNames = ref<Record<string, string>>({});
     const savingTeamNameId = ref<string | null>(null);
-    const trainingDays = ref<Record<string, number[]>>({});
-    const savingTrainingDaysId = ref<string | null>(null);
-    const dayOptions = weekdayOptions();
 
     const addSeason = async () => {
         const id = newSeason.value.trim();
@@ -87,30 +82,6 @@
             });
         } finally {
             savingTeamNameId.value = null;
-        }
-    };
-
-    const saveTrainingDays = async (id: string) => {
-        const season = seasonStore.seasons.find((s) => s.id === id);
-        const days = trainingDays.value[id] ?? season?.trainingDays ?? [];
-
-        savingTrainingDaysId.value = id;
-        try {
-            await seasonStore.setTrainingDays(id, days);
-            toast.add({
-                severity: 'success',
-                summary: t('common.success'),
-                detail: t('training.messages.trainingDaysSaved'),
-                life: TOAST_LIFE,
-            });
-        } catch {
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
-        } finally {
-            savingTrainingDaysId.value = null;
         }
     };
 
@@ -198,35 +169,6 @@
                                 :aria-label="t('common.save')"
                                 :loading="savingTeamNameId === season.id"
                                 @click="saveTeamName(season.id)"
-                            />
-                        </div>
-                        <div class="flex gap-2">
-                            <MultiSelect
-                                class="flex-1"
-                                :model-value="
-                                    trainingDays[season.id] ??
-                                    season.trainingDays ??
-                                    []
-                                "
-                                :options="dayOptions"
-                                option-label="label"
-                                option-value="value"
-                                size="small"
-                                display="chip"
-                                :placeholder="t('training.trainingDays')"
-                                :aria-label="t('training.trainingDays')"
-                                @update:model-value="
-                                    trainingDays[season.id] = $event
-                                "
-                            />
-                            <Button
-                                icon="pi pi-check"
-                                size="small"
-                                severity="secondary"
-                                :label="t('common.save')"
-                                :aria-label="t('common.save')"
-                                :loading="savingTrainingDaysId === season.id"
-                                @click="saveTrainingDays(season.id)"
                             />
                         </div>
                     </li>

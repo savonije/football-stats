@@ -1,15 +1,9 @@
 <script setup lang="ts">
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { computed, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useI18n } from 'vue-i18n';
     import dayjs from 'dayjs';
-    import {
-        Button,
-        Select,
-        Tag,
-        ToggleSwitch,
-        useConfirm,
-    } from 'primevue';
+    import { Button, Tag, ToggleSwitch, useConfirm } from 'primevue';
     import { useToast } from 'primevue/usetoast';
 
     import { useTrainingStore } from '@/stores/trainingStore';
@@ -47,24 +41,6 @@
 
     const attendees = computed(() => trainingStore.attendeesWithNames);
 
-    const reasonOptions = computed(() => [
-        { label: t('training.reasons.weather'), value: t('training.reasons.weather') },
-        { label: t('training.reasons.noTrainer'), value: t('training.reasons.noTrainer') },
-        { label: t('training.reasons.other'), value: t('training.reasons.other') },
-    ]);
-
-    const cancelReason = ref<string>('');
-
-    watch(
-        reasonOptions,
-        (options) => {
-            if (!cancelReason.value && options.length) {
-                cancelReason.value = options[0]!.value;
-            }
-        },
-        { immediate: true },
-    );
-
     const togglePresent = (attendanceId: string, present: boolean) => {
         trainingStore.setAttendancePresent(
             seasonStore.currentSeason,
@@ -79,7 +55,6 @@
             seasonStore.currentSeason,
             trainingId.value,
             true,
-            cancelReason.value,
         );
         toast.add({
             severity: 'success',
@@ -148,37 +123,21 @@
                 v-if="isCancelled"
                 severity="danger"
                 icon="pi pi-ban"
-                :value="
-                    training.cancelledReason || t('training.cancelled')
-                "
+                :value="t('training.cancelled')"
             />
         </div>
 
-        <!-- Cancel / uncancel controls -->
-        <div
-            v-if="canEdit"
-            class="mb-6 flex flex-wrap items-center gap-2 rounded-xl bg-gray-50 p-3"
-        >
-            <template v-if="!isCancelled">
-                <Select
-                    v-model="cancelReason"
-                    :options="reasonOptions"
-                    option-label="label"
-                    option-value="value"
-                    size="small"
-                    class="w-48"
-                    :aria-label="t('training.cancelReason')"
-                    editable
-                />
-                <Button
-                    :label="t('training.cancel')"
-                    icon="pi pi-ban"
-                    severity="danger"
-                    variant="outlined"
-                    size="small"
-                    @click="cancelTraining"
-                />
-            </template>
+        <!-- Cancel / uncancel control -->
+        <div v-if="canEdit" class="mb-6">
+            <Button
+                v-if="!isCancelled"
+                :label="t('training.cancel')"
+                icon="pi pi-ban"
+                severity="danger"
+                variant="outlined"
+                size="small"
+                @click="cancelTraining"
+            />
             <Button
                 v-else
                 :label="t('training.uncancel')"
