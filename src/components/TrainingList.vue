@@ -54,8 +54,7 @@
 </script>
 
 <template>
-    <div class="mb-3 flex items-center justify-between gap-3">
-        <h2 class="text-xl font-semibold">{{ t('training.allTrainings') }}</h2>
+    <div class="mb-3 flex items-center justify-end gap-3">
         <div v-if="canEdit" class="flex items-center gap-2">
             <Button
                 icon="pi pi-cog"
@@ -82,11 +81,7 @@
         <ProgressSpinner />
     </div>
 
-    <TrainingMonthCalendar
-        v-else
-        v-model:month="viewMonth"
-        :trainings="rows"
-    />
+    <TrainingMonthCalendar v-else v-model:month="viewMonth" :trainings="rows" />
 
     <GenerateTrainingsDialog
         v-model:visible="showGenerateDialog"
