@@ -80,8 +80,12 @@
         </Tag>
     </div>
 
+    <div v-if="!matchStore.matchesLoaded" class="justify-content-center flex">
+        <ProgressSpinner />
+    </div>
+
     <DataTable
-        v-if="matchStore.matchesLoaded && matchStore.matches.length"
+        v-else
         v-model:filters="filters"
         class="rounded-2xl shadow-lg"
         :value="matchStore.matches"
@@ -164,14 +168,11 @@
                 />
             </template>
         </Column>
+
+        <template #empty>
+            <p class="py-4 text-center text-gray-500">
+                {{ t('match.noMatches') }}
+            </p>
+        </template>
     </DataTable>
-
-    <div
-        v-else-if="!matchStore.matchesLoaded"
-        class="justify-content-center flex"
-    >
-        <ProgressSpinner />
-    </div>
-
-    <h1 v-else>{{ t('match.noMatches') }}</h1>
 </template>
