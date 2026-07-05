@@ -5,9 +5,7 @@ import {
     doc,
     getDocs,
     onSnapshot,
-    query,
     updateDoc,
-    where,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
@@ -102,32 +100,45 @@ export const useTrainingStore = defineStore('trainingStore', {
         fetchAttendances(seasonId: string, trainingId?: string) {
             _unsubscribeAttendances?.();
             this.attendancesLoaded = false;
+            // For a single training we read its subcollection directly. For the
+            // season-wide case we use an UNFILTERED collection-group query and
+            // scope by seasonId client-side: a `where('seasonId', ...)` on a
+            // collection group would require a dedicated composite index, and
+            // without it the listener fails silently (leaving counts at 0).
             const q = trainingId
                 ? collection(
                       db,
                       `seasons/${seasonId}/trainings/${trainingId}/attendances`,
                   )
-                : query(
-                      collectionGroup(db, 'attendances'),
-                      where('seasonId', '==', seasonId),
-                  );
+                : collectionGroup(db, 'attendances');
 
-            _unsubscribeAttendances = onSnapshot(q, (snapshot) => {
-                this.attendances = snapshot.docs.map((doc) => {
-                    const data = doc.data() as TrainingAttendance;
-                    return {
-                        id: doc.id,
-                        playerId: data.playerId,
-                        seasonId: data.seasonId,
-                        trainingId:
-                            trainingId ??
-                            doc.ref.parent.parent?.id ??
-                            data.trainingId,
-                        present: data.present ?? false,
-                    };
-                });
-                this.attendancesLoaded = true;
-            });
+            _unsubscribeAttendances = onSnapshot(
+                q,
+                (snapshot) => {
+                    this.attendances = snapshot.docs
+                        .map((doc) => {
+                            const data = doc.data() as TrainingAttendance;
+                            return {
+                                id: doc.id,
+                                playerId: data.playerId,
+                                seasonId: data.seasonId,
+                                trainingId:
+                                    trainingId ??
+                                    doc.ref.parent.parent?.id ??
+                                    data.trainingId,
+                                present: data.present ?? false,
+                            };
+                        })
+                        .filter(
+                            (a) => trainingId != null || a.seasonId === seasonId,
+                        );
+                    this.attendancesLoaded = true;
+                },
+                (error) => {
+                    console.error('Failed to load attendances', error);
+                    this.attendancesLoaded = true;
+                },
+            );
         },
 
         setAttendancePresent(

@@ -14,6 +14,7 @@
     import { TOAST_LIFE } from '@/constants';
 
     const model = defineModel<boolean>('visible');
+    const props = defineProps<{ initialMonth?: Date }>();
 
     const { t } = useI18n();
     const toast = useToast();
@@ -92,9 +93,9 @@
         await playerStore.fetchPlayers();
     });
 
-    // Reset to the current month each time the dialog opens.
+    // Default to the month in view (or the current month) each time it opens.
     watch(model, (visible) => {
-        if (visible) month.value = new Date();
+        if (visible) month.value = props.initialMonth ?? new Date();
     });
 </script>
 

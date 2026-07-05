@@ -34,3 +34,20 @@ export function trainingDatesInMonth(
     }
     return dates;
 }
+
+/**
+ * The full grid of days to render a Monday-first month calendar: every day of
+ * `month` plus the leading/trailing days needed to complete whole weeks.
+ */
+export function monthCalendarDays(month: Date | Dayjs): Dayjs[] {
+    const start = dayjs(month).startOf('month');
+    const end = dayjs(month).endOf('month');
+
+    const leading = start.day() === 0 ? 6 : start.day() - 1; // days since Mon
+    const trailing = end.day() === 0 ? 0 : 7 - end.day(); // days until Sun
+
+    const gridStart = start.subtract(leading, 'day');
+    const totalDays = end.add(trailing, 'day').diff(gridStart, 'day') + 1;
+
+    return Array.from({ length: totalDays }, (_, i) => gridStart.add(i, 'day'));
+}

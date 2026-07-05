@@ -1,21 +1,14 @@
 <script setup lang="ts">
     import { computed, onMounted, ref, watch } from 'vue';
-    import { useRouter } from 'vue-router';
     import { useI18n } from 'vue-i18n';
-    import dayjs from 'dayjs';
-    import {
-        Button,
-        Tag,
-        Column,
-        DataTable,
-        type DataTableRowClickEvent,
-    } from 'primevue';
+    import { Button } from 'primevue';
 
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useStoreAuth } from '@/stores/authStore';
     import ProgressSpinner from '@/components/ProgressSpinner.vue';
+    import TrainingMonthCalendar from '@/components/TrainingMonthCalendar.vue';
     import GenerateTrainingsDialog from '@/components/GenerateTrainingsDialog.vue';
     import TrainingDaysDialog from '@/components/TrainingDaysDialog.vue';
 
@@ -23,11 +16,12 @@
     const seasonStore = useSeasonStore();
     const playerStore = usePlayerStore();
     const authStore = useStoreAuth();
-    const router = useRouter();
     const { t } = useI18n();
 
     const showGenerateDialog = ref(false);
     const showTrainingDaysDialog = ref(false);
+    // The month currently shown in the calendar; the generator targets it.
+    const viewMonth = ref<Date>(new Date());
     const canEdit = computed(
         () => !!authStore.user?.id && seasonStore.isCurrentSeasonActive,
     );
@@ -57,10 +51,6 @@
         () => seasonStore.currentSeason,
         (seasonId) => fetchForSeason(seasonId),
     );
-
-    const onRowClick = (event: DataTableRowClickEvent) => {
-        router.push({ name: 'trainingDetail', params: { id: event.data.id } });
-    };
 </script>
 
 <template>
@@ -92,71 +82,15 @@
         <ProgressSpinner />
     </div>
 
-    <DataTable
+    <TrainingMonthCalendar
         v-else
-        class="rounded-2xl shadow-lg"
-        :value="rows"
-        paginator
-        :rows="10"
-        striped-rows
-        sort-field="date"
-        :sort-order="-1"
-        data-key="id"
-        @row-click="onRowClick"
-    >
-        <Column field="date" :header="t('common.date')" sortable>
-            <template #body="{ data }">
-                <span :class="{ 'text-gray-400 line-through': data.cancelled }">
-                    {{
-                        data.date
-                            ? dayjs(data.date.toDate()).format('DD-MM-YYYY')
-                            : '-'
-                    }}
-                </span>
-            </template>
-        </Column>
+        v-model:month="viewMonth"
+        :trainings="rows"
+    />
 
-        <Column :header="t('training.attendance')">
-            <template #body="{ data }">
-                <span v-if="data.cancelled" class="text-gray-400">-</span>
-                <span v-else class="font-semibold">{{ data.presentCount }}</span>
-            </template>
-        </Column>
-
-        <Column :header="t('common.result')">
-            <template #body="{ data }">
-                <Tag
-                    v-if="data.cancelled"
-                    severity="danger"
-                    :value="t('training.cancelled')"
-                />
-                <Tag
-                    v-else
-                    severity="success"
-                    :value="t('training.present')"
-                />
-            </template>
-        </Column>
-
-        <Column class="hidden text-right! sm:table-cell">
-            <template #body="{ data }">
-                <Button
-                    as="router-link"
-                    size="small"
-                    :to="{ name: 'trainingDetail', params: { id: data.id } }"
-                    icon="pi pi-chevron-right"
-                    :aria-label="t('common.view')"
-                />
-            </template>
-        </Column>
-
-        <template #empty>
-            <p class="py-4 text-center text-gray-500">
-                {{ t('training.noTrainings') }}
-            </p>
-        </template>
-    </DataTable>
-
-    <GenerateTrainingsDialog v-model:visible="showGenerateDialog" />
+    <GenerateTrainingsDialog
+        v-model:visible="showGenerateDialog"
+        :initial-month="viewMonth"
+    />
     <TrainingDaysDialog v-model:visible="showTrainingDaysDialog" />
 </template>

@@ -52,11 +52,6 @@ export interface Training {
     cancelled?: boolean;
 }
 
-export interface NewTraining {
-    date: Timestamp | Date;
-    playerIds?: string[];
-}
-
 export interface TrainingAttendance {
     id: string;
     playerId: string;
