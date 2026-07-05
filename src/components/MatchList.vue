@@ -2,6 +2,7 @@
     import { onMounted, ref, watch } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { usePlayerStore } from '@/stores/playerStore';
     import { useRouter } from 'vue-router';
 
     import dayjs from 'dayjs';
@@ -24,6 +25,7 @@
 
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
+    const playerStore = usePlayerStore();
     const router = useRouter();
 
     const { t } = useI18n();
@@ -41,6 +43,7 @@
 
     onMounted(() => {
         matchStore.fetchMatches(seasonStore.currentSeason);
+        playerStore.fetchPlayers();
     });
 
     watch(
@@ -112,6 +115,17 @@
         <Column class="hidden sm:table-cell" :header="t('common.homeOrAway')">
             <template #body="{ data }">
                 {{ data.home ? t('common.home') : t('common.away') }}
+            </template>
+        </Column>
+
+        <Column class="hidden md:table-cell" :header="t('washing.washer')">
+            <template #body="{ data }">
+                {{
+                    data.washing
+                        ? (playerStore.getPlayerById(data.washing)?.name ??
+                          t('washing.notAssigned'))
+                        : t('washing.notAssigned')
+                }}
             </template>
         </Column>
 
