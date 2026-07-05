@@ -53,6 +53,9 @@ app.use(Config, {
         },
         preset: CustomPreset,
     },
+    locale: {
+        firstDayOfWeek: 1,
+    },
 });
 
 app.use(ToastService);
