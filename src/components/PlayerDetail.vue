@@ -59,6 +59,11 @@
         () => playerAppearances.value.filter((a) => a.isGoalkeeper).length,
     );
     const totalMatches = computed(() => matchStore.matches.length);
+    const totalWashes = computed(
+        () =>
+            matchStore.matches.filter((m) => m.washing === playerId.value)
+                .length,
+    );
     const goalsPerMatch = computed(() =>
         totalAppearances.value > 0
             ? (totalGoals.value / totalAppearances.value).toFixed(2)
@@ -227,7 +232,7 @@
     </div>
 
     <!-- Stat tiles -->
-    <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
+    <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-6">
         <PlayerStatTile
             icon="pi-trophy"
             gradient="var(--gradient-accent-amber)"
@@ -278,11 +283,21 @@
         </PlayerStatTile>
 
         <PlayerStatTile
+            icon="pi-sparkles"
+            gradient="var(--gradient-accent-red)"
+            :label="$t('washing.totalWashes')"
+            :loading="loading"
+        >
+            <div class="text-primary-900 text-4xl leading-none font-black">
+                {{ totalWashes }}
+            </div>
+        </PlayerStatTile>
+
+        <PlayerStatTile
             icon="pi-check-circle"
             gradient="var(--gradient-accent-green)"
             :label="$t('common.attendancePercentage')"
             :loading="loading"
-            :col-span="true"
         >
             <div class="text-primary-900 text-4xl leading-none font-black">
                 {{ attendancePercentage }}

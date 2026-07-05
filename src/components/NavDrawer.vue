@@ -115,6 +115,22 @@
                     <span>{{ t('player.player', 2) }}</span>
                     <i class="pi pi-chevron-right nav-chevron" />
                 </Router-Link>
+
+                <Router-Link
+                    class="nav-item"
+                    :to="{ name: 'washing' }"
+                    style="--i: 3"
+                    @click="drawerVisible = false"
+                >
+                    <span
+                        class="nav-icon"
+                        style="background: var(--gradient-accent-purple)"
+                    >
+                        <i class="pi pi-sparkles" />
+                    </span>
+                    <span>{{ t('washing.title') }}</span>
+                    <i class="pi pi-chevron-right nav-chevron" />
+                </Router-Link>
             </nav>
 
             <template v-if="storeAuth.user?.id">
@@ -123,7 +139,7 @@
                     <button
                         v-if="seasonStore.isCurrentSeasonActive"
                         class="nav-item"
-                        style="--i: 3"
+                        style="--i: 4"
                         @click="openAddMatch"
                     >
                         <span
@@ -137,7 +153,7 @@
                     </button>
                     <button
                         class="nav-item"
-                        style="--i: 4"
+                        style="--i: 5"
                         @click="openAddPlayer"
                     >
                         <span
@@ -151,7 +167,7 @@
                     </button>
                     <button
                         class="nav-item"
-                        style="--i: 5"
+                        style="--i: 6"
                         @click="openManageSeasons"
                     >
                         <span
@@ -168,7 +184,7 @@
                 <div class="mt-10">
                     <button
                         class="nav-item nav-item--danger"
-                        style="--i: 7"
+                        style="--i: 8"
                         @click="logout"
                     >
                         <span
@@ -187,7 +203,7 @@
                     <Router-Link
                         class="nav-item"
                         :to="{ name: 'auth' }"
-                        style="--i: 3"
+                        style="--i: 4"
                         @click="drawerVisible = false"
                     >
                         <span

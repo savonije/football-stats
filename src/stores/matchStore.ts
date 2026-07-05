@@ -130,6 +130,15 @@ export const useMatchStore = defineStore('matchStore', {
             });
         },
 
+        setMatchWashing(
+            seasonId: string,
+            matchId: string,
+            washing: string | null,
+        ) {
+            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+            return updateDoc(matchRef, { washing: washing || null });
+        },
+
         endMatch(seasonId: string, matchId: string) {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
             return updateDoc(matchRef, {

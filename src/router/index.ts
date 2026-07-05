@@ -68,6 +68,12 @@ const routes = [
         meta: { title: "Topscorers - Apollo '69" },
     },
     {
+        path: '/washing',
+        name: 'washing',
+        component: () => import('@/views/WashingView.vue'),
+        meta: { title: "Wasschema - Apollo '69" },
+    },
+    {
         path: '/login',
         name: 'auth',
         component: () => import('@/views/AuthView.vue'),

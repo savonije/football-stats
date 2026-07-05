@@ -29,6 +29,7 @@
             date: new Date(),
             home: true,
             players: [],
+            washing: '',
             result: { goalsFor: 0, goalsAgainst: 0 },
         },
     );
@@ -156,6 +157,19 @@
                     optionLabel="label"
                     optionValue="value"
                     multiple
+                    showClear
+                    fluid
+                />
+            </div>
+
+            <div>
+                <label>{{ t('washing.washer') }}</label>
+                <Select
+                    v-model="form.washing"
+                    :options="playerOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    :placeholder="t('washing.notAssigned')"
                     showClear
                     fluid
                 />

@@ -15,6 +15,7 @@ export interface Match {
         goalsFor: number;
         goalsAgainst: number;
     };
+    washing?: string;
     durationMinutes: number;
     running: boolean;
     paused: boolean;
@@ -31,6 +32,7 @@ export interface NewMatch {
         goalsFor: number;
         goalsAgainst: number;
     };
+    washing?: string;
     playerIds?: string[];
 }
 
