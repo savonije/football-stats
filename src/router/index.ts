@@ -74,6 +74,28 @@ const routes = [
         meta: { title: "Wasschema - Apollo '69" },
     },
     {
+        path: '/training',
+        name: 'training',
+        component: () => import('@/views/TrainingView.vue'),
+        meta: { title: "Trainingen - Apollo '69" },
+    },
+    {
+        path: '/training/:id',
+        name: 'trainingDetail',
+        component: () => import('@/views/TrainingDetailView.vue'),
+        meta: {
+            title: "Trainingdetails - Apollo '69",
+            breadcrumb: [
+                {
+                    labelKey: 'training.training',
+                    count: 2,
+                    to: { name: 'training' },
+                    icon: 'pi pi-calendar',
+                },
+            ],
+        },
+    },
+    {
         path: '/login',
         name: 'auth',
         component: () => import('@/views/AuthView.vue'),

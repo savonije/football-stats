@@ -4,6 +4,7 @@ import errors from '@/lang/nl/errors';
 import match from '@/lang/nl/match';
 import player from '@/lang/nl/player';
 import seasons from '@/lang/nl/seasons';
+import training from '@/lang/nl/training';
 import washing from '@/lang/nl/washing';
 
 export default {
@@ -13,5 +14,6 @@ export default {
     match,
     player,
     seasons,
+    training,
     washing,
 };
