@@ -4,6 +4,7 @@
     import type { Match } from '@/types';
     import ScoreBox from '@/components/ScoreBox.vue';
     import { CLUBNAME } from '@/constants';
+    import { hasStarted } from '@/utils/match';
 
     const props = defineProps<{ match: Match | null }>();
     const homeClass = computed(() =>
@@ -27,6 +28,7 @@
         </div>
 
         <div
+            v-if="hasStarted(props.match)"
             class="my-12 flex items-center justify-center gap-3"
             :class="homeClass"
         >

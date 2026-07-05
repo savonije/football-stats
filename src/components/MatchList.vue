@@ -18,6 +18,8 @@
 
     import ProgressSpinner from '@/components/ProgressSpinner.vue';
 
+    import { hasStarted } from '@/utils/match';
+
     import { useI18n } from 'vue-i18n';
 
     const matchStore = useMatchStore();
@@ -118,7 +120,7 @@
                 <span
                     class="font-bold"
                     :class="
-                        data.result
+                        hasStarted(data) && data.result
                             ? data.result.goalsFor > data.result.goalsAgainst
                                 ? 'text-green-700'
                                 : data.result.goalsFor <
@@ -129,7 +131,7 @@
                     "
                 >
                     {{
-                        data.result
+                        hasStarted(data) && data.result
                             ? `${data.result.goalsFor}-${data.result.goalsAgainst}`
                             : '-'
                     }}
