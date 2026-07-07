@@ -10,7 +10,6 @@
         "build-only": "vite build",
         "build": "run-p type-check \"build-only {@}\" --",
         "dev": "vite",
-        "format": "prettier --write src/",
         "lint:eslint": "eslint . --fix",
         "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
         "lint": "run-s lint:*",
