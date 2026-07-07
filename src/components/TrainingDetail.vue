@@ -165,10 +165,7 @@
             </div>
         </div>
 
-        <div
-            v-if="canEdit"
-            class="mt-12 flex justify-between gap-6"
-        >
+        <div v-if="canEdit" class="mt-12 flex justify-between gap-6">
             <Button
                 :label="t('common.delete')"
                 severity="danger"

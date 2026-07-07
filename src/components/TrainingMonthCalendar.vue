@@ -115,17 +115,17 @@
             <button
                 v-for="day in days"
                 :key="day.key"
-                type="button"
                 class="flex min-h-14 flex-col items-center gap-1 rounded-lg border p-1 transition-colors sm:min-h-20"
                 :class="[
                     day.inMonth
-                        ? 'bg-white text-primary-900'
+                        ? 'text-primary-900 bg-white'
                         : 'bg-gray-50 text-gray-300',
                     day.training
                         ? 'hover:border-primary-300 cursor-pointer'
                         : 'cursor-default',
                     day.isToday ? 'border-primary-400' : 'border-gray-100',
                 ]"
+                type="button"
                 :disabled="!day.training"
                 @click="day.training && openTraining(day.training.id)"
             >
@@ -134,9 +134,9 @@
                 <template v-if="day.training">
                     <Tag
                         v-if="day.training.cancelled"
+                        class="!text-[0.55rem]"
                         severity="danger"
                         :value="t('training.cancelled')"
-                        class="!text-[0.55rem]"
                     />
                     <span
                         v-else

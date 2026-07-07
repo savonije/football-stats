@@ -130,7 +130,8 @@ export const useTrainingStore = defineStore('trainingStore', {
                             };
                         })
                         .filter(
-                            (a) => trainingId != null || a.seasonId === seasonId,
+                            (a) =>
+                                trainingId != null || a.seasonId === seasonId,
                         );
                     this.attendancesLoaded = true;
                 },
