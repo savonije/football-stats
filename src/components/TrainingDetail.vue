@@ -8,7 +8,9 @@
 
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { usePlayerStore } from '@/stores/playerStore';
     import { useStoreAuth } from '@/stores/authStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
     import { TOAST_LIFE } from '@/constants';
 
     import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -22,6 +24,7 @@
 
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
+    const playerStore = usePlayerStore();
     const authStore = useStoreAuth();
 
     const trainingId = computed(() => route.params.id as string);
@@ -39,13 +42,30 @@
             : '',
     );
 
-    const attendees = computed(() => trainingStore.attendeesWithNames);
+    // The checklist is the season squad (guests excluded, matching how
+    // trainings are generated); "present" is membership in the training's
+    // presentPlayerIds array.
+    const attendees = computed(() => {
+        const present = new Set(training.value?.presentPlayerIds ?? []);
+        return playerStore
+            .playersInSeason(seasonStore.currentSeason)
+            .filter((p) => !isGuestInSeason(p, seasonStore.currentSeason))
+            .map((p) => ({
+                id: p.id,
+                playerName: p.name,
+                present: present.has(p.id),
+            }));
+    });
 
-    const togglePresent = (attendanceId: string, present: boolean) => {
-        trainingStore.setAttendancePresent(
+    const presentCount = computed(
+        () => attendees.value.filter((a) => a.present).length,
+    );
+
+    const togglePresent = (playerId: string, present: boolean) => {
+        trainingStore.setPlayerPresent(
             seasonStore.currentSeason,
             trainingId.value,
-            attendanceId,
+            playerId,
             present,
         );
     };
@@ -93,6 +113,7 @@
     };
 
     onMounted(() => {
+        playerStore.fetchPlayers();
         trainingStore.fetchTrainingDetails(
             seasonStore.currentSeason,
             trainingId.value,
@@ -112,7 +133,7 @@
                 <p class="text-primary-400 text-sm font-medium">
                     {{
                         t('training.presentCount', {
-                            present: trainingStore.presentCount,
+                            present: presentCount,
                             total: attendees.length,
                         })
                     }}
@@ -187,7 +208,7 @@
     </div>
 
     <div
-        v-else-if="!trainingStore.attendancesLoaded"
+        v-else-if="!trainingStore.selectedTrainingLoaded"
         class="justify-content-center flex"
     >
         <ProgressSpinner />

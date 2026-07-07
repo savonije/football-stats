@@ -50,14 +50,7 @@ export interface Training {
     date: Timestamp;
     createdAt?: Timestamp;
     cancelled?: boolean;
-}
-
-export interface TrainingAttendance {
-    id: string;
-    playerId: string;
-    present: boolean;
-    seasonId: string;
-    trainingId: string;
+    presentPlayerIds?: string[];
 }
 
 export interface PlayerSeasonInfo {

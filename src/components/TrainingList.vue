@@ -31,15 +31,12 @@
             id: training.id,
             date: training.date,
             cancelled: training.cancelled ?? false,
-            presentCount: trainingStore.attendances.filter(
-                (a) => a.trainingId === training.id && a.present,
-            ).length,
+            presentCount: training.presentPlayerIds?.length ?? 0,
         })),
     );
 
     const fetchForSeason = (seasonId: string) => {
         trainingStore.fetchTrainings(seasonId);
-        trainingStore.fetchAttendances(seasonId);
     };
 
     onMounted(() => {

@@ -77,31 +77,22 @@
             : 0,
     );
 
-    // Cancelled trainings are excluded from both the denominator and, via the
-    // trainingId set, the player's counted present-attendances.
-    const countedTrainingIds = computed(
+    // Cancelled trainings are excluded from both the denominator and the
+    // player's counted present-attendances.
+    const activeTrainings = computed(() =>
+        trainingStore.trainings.filter((training) => !training.cancelled),
+    );
+    const playerTrainingCount = computed(
         () =>
-            new Set(
-                trainingStore.trainings
-                    .filter((training) => !training.cancelled)
-                    .map((training) => training.id),
-            ),
+            activeTrainings.value.filter((training) =>
+                (training.presentPlayerIds ?? []).includes(playerId.value),
+            ).length,
     );
-    const playerTrainingAttendances = computed(() =>
-        trainingStore.attendances.filter(
-            (a) =>
-                a.playerId === playerId.value &&
-                a.present &&
-                countedTrainingIds.value.has(a.trainingId),
-        ),
-    );
-    const totalTrainings = computed(() => countedTrainingIds.value.size);
+    const totalTrainings = computed(() => activeTrainings.value.length);
     const trainingAttendancePercentage = computed(() =>
         totalTrainings.value > 0
             ? Math.round(
-                  (playerTrainingAttendances.value.length /
-                      totalTrainings.value) *
-                      100,
+                  (playerTrainingCount.value / totalTrainings.value) * 100,
               )
             : 0,
     );
@@ -210,7 +201,6 @@
         matchStore.fetchMatches(seasonStore.currentSeason);
         matchStore.fetchAppearances(seasonStore.currentSeason);
         trainingStore.fetchTrainings(seasonStore.currentSeason);
-        trainingStore.fetchAttendances(seasonStore.currentSeason);
         loading.value = false;
     });
 
@@ -220,7 +210,6 @@
             matchStore.fetchMatches(seasonId);
             matchStore.fetchAppearances(seasonId);
             trainingStore.fetchTrainings(seasonId);
-            trainingStore.fetchAttendances(seasonId);
         },
     );
 </script>

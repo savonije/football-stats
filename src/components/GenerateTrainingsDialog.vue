@@ -1,15 +1,13 @@
 <script setup lang="ts">
-    import { ref, computed, onMounted, watch } from 'vue';
+    import { ref, computed, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useToast } from 'primevue/usetoast';
     import { Dialog, DatePicker, Button, Message } from 'primevue';
     import dayjs from 'dayjs';
 
     import { addTrainings } from '@/services/trainingService';
-    import { usePlayerStore } from '@/stores/playerStore';
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { isGuestInSeason } from '@/utils/playerSeason';
     import { trainingDatesInMonth } from '@/utils/training';
     import { TOAST_LIFE } from '@/constants';
 
@@ -18,7 +16,6 @@
 
     const { t } = useI18n();
     const toast = useToast();
-    const playerStore = usePlayerStore();
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
     const loading = ref(false);
@@ -29,14 +26,6 @@
         () =>
             seasonStore.seasons.find((s) => s.id === seasonStore.currentSeason)
                 ?.trainingDays ?? [],
-    );
-
-    // Trainings are for the regular squad only — guests are excluded.
-    const squadIds = computed(() =>
-        playerStore
-            .playersInSeason(seasonStore.currentSeason)
-            .filter((p) => !isGuestInSeason(p, seasonStore.currentSeason))
-            .map((p) => p.id),
     );
 
     // Dates in the chosen month that already have a training, as YYYY-MM-DD.
@@ -67,7 +56,6 @@
             const count = await addTrainings(
                 seasonStore.currentSeason,
                 newDates.value,
-                squadIds.value,
             );
             toast.add({
                 severity: 'success',
@@ -88,10 +76,6 @@
             loading.value = false;
         }
     };
-
-    onMounted(async () => {
-        await playerStore.fetchPlayers();
-    });
 
     // Default to the month in view (or the current month) each time it opens.
     watch(model, (visible) => {

@@ -1,41 +1,34 @@
 import {
+    arrayRemove,
+    arrayUnion,
     collection,
-    collectionGroup,
     deleteDoc,
     doc,
-    getDocs,
     onSnapshot,
     updateDoc,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
-import { usePlayerStore } from '@/stores/playerStore';
-import type { Training, TrainingAttendance } from '@/types';
+import type { Training } from '@/types';
 
 let _unsubscribeTrainings: (() => void) | null = null;
 let _unsubscribeTrainingDetails: (() => void) | null = null;
-let _unsubscribeAttendances: (() => void) | null = null;
 
 export const useTrainingStore = defineStore('trainingStore', {
     state: (): {
         trainings: Training[];
         trainingsLoaded: boolean;
         selectedTraining: Training | null;
-        attendances: TrainingAttendance[];
-        attendancesLoaded: boolean;
+        selectedTrainingLoaded: boolean;
     } => ({
         trainings: [],
         trainingsLoaded: false,
         selectedTraining: null,
-        attendances: [],
-        attendancesLoaded: false,
+        selectedTrainingLoaded: false,
     }),
 
     actions: {
-        /** -----------------------------
-         *  TRAININGS
-         * ----------------------------- */
         fetchTrainings(seasonId: string) {
             _unsubscribeTrainings?.();
             this.trainingsLoaded = false;
@@ -53,6 +46,7 @@ export const useTrainingStore = defineStore('trainingStore', {
 
         fetchTrainingDetails(seasonId: string, trainingId: string) {
             _unsubscribeTrainingDetails?.();
+            this.selectedTrainingLoaded = false;
             const trainingRef = doc(
                 db,
                 `seasons/${seasonId}/trainings/${trainingId}`,
@@ -61,8 +55,8 @@ export const useTrainingStore = defineStore('trainingStore', {
                 this.selectedTraining = snap.exists()
                     ? ({ id: snap.id, ...snap.data() } as Training)
                     : null;
+                this.selectedTrainingLoaded = true;
             });
-            this.fetchAttendances(seasonId, trainingId);
         },
 
         setTrainingCancelled(
@@ -77,100 +71,27 @@ export const useTrainingStore = defineStore('trainingStore', {
             return updateDoc(trainingRef, { cancelled });
         },
 
-        async deleteTraining(seasonId: string, trainingId: string) {
-            const attendancesRef = collection(
-                db,
-                `seasons/${seasonId}/trainings/${trainingId}/attendances`,
-            );
-            const snapshot = await getDocs(attendancesRef);
-
-            const deletePromises = snapshot.docs.map((doc) =>
-                deleteDoc(doc.ref),
-            );
-            await Promise.all(deletePromises);
-
-            await deleteDoc(
+        deleteTraining(seasonId: string, trainingId: string) {
+            return deleteDoc(
                 doc(db, `seasons/${seasonId}/trainings/${trainingId}`),
             );
         },
 
-        /** -----------------------------
-         *  ATTENDANCES
-         * ----------------------------- */
-        fetchAttendances(seasonId: string, trainingId?: string) {
-            _unsubscribeAttendances?.();
-            this.attendancesLoaded = false;
-            // For a single training we read its subcollection directly. For the
-            // season-wide case we use an UNFILTERED collection-group query and
-            // scope by seasonId client-side: a `where('seasonId', ...)` on a
-            // collection group would require a dedicated composite index, and
-            // without it the listener fails silently (leaving counts at 0).
-            const q = trainingId
-                ? collection(
-                      db,
-                      `seasons/${seasonId}/trainings/${trainingId}/attendances`,
-                  )
-                : collectionGroup(db, 'attendances');
-
-            _unsubscribeAttendances = onSnapshot(
-                q,
-                (snapshot) => {
-                    this.attendances = snapshot.docs
-                        .map((doc) => {
-                            const data = doc.data() as TrainingAttendance;
-                            return {
-                                id: doc.id,
-                                playerId: data.playerId,
-                                seasonId: data.seasonId,
-                                trainingId:
-                                    trainingId ??
-                                    doc.ref.parent.parent?.id ??
-                                    data.trainingId,
-                                present: data.present ?? false,
-                            };
-                        })
-                        .filter(
-                            (a) =>
-                                trainingId != null || a.seasonId === seasonId,
-                        );
-                    this.attendancesLoaded = true;
-                },
-                (error) => {
-                    console.error('Failed to load attendances', error);
-                    this.attendancesLoaded = true;
-                },
-            );
-        },
-
-        setAttendancePresent(
+        setPlayerPresent(
             seasonId: string,
             trainingId: string,
-            attendanceId: string,
+            playerId: string,
             present: boolean,
         ) {
-            return updateDoc(
-                doc(
-                    db,
-                    `seasons/${seasonId}/trainings/${trainingId}/attendances/${attendanceId}`,
-                ),
-                { present },
+            const trainingRef = doc(
+                db,
+                `seasons/${seasonId}/trainings/${trainingId}`,
             );
-        },
-    },
-
-    getters: {
-        presentCount: (state) =>
-            state.attendances.filter((a) => a.present).length,
-
-        attendeesWithNames: (state) => {
-            const playerStore = usePlayerStore();
-            return state.attendances
-                .map((a) => ({
-                    ...a,
-                    playerName:
-                        playerStore.getPlayerById(a.playerId)?.name ?? '',
-                }))
-                .sort((a, b) => a.playerName.localeCompare(b.playerName));
+            return updateDoc(trainingRef, {
+                presentPlayerIds: present
+                    ? arrayUnion(playerId)
+                    : arrayRemove(playerId),
+            });
         },
     },
 });
