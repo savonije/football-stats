@@ -51,44 +51,56 @@
     const playerAppearances = computed(() =>
         matchStore.appearances.filter((a) => a.playerId === playerId.value),
     );
+
     const totalGoals = computed(() =>
         playerAppearances.value.reduce((sum, a) => sum + (a.goals || 0), 0),
     );
+
     const totalAppearances = computed(
         () => playerAppearances.value.filter((a) => a.present).length,
     );
+
     const totalKeeper = computed(
         () => playerAppearances.value.filter((a) => a.isGoalkeeper).length,
     );
+
     const totalMatches = computed(() => matchStore.matches.length);
+
     const totalWashes = computed(
         () =>
             matchStore.matches.filter((m) => m.washing === playerId.value)
                 .length,
     );
+
     const goalsPerMatch = computed(() =>
         totalAppearances.value > 0
             ? (totalGoals.value / totalAppearances.value).toFixed(2)
             : '0.00',
     );
+
     const attendancePercentage = computed(() =>
         totalMatches.value > 0
             ? Math.round((totalAppearances.value / totalMatches.value) * 100)
             : 0,
     );
 
-    // Cancelled trainings are excluded from both the denominator and the
-    // player's counted present-attendances.
-    const activeTrainings = computed(() =>
-        trainingStore.trainings.filter((training) => !training.cancelled),
-    );
+    const activeTrainings = computed(() => {
+        const now = Date.now() / 1000;
+        return trainingStore.trainings.filter(
+            (training) =>
+                !training.cancelled && (training.date?.seconds ?? 0) <= now,
+        );
+    });
+
     const playerTrainingCount = computed(
         () =>
             activeTrainings.value.filter((training) =>
                 (training.presentPlayerIds ?? []).includes(playerId.value),
             ).length,
     );
+
     const totalTrainings = computed(() => activeTrainings.value.length);
+
     const trainingAttendancePercentage = computed(() =>
         totalTrainings.value > 0
             ? Math.round(
