@@ -3,6 +3,7 @@ export default {
     manageSeasons: 'Seizoenen beheren',
     activeSeason: 'Actief seizoen',
     active: 'Actief',
+    selectSeason: 'Kies een seizoen',
     addSeason: 'Nieuw seizoen toevoegen',
     setActive: 'Activeren',
     teamName: 'Teamnaam',
@@ -18,6 +19,7 @@ export default {
         activeChanged: 'Actief seizoen gewijzigd',
         teamNameChanged: 'Teamnaam opgeslagen',
         halfDurationChanged: 'Speelduur opgeslagen',
+        settingsSaved: 'Instellingen opgeslagen',
         invalidFormat:
             'Gebruik het formaat JJJJ-JJJJ met twee opeenvolgende jaren',
     },

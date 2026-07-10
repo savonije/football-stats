@@ -124,6 +124,17 @@ export const useSeasonStore = defineStore('seasonStore', {
             await this.fetchSeasons();
         },
 
+        async updateSeasonSettings(
+            id: string,
+            settings: { teamname: string; halfDurationMinutes: number },
+        ) {
+            await updateDoc(doc(db, 'seasons', id), {
+                teamname: settings.teamname.trim(),
+                halfDurationMinutes: settings.halfDurationMinutes,
+            });
+            await this.fetchSeasons();
+        },
+
         async setTrainingDays(id: string, days: number[]) {
             await updateDoc(doc(db, 'seasons', id), {
                 trainingDays: [...days].sort((a, b) => a - b),
