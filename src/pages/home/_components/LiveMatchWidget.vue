@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { computed, onMounted, onUnmounted, ref } from 'vue';
+    import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { getDisplaySeconds } from '@/utils/match';
@@ -38,6 +38,23 @@
             ) / 60,
         ),
     );
+
+    const goalsFor = computed(() => liveMatch.value?.result?.goalsFor ?? 0);
+
+    const goalsAgainst = computed(
+        () => liveMatch.value?.result?.goalsAgainst ?? 0,
+    );
+
+    const animateFor = ref(false);
+    const animateAgainst = ref(false);
+
+    watch(goalsFor, (val, old) => {
+        if (val > old) animateFor.value = true;
+    });
+
+    watch(goalsAgainst, (val, old) => {
+        if (val > old) animateAgainst.value = true;
+    });
 </script>
 
 <template>
@@ -72,8 +89,23 @@
 
                     <div class="text-right">
                         <p class="text-4xl font-bold tabular-nums">
-                            {{ liveMatch.result?.goalsFor ?? 0 }} –
-                            {{ liveMatch.result?.goalsAgainst ?? 0 }}
+                            <span
+                                class="inline-block"
+                                :class="{ 'animate-score-pop': animateFor }"
+                                @animationend="animateFor = false"
+                            >
+                                {{ goalsFor }}
+                            </span>
+                            –
+                            <span
+                                class="inline-block"
+                                :class="{
+                                    'animate-score-pop': animateAgainst,
+                                }"
+                                @animationend="animateAgainst = false"
+                            >
+                                {{ goalsAgainst }}
+                            </span>
                         </p>
                         <p class="mt-1 text-sm text-gray-500">
                             {{ currentMinute }}'
