@@ -1,8 +1,12 @@
 export default {
     title: 'Trainingen',
     training: 'Training | Trainingen',
-    generate: 'Trainingen genereren',
+    generate: 'Bulk genereren',
     generateForMonth: 'Trainingen voor een maand genereren',
+    add: 'Training toevoegen',
+    addForDate: 'Training toevoegen',
+    selectDate: 'Datum',
+    dateExists: 'Op deze datum bestaat al een training.',
     selectMonth: 'Maand',
     newTrainingsCount:
         'Geen nieuwe trainingen | {count} nieuwe training | {count} nieuwe trainingen',
@@ -13,7 +17,8 @@ export default {
     presentCount: '{present} / {total} aanwezig',
     attendancePercentage: 'Trainingsopkomst (%)',
     trainingDays: 'Trainingsdagen',
-    deleteTrainingConfirm: 'Weet je zeker dat je deze training wilt verwijderen?',
+    deleteTrainingConfirm:
+        'Weet je zeker dat je deze training wilt verwijderen?',
     cancelled: 'Afgelast',
     cancel: 'Training afgelasten',
     uncancel: 'Afgelasting ongedaan maken',

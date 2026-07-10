@@ -11,6 +11,7 @@
     import ProgressSpinner from '@/components/ProgressSpinner.vue';
     import TrainingMonthCalendar from '@/components/TrainingMonthCalendar.vue';
     import GenerateTrainingsDialog from '@/components/GenerateTrainingsDialog.vue';
+    import AddTrainingDialog from '@/components/AddTrainingDialog.vue';
     import TrainingDaysDialog from '@/components/TrainingDaysDialog.vue';
 
     const trainingStore = useTrainingStore();
@@ -21,6 +22,7 @@
     const VIEW_MONTH_KEY = 'trainingViewMonth';
 
     const showGenerateDialog = ref(false);
+    const showAddDialog = ref(false);
     const showTrainingDaysDialog = ref(false);
     // The month currently shown in the calendar; the generator targets it.
     // Persisted so navigating into a training and back restores the month.
@@ -74,6 +76,12 @@
                 size="small"
                 @click="showGenerateDialog = true"
             />
+            <Button
+                :label="t('training.add')"
+                icon="pi pi-plus"
+                size="small"
+                @click="showAddDialog = true"
+            />
         </div>
     </div>
 
@@ -90,5 +98,6 @@
         v-model:visible="showGenerateDialog"
         :initial-month="viewMonth"
     />
+    <AddTrainingDialog v-model:visible="showAddDialog" />
     <TrainingDaysDialog v-model:visible="showTrainingDaysDialog" />
 </template>
