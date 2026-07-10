@@ -8,11 +8,11 @@
     import { ToggleButton, Button, useConfirm } from 'primevue';
     import { useToast } from 'primevue/usetoast';
 
-    import MatchHeader from '@/components/MatchHeader.vue';
-    import PlayerAppearanceItem from '@/components/PlayerAppearanceItem.vue';
-    import ProgressSpinner from '@/components/ProgressSpinner.vue';
-    import MatchTimer from '@/components/MatchTimer.vue';
-    import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+    import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
+    import PlayerAppearanceItem from '@/pages/matches/_components/PlayerAppearanceItem.vue';
+    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
+    import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
+    import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
     import { useI18n } from 'vue-i18n';
 
     const toast = useToast();

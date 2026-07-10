@@ -6,7 +6,7 @@
 
     import { useSeasonStore } from '@/stores/seasonStore';
 
-    import NavDrawer from '@/components/NavDrawer.vue';
+    import NavDrawer from '@/components/layout/NavDrawer.vue';
 
     import { CLUBNAME } from '@/constants';
 

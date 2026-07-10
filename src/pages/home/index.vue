@@ -1,11 +1,10 @@
 <script setup lang="ts">
     import { ref, computed, onMounted, onUnmounted } from 'vue';
-    import MatchList from '@/components/MatchList.vue';
-    import MatchResultsChart from '@/components/MatchResultsChart.vue';
-    import LiveMatchWidget from '@/components/LiveMatchWidget.vue';
+    import MatchList from '@/pages/home/_components/MatchList.vue';
+    import MatchResultsChart from '@/pages/home/_components/MatchResultsChart.vue';
+    import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
     import { Card } from 'primevue';
 
-    import DefaultLayout from '@/layouts/DefaultLayout.vue';
     import { useMatchStore } from '@/stores/matchStore';
 
     const matchStore = useMatchStore();
@@ -36,24 +35,22 @@
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="md:w-1/3">
-            <LiveMatchWidget />
-        </div>
+    <div class="md:w-1/3">
+        <LiveMatchWidget />
+    </div>
 
-        <Card v-if="recentMatchData.length > 0">
-            <template #title>
-                <h2 class="mb-2">{{ $t('match.recentResults') }}</h2>
-            </template>
-            <template #content>
-                <MatchResultsChart
-                    v-if="matchStore.matchesLoaded"
-                    :data="recentMatchData"
-                />
-            </template>
-        </Card>
+    <Card v-if="recentMatchData.length > 0">
+        <template #title>
+            <h2 class="mb-2">{{ $t('match.recentResults') }}</h2>
+        </template>
+        <template #content>
+            <MatchResultsChart
+                v-if="matchStore.matchesLoaded"
+                :data="recentMatchData"
+            />
+        </template>
+    </Card>
 
-        <h1 class="mt-8 mb-3">{{ $t('match.game', 2) }}</h1>
-        <MatchList />
-    </DefaultLayout>
+    <h1 class="mt-8 mb-3">{{ $t('match.game', 2) }}</h1>
+    <MatchList />
 </template>

@@ -2,7 +2,7 @@
     import { computed } from 'vue';
     import dayjs from 'dayjs';
     import type { Match } from '@/types';
-    import ScoreBox from '@/components/ScoreBox.vue';
+    import ScoreBox from '@/pages/matches/_components/ScoreBox.vue';
     import { CLUBNAME } from '@/constants';
     import { hasStarted } from '@/utils/match';
 

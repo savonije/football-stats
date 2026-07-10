@@ -2,11 +2,14 @@ import {
     createRouter,
     createWebHistory,
     type RouteLocationRaw,
+    type RouteRecordRaw,
 } from 'vue-router';
 
 declare module 'vue-router' {
     interface RouteMeta {
         title?: string;
+        layout?: 'default' | 'blank';
+        heading?: { labelKey: string; count?: number };
         breadcrumb?: Array<{
             labelKey: string;
             count?: number;
@@ -16,17 +19,17 @@ declare module 'vue-router' {
     }
 }
 
-const routes = [
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'home',
-        component: () => import('@/views/HomeView.vue'),
+        component: () => import('@/pages/home/index.vue'),
         meta: { title: "Home - Apollo '69" },
     },
     {
         path: '/match/:id',
         name: 'matchDetail',
-        component: () => import('@/views/MatchView.vue'),
+        component: () => import('@/pages/matches/[id].vue'),
         meta: {
             title: "Wedstrijddetails - Apollo '69",
             breadcrumb: [
@@ -42,7 +45,7 @@ const routes = [
     {
         path: '/player/:id',
         name: 'playerDetail',
-        component: () => import('@/views/PlayerView.vue'),
+        component: () => import('@/pages/players/[id].vue'),
         meta: {
             title: "Spelerdetails - Apollo '69",
             breadcrumb: [
@@ -58,31 +61,43 @@ const routes = [
     {
         path: '/players',
         name: 'players',
-        component: () => import('@/views/PlayersView.vue'),
-        meta: { title: "Spelers - Apollo '69" },
+        component: () => import('@/pages/players/index.vue'),
+        meta: {
+            title: "Spelers - Apollo '69",
+            heading: { labelKey: 'player.player', count: 2 },
+        },
     },
     {
         path: '/topscorers',
         name: 'topscorers',
-        component: () => import('@/views/TopScorersView.vue'),
-        meta: { title: "Topscorers - Apollo '69" },
+        component: () => import('@/pages/topscorers/index.vue'),
+        meta: {
+            title: "Topscorers - Apollo '69",
+            heading: { labelKey: 'common.topscorers' },
+        },
     },
     {
         path: '/washing',
         name: 'washing',
-        component: () => import('@/views/WashingView.vue'),
-        meta: { title: "Wasschema - Apollo '69" },
+        component: () => import('@/pages/washing/index.vue'),
+        meta: {
+            title: "Wasschema - Apollo '69",
+            heading: { labelKey: 'washing.title' },
+        },
     },
     {
         path: '/training',
         name: 'training',
-        component: () => import('@/views/TrainingView.vue'),
-        meta: { title: "Trainingen - Apollo '69" },
+        component: () => import('@/pages/training/index.vue'),
+        meta: {
+            title: "Trainingen - Apollo '69",
+            heading: { labelKey: 'training.title' },
+        },
     },
     {
         path: '/training/:id',
         name: 'trainingDetail',
-        component: () => import('@/views/TrainingDetailView.vue'),
+        component: () => import('@/pages/training/[id].vue'),
         meta: {
             title: "Trainingdetails - Apollo '69",
             breadcrumb: [
@@ -98,8 +113,8 @@ const routes = [
     {
         path: '/login',
         name: 'auth',
-        component: () => import('@/views/AuthView.vue'),
-        meta: { title: "Login -  Apollo '69" },
+        component: () => import('@/pages/login/index.vue'),
+        meta: { title: "Login -  Apollo '69", layout: 'blank' },
     },
 ];
 
