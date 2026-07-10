@@ -1,11 +1,14 @@
 <script setup lang="ts">
     import { computed, onMounted, onUnmounted, ref } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
+    import { getDisplaySeconds } from '@/utils/match';
     import { useI18n } from 'vue-i18n';
     import { Card } from 'primevue';
     import { RouterLink } from 'vue-router';
 
     const matchStore = useMatchStore();
+    const seasonStore = useSeasonStore();
     const { t } = useI18n();
 
     const now = ref(Date.now());
@@ -26,21 +29,15 @@
             ) ?? null,
     );
 
-    const currentMinute = computed(() => {
-        const match = liveMatch.value;
-        if (!match?.startTime) return 0;
-
-        let elapsed = now.value - match.startTime;
-
-        if (match.paused && match.pausedAt) {
-            elapsed -=
-                (match.pausedDuration ?? 0) + (now.value - match.pausedAt);
-        } else {
-            elapsed -= match.pausedDuration ?? 0;
-        }
-
-        return Math.max(0, Math.floor(elapsed / 60_000));
-    });
+    const currentMinute = computed(() =>
+        Math.floor(
+            getDisplaySeconds(
+                liveMatch.value,
+                seasonStore.currentHalfDuration,
+                now.value,
+            ) / 60,
+        ),
+    );
 </script>
 
 <template>

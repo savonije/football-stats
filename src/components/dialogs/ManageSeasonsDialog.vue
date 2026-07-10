@@ -4,6 +4,7 @@
         Dialog,
         InputText,
         InputMask,
+        InputNumber,
         Button,
         Tag,
         useToast,
@@ -23,6 +24,8 @@
     const activatingId = ref<string | null>(null);
     const teamNames = ref<Record<string, string>>({});
     const savingTeamNameId = ref<string | null>(null);
+    const halfDurations = ref<Record<string, number | null>>({});
+    const savingHalfDurationId = ref<string | null>(null);
 
     const addSeason = async () => {
         const id = newSeason.value.trim();
@@ -82,6 +85,40 @@
             });
         } finally {
             savingTeamNameId.value = null;
+        }
+    };
+
+    const saveHalfDuration = async (id: string) => {
+        const season = seasonStore.seasons.find((s) => s.id === id);
+        const value =
+            halfDurations.value[id] ?? season?.halfDurationMinutes ?? null;
+
+        if (value == null || value <= 0) {
+            toast.add({
+                severity: 'warn',
+                summary: t('common.validation.warning'),
+                life: TOAST_LIFE,
+            });
+            return;
+        }
+
+        savingHalfDurationId.value = id;
+        try {
+            await seasonStore.setHalfDuration(id, value);
+            toast.add({
+                severity: 'success',
+                summary: t('common.success'),
+                detail: t('seasons.messages.halfDurationChanged'),
+                life: TOAST_LIFE,
+            });
+        } catch {
+            toast.add({
+                severity: 'error',
+                summary: t('common.messages.error'),
+                life: TOAST_LIFE,
+            });
+        } finally {
+            savingHalfDurationId.value = null;
         }
     };
 
@@ -169,6 +206,37 @@
                                 :aria-label="t('common.save')"
                                 :loading="savingTeamNameId === season.id"
                                 @click="saveTeamName(season.id)"
+                            />
+                        </div>
+                        <div class="flex gap-2">
+                            <InputNumber
+                                class="flex-1"
+                                :model-value="
+                                    halfDurations[season.id] ??
+                                    season.halfDurationMinutes ??
+                                    null
+                                "
+                                size="small"
+                                :min="1"
+                                :max="60"
+                                :suffix="' min'"
+                                :placeholder="
+                                    t('seasons.halfDurationPlaceholder')
+                                "
+                                :aria-label="t('seasons.halfDuration')"
+                                @update:model-value="
+                                    halfDurations[season.id] = $event
+                                "
+                                @keyup.enter="saveHalfDuration(season.id)"
+                            />
+                            <Button
+                                icon="pi pi-check"
+                                size="small"
+                                severity="secondary"
+                                :label="t('common.save')"
+                                :aria-label="t('common.save')"
+                                :loading="savingHalfDurationId === season.id"
+                                @click="saveHalfDuration(season.id)"
                             />
                         </div>
                     </li>

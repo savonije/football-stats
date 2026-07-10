@@ -9,6 +9,7 @@ import {
 import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
+import { DEFAULT_HALF_DURATION_MINUTES } from '@/constants';
 
 const STORAGE_KEY = 'selectedSeason';
 
@@ -17,6 +18,7 @@ export interface Season {
     active: boolean;
     teamname?: string;
     trainingDays?: number[];
+    halfDurationMinutes?: number;
 }
 
 export const useSeasonStore = defineStore('seasonStore', {
@@ -40,6 +42,14 @@ export const useSeasonStore = defineStore('seasonStore', {
             );
             return season?.teamname ?? '';
         },
+        currentHalfDuration(state): number {
+            const season = state.seasons.find(
+                (s) => s.id === state.currentSeason,
+            );
+            return (
+                season?.halfDurationMinutes ?? DEFAULT_HALF_DURATION_MINUTES
+            );
+        },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
                 (season) => season.active && season.id === state.currentSeason,
@@ -59,6 +69,7 @@ export const useSeasonStore = defineStore('seasonStore', {
                     active: d.data().active === true,
                     teamname: d.data().teamname,
                     trainingDays: d.data().trainingDays ?? [],
+                    halfDurationMinutes: d.data().halfDurationMinutes,
                 }))
                 .sort((a, b) => b.id.localeCompare(a.id));
             this.seasonsLoaded = true;
@@ -102,6 +113,13 @@ export const useSeasonStore = defineStore('seasonStore', {
         async setTeamName(id: string, teamname: string) {
             await updateDoc(doc(db, 'seasons', id), {
                 teamname: teamname.trim(),
+            });
+            await this.fetchSeasons();
+        },
+
+        async setHalfDuration(id: string, minutes: number) {
+            await updateDoc(doc(db, 'seasons', id), {
+                halfDurationMinutes: minutes,
             });
             await this.fetchSeasons();
         },

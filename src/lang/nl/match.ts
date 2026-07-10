@@ -5,9 +5,13 @@ export default {
     deleteMatchSuccess: 'Wedstrijd succesvol verwijderd',
     deletePlayerConfirm:
         'Weet je zeker dat je {0} wilt verwijderen uit deze wedstrijd?',
+    endFirstHalf: 'Eerste helft beëindigen',
+    endFirstHalfConfirm:
+        'Weet je zeker dat je de eerste helft wilt beëindigen? Dit kan niet ongedaan worden gemaakt.',
     endMatch: 'Wedstrijd beëindigen',
     endMatchConfirm: 'Weet je zeker dat je deze wedstrijd wilt beëindigen?',
     endMatchSuccess: 'Wedstrijd succesvol beëindigd',
+    firstHalf: '1e helft',
     game: 'Wedstrijd | Wedstrijden',
     goalScorer: 'Doelpuntenmaker',
     goalTypes: {
@@ -16,15 +20,19 @@ export default {
     },
     goalsAgainst: 'Doelpunten tegen',
     goalsFor: 'Doelpunten voor',
+    halfTime: 'Rust',
     isPaused: 'Wedstrijd gepauzeerd',
     isEnded: 'Wedstrijd beëindigd',
     live: 'Live',
     messages: {
+        firstHalfEnded: 'Eerste helft beëindigd',
         matchAdded: 'Wedstrijd succesvol toegevoegd',
         matchAddError: 'Kon de wedstrijd niet toevoegen',
     },
     noMatches: 'Geen wedstrijden gevonden...',
     recentResults: 'Recente resultaten',
     running: 'Wedstrijd is bezig...',
+    secondHalf: '2e helft',
+    startSecondHalf: 'Tweede helft starten',
     viewMatchDetails: 'Bekijk wedstrijd details',
 };

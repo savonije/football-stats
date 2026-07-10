@@ -15,6 +15,8 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
+import { useSeasonStore } from '@/stores/seasonStore';
+import { getDisplaySeconds } from '@/utils/match';
 import type { Appearance, Match } from '@/types';
 
 let _unsubscribeMatches: (() => void) | null = null;
@@ -101,6 +103,35 @@ export const useMatchStore = defineStore('matchStore', {
                 startTime: now,
                 pausedDuration: 0,
                 pausedAt: null,
+                half: 1,
+                halfTime: false,
+            });
+        },
+
+        endFirstHalf(seasonId: string, matchId: string) {
+            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+            const now = Date.now();
+
+            return updateDoc(matchRef, {
+                running: false,
+                paused: true,
+                pausedAt: now,
+                halfTime: true,
+            });
+        },
+
+        startSecondHalf(seasonId: string, matchId: string) {
+            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+            const now = Date.now();
+
+            return updateDoc(matchRef, {
+                half: 2,
+                running: true,
+                paused: false,
+                halfTime: false,
+                startTime: now,
+                pausedDuration: 0,
+                pausedAt: null,
             });
         },
 
@@ -145,6 +176,7 @@ export const useMatchStore = defineStore('matchStore', {
                 ended: true,
                 running: false,
                 paused: false,
+                halfTime: false,
             });
         },
 
@@ -277,16 +309,13 @@ export const useMatchStore = defineStore('matchStore', {
 
         getMatchDuration: () => (match: Match) => {
             if (!match.startTime) return 0;
-            const now = Date.now();
-            let elapsed = now - match.startTime;
-
-            if (match.paused && match.pausedAt) {
-                elapsed -= (match.pausedDuration ?? 0) + (now - match.pausedAt);
-            } else {
-                elapsed -= match.pausedDuration ?? 0;
-            }
-
-            return Math.floor(elapsed / 60000); // minutes
+            const seasonStore = useSeasonStore();
+            const seconds = getDisplaySeconds(
+                match,
+                seasonStore.currentHalfDuration,
+                Date.now(),
+            );
+            return Math.floor(seconds / 60); // minutes
         },
     },
 });
