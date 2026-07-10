@@ -36,7 +36,9 @@ Run these and confirm each before proceeding:
    first or deploy from the current branch. Don't assume.
 3. **Firebase auth** — `firebase projects:list` should succeed (i.e. logged in). If not,
    tell the user to run `! firebase login` in the prompt.
-4. **Show what's shipping** — `git log $(git describe --tags --abbrev=0)..HEAD --oneline`
+4. **GitHub auth** — `gh auth status` should succeed. If not, tell the user to run
+   `! gh auth login` in the prompt (interactive; can't be done for them).
+5. **Show what's shipping** — `git log $(git describe --tags --abbrev=0)..HEAD --oneline`
    so the user sees the commits since the last release.
 
 ## Phase 2 — Bump the version
@@ -62,26 +64,14 @@ step. Capture the new version string (e.g. `v3.3.0`) — you'll reuse it below.
 git push --follow-tags        # pushes the release commit AND the new tag
 ```
 
-Create the GitHub release. **`gh` is not currently installed** — check first:
+Create the GitHub release with `gh` (installed; auth verified in Phase 1):
 
 ```bash
-command -v gh
+gh release create <vX.Y.Z> --generate-notes --title "<vX.Y.Z>"
 ```
 
-- **If `gh` is available:**
-  ```bash
-  gh release create <vX.Y.Z> --generate-notes --title "<vX.Y.Z>"
-  ```
-- **If `gh` is missing:** offer to install it (`brew install gh && gh auth login`), which
-  is the cleanest path. If the user would rather not, fall back to the REST API using a
-  token (`GITHUB_TOKEN` or `gh auth token`), generating notes from the commit range:
-  ```bash
-  curl -sf -X POST \
-    -H "Authorization: Bearer $GITHUB_TOKEN" \
-    -H "Accept: application/vnd.github+json" \
-    https://api.github.com/repos/savonije/football-stats/releases \
-    -d '{"tag_name":"<vX.Y.Z>","name":"<vX.Y.Z>","generate_release_notes":true}'
-  ```
+`--generate-notes` auto-builds the release notes from the commits/PRs since the last tag.
+The command prints the release URL — capture it for the final report.
 
 ## Phase 4 — Build and deploy
 
