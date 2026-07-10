@@ -17,7 +17,7 @@
         seasonId: string;
     }
 
-    const props = defineProps<Props>();
+    const { seasonId } = defineProps<Props>();
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
     const toast = useToast();
@@ -31,7 +31,7 @@
     onMounted(() => {
         timer = setInterval(() => {
             now.value = Date.now();
-        }, 1000); // update every second
+        }, 1000);
     });
 
     onUnmounted(() => {
@@ -70,7 +70,7 @@
 
     const startMatch = () => {
         if (!matchStore.selectedMatch?.id) return;
-        matchStore.startMatch(props.seasonId, matchStore.selectedMatch.id);
+        matchStore.startMatch(seasonId, matchStore.selectedMatch.id);
     };
 
     const endFirstHalf = async () => {
@@ -84,7 +84,7 @@
             acceptClass: 'p-button-warning',
             accept: async () => {
                 await matchStore.endFirstHalf(
-                    props.seasonId,
+                    seasonId,
                     matchStore.selectedMatch!.id,
                 );
                 toast.add({
@@ -99,7 +99,7 @@
 
     const startSecondHalf = () => {
         if (!matchStore.selectedMatch?.id) return;
-        matchStore.startSecondHalf(props.seasonId, matchStore.selectedMatch.id);
+        matchStore.startSecondHalf(seasonId, matchStore.selectedMatch.id);
     };
 
     const endMatch = async () => {
@@ -113,7 +113,7 @@
             acceptClass: 'p-button-success',
             accept: async () => {
                 await matchStore.endMatch(
-                    props.seasonId,
+                    seasonId,
                     matchStore.selectedMatch!.id,
                 );
                 toast.add({
