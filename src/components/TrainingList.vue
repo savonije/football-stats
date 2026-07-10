@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
+    import dayjs from 'dayjs';
     import { Button } from 'primevue';
 
     import { useTrainingStore } from '@/stores/trainingStore';
@@ -17,10 +18,14 @@
     const playerStore = usePlayerStore();
     const { t } = useI18n();
 
+    const VIEW_MONTH_KEY = 'trainingViewMonth';
+
     const showGenerateDialog = ref(false);
     const showTrainingDaysDialog = ref(false);
     // The month currently shown in the calendar; the generator targets it.
-    const viewMonth = ref<Date>(new Date());
+    // Persisted so navigating into a training and back restores the month.
+    const stored = localStorage.getItem(VIEW_MONTH_KEY);
+    const viewMonth = ref<Date>(stored ? dayjs(stored).toDate() : new Date());
     const canEdit = useCanEdit();
 
     const rows = computed(() =>
@@ -40,6 +45,10 @@
         fetchForSeason(seasonStore.currentSeason);
         playerStore.fetchPlayers();
     });
+
+    watch(viewMonth, (month) =>
+        localStorage.setItem(VIEW_MONTH_KEY, dayjs(month).format('YYYY-MM')),
+    );
 
     watch(
         () => seasonStore.currentSeason,
