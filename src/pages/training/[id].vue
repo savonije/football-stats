@@ -13,8 +13,8 @@
     import { useCanEdit } from '@/composables/useCanEdit';
     import { TOAST_LIFE } from '@/constants';
 
-    import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
-    import ProgressSpinner from '@/components/ProgressSpinner.vue';
+    import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
+    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
 
     const route = useRoute();
     const router = useRouter();

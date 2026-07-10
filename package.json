@@ -18,7 +18,7 @@
         "preview": "vite preview",
         "type-check": "vue-tsc --build",
         "typecheck": "vue-tsc --noEmit --skipLibCheck --project tsconfig.app.json",
-        "test:e2e": "playwright test"
+        "test": "playwright test"
     },
     "dependencies": {
         "@primeuix/themes": "^2.0.2",

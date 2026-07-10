@@ -8,11 +8,11 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useCanEdit } from '@/composables/useCanEdit';
-    import ProgressSpinner from '@/components/ProgressSpinner.vue';
-    import TrainingMonthCalendar from '@/components/TrainingMonthCalendar.vue';
-    import GenerateTrainingsDialog from '@/components/GenerateTrainingsDialog.vue';
-    import AddTrainingDialog from '@/components/AddTrainingDialog.vue';
-    import TrainingDaysDialog from '@/components/TrainingDaysDialog.vue';
+    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
+    import TrainingMonthCalendar from '@/pages/training/_components/TrainingMonthCalendar.vue';
+    import GenerateTrainingsDialog from '@/pages/training/_components/GenerateTrainingsDialog.vue';
+    import AddTrainingDialog from '@/pages/training/_components/AddTrainingDialog.vue';
+    import TrainingDaysDialog from '@/pages/training/_components/TrainingDaysDialog.vue';
 
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();

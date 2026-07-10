@@ -7,9 +7,9 @@
     import { useStoreAuth } from '@/stores/authStore';
     import { useSeasonStore } from '@/stores/seasonStore';
 
-    import AddMatchDialog from '@/components/AddMatchDialog.vue';
-    import AddPlayerDialog from '@/components/AddPlayerDialog.vue';
-    import ManageSeasonsDialog from '@/components/ManageSeasonsDialog.vue';
+    import AddMatchDialog from '@/components/dialogs/AddMatchDialog.vue';
+    import AddPlayerDialog from '@/components/dialogs/AddPlayerDialog.vue';
+    import ManageSeasonsDialog from '@/components/dialogs/ManageSeasonsDialog.vue';
 
     const storeAuth = useStoreAuth();
     const seasonStore = useSeasonStore();

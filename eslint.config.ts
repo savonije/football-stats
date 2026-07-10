@@ -21,4 +21,14 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
   ...pluginOxlint.configs['flat/recommended'],
   skipFormatting,
+
+  {
+    // Page components are named by route convention (index.vue, [id].vue),
+    // so the multi-word component-name rule doesn't apply to them.
+    name: 'app/pages',
+    files: ['src/pages/**/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  },
 )

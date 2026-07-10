@@ -11,7 +11,7 @@
         type DataTableRowClickEvent,
     } from 'primevue';
 
-    import ProgressSpinner from '@/components/ProgressSpinner.vue';
+    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
 
     import router from '@/router';
 

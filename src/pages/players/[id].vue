@@ -21,10 +21,10 @@
     import type { Player } from '@/types';
     import { isGuestInSeason, playerSeasonInfo } from '@/utils/playerSeason';
     import { useI18n } from 'vue-i18n';
-    import PlayerGoalsChart from '@/components/PlayerGoalsChart.vue';
-    import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
-    import PlayerInfoRow from '@/components/PlayerInfoRow.vue';
-    import PlayerStatTile from '@/components/PlayerStatTile.vue';
+    import PlayerGoalsChart from '@/pages/players/_components/PlayerGoalsChart.vue';
+    import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
+    import PlayerInfoRow from '@/pages/players/_components/PlayerInfoRow.vue';
+    import PlayerStatTile from '@/pages/players/_components/PlayerStatTile.vue';
 
     const matchStore = useMatchStore();
     const trainingStore = useTrainingStore();

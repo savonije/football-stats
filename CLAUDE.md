@@ -10,7 +10,7 @@ npm run build        # type-check + build for production
 npm run lint         # run oxlint then eslint (both with --fix)
 npm run type-check   # vue-tsc type checking
 npm run format       # prettier format src/
-npm run test:e2e     # Playwright end-to-end tests
+npm run test     # Playwright end-to-end tests
 ```
 
 Playwright tests live in `e2e/` and run against a production preview build (`playwright.config.ts` boots `npm run preview` on port 4173 as its `webServer`). Run a single spec/test:
