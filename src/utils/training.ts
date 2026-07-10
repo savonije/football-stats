@@ -13,7 +13,7 @@ export const weekdayOptions = (): { label: string; value: number }[] => {
             value,
         };
     });
-}
+};
 
 /**
  * All dates within the month of `month` whose weekday is one of
@@ -33,7 +33,7 @@ export const trainingDatesInMonth = (
         }
     }
     return dates;
-}
+};
 
 /**
  * The full grid of days to render a Monday-first month calendar: every day of
@@ -50,4 +50,4 @@ export const monthCalendarDays = (month: Date | Dayjs): Dayjs[] => {
     const totalDays = end.add(trailing, 'day').diff(gridStart, 'day') + 1;
 
     return Array.from({ length: totalDays }, (_, i) => gridStart.add(i, 'day'));
-}
+};

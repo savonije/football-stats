@@ -1,7 +1,7 @@
 import { computed, type ComputedRef } from 'vue';
 
-import { useSeasonStore } from '@/stores/seasonStore';
 import { useStoreAuth } from '@/stores/authStore';
+import { useSeasonStore } from '@/stores/seasonStore';
 
 /**
  * Whether the current user may edit data for the currently selected season.
