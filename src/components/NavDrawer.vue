@@ -131,6 +131,22 @@
                     <span>{{ t('washing.title') }}</span>
                     <i class="pi pi-chevron-right nav-chevron" />
                 </Router-Link>
+
+                <Router-Link
+                    class="nav-item"
+                    :to="{ name: 'training' }"
+                    style="--i: 4"
+                    @click="drawerVisible = false"
+                >
+                    <span
+                        class="nav-icon"
+                        style="background: var(--gradient-accent-green)"
+                    >
+                        <i class="pi pi-calendar" />
+                    </span>
+                    <span>{{ t('training.title') }}</span>
+                    <i class="pi pi-chevron-right nav-chevron" />
+                </Router-Link>
             </nav>
 
             <template v-if="storeAuth.user?.id">

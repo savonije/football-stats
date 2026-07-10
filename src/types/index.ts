@@ -45,6 +45,14 @@ export interface Appearance {
     seasonId: string;
     matchId: string;
 }
+export interface Training {
+    id: string;
+    date: Timestamp;
+    createdAt?: Timestamp;
+    cancelled?: boolean;
+    presentPlayerIds?: string[];
+}
+
 export interface PlayerSeasonInfo {
     active: boolean;
     guestPlayer: boolean;

@@ -16,6 +16,7 @@ export interface Season {
     id: string;
     active: boolean;
     teamname?: string;
+    trainingDays?: number[];
 }
 
 export const useSeasonStore = defineStore('seasonStore', {
@@ -24,8 +25,6 @@ export const useSeasonStore = defineStore('seasonStore', {
         seasons: Season[];
         seasonsLoaded: boolean;
     } => ({
-        // Empty until the season list loads; fetchSeasons() reconciles this
-        // against Firestore (active season, or newest) on startup.
         currentSeason: localStorage.getItem(STORAGE_KEY) ?? '',
         seasons: [],
         seasonsLoaded: false,
@@ -59,6 +58,7 @@ export const useSeasonStore = defineStore('seasonStore', {
                     id: d.id,
                     active: d.data().active === true,
                     teamname: d.data().teamname,
+                    trainingDays: d.data().trainingDays ?? [],
                 }))
                 .sort((a, b) => b.id.localeCompare(a.id));
             this.seasonsLoaded = true;
@@ -102,6 +102,13 @@ export const useSeasonStore = defineStore('seasonStore', {
         async setTeamName(id: string, teamname: string) {
             await updateDoc(doc(db, 'seasons', id), {
                 teamname: teamname.trim(),
+            });
+            await this.fetchSeasons();
+        },
+
+        async setTrainingDays(id: string, days: number[]) {
+            await updateDoc(doc(db, 'seasons', id), {
+                trainingDays: [...days].sort((a, b) => a - b),
             });
             await this.fetchSeasons();
         },

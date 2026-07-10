@@ -2,6 +2,7 @@
     import { computed, onMounted, ref, watch } from 'vue';
     import { useRoute } from 'vue-router';
     import { useMatchStore } from '@/stores/matchStore';
+    import { useTrainingStore } from '@/stores/trainingStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useStoreAuth } from '@/stores/authStore';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -26,6 +27,7 @@
     import PlayerStatTile from '@/components/PlayerStatTile.vue';
 
     const matchStore = useMatchStore();
+    const trainingStore = useTrainingStore();
     const playerStore = usePlayerStore();
     const AuthStore = useStoreAuth();
     const seasonStore = useSeasonStore();
@@ -49,29 +51,61 @@
     const playerAppearances = computed(() =>
         matchStore.appearances.filter((a) => a.playerId === playerId.value),
     );
+
     const totalGoals = computed(() =>
         playerAppearances.value.reduce((sum, a) => sum + (a.goals || 0), 0),
     );
+
     const totalAppearances = computed(
         () => playerAppearances.value.filter((a) => a.present).length,
     );
+
     const totalKeeper = computed(
         () => playerAppearances.value.filter((a) => a.isGoalkeeper).length,
     );
+
     const totalMatches = computed(() => matchStore.matches.length);
+
     const totalWashes = computed(
         () =>
             matchStore.matches.filter((m) => m.washing === playerId.value)
                 .length,
     );
+
     const goalsPerMatch = computed(() =>
         totalAppearances.value > 0
             ? (totalGoals.value / totalAppearances.value).toFixed(2)
             : '0.00',
     );
+
     const attendancePercentage = computed(() =>
         totalMatches.value > 0
             ? Math.round((totalAppearances.value / totalMatches.value) * 100)
+            : 0,
+    );
+
+    const activeTrainings = computed(() => {
+        const now = Date.now() / 1000;
+        return trainingStore.trainings.filter(
+            (training) =>
+                !training.cancelled && (training.date?.seconds ?? 0) <= now,
+        );
+    });
+
+    const playerTrainingCount = computed(
+        () =>
+            activeTrainings.value.filter((training) =>
+                (training.presentPlayerIds ?? []).includes(playerId.value),
+            ).length,
+    );
+
+    const totalTrainings = computed(() => activeTrainings.value.length);
+
+    const trainingAttendancePercentage = computed(() =>
+        totalTrainings.value > 0
+            ? Math.round(
+                  (playerTrainingCount.value / totalTrainings.value) * 100,
+              )
             : 0,
     );
 
@@ -85,6 +119,21 @@
                 }, 80);
             } else {
                 animatedBarWidth.value = 0;
+            }
+        },
+        { immediate: true },
+    );
+
+    const animatedTrainingBarWidth = ref(0);
+    watch(
+        [loading, trainingAttendancePercentage],
+        ([isLoading, pct]) => {
+            if (!isLoading) {
+                setTimeout(() => {
+                    animatedTrainingBarWidth.value = pct as number;
+                }, 80);
+            } else {
+                animatedTrainingBarWidth.value = 0;
             }
         },
         { immediate: true },
@@ -163,6 +212,7 @@
         player.value = p ?? null;
         matchStore.fetchMatches(seasonStore.currentSeason);
         matchStore.fetchAppearances(seasonStore.currentSeason);
+        trainingStore.fetchTrainings(seasonStore.currentSeason);
         loading.value = false;
     });
 
@@ -171,6 +221,7 @@
         (seasonId) => {
             matchStore.fetchMatches(seasonId);
             matchStore.fetchAppearances(seasonId);
+            trainingStore.fetchTrainings(seasonId);
         },
     );
 </script>
@@ -232,7 +283,7 @@
     </div>
 
     <!-- Stat tiles -->
-    <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-6">
+    <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-7">
         <PlayerStatTile
             icon="pi-trophy"
             gradient="var(--gradient-accent-amber)"
@@ -311,6 +362,29 @@
                         class="h-full rounded-full bg-gradient-to-r from-green-500 to-green-700 transition-[width] duration-900 [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
                         aria-hidden="true"
                         :style="{ width: `${animatedBarWidth}%` }"
+                    />
+                </div>
+            </template>
+        </PlayerStatTile>
+
+        <PlayerStatTile
+            icon="pi-calendar-plus"
+            gradient="var(--gradient-accent-teal)"
+            :label="$t('training.attendancePercentage')"
+            :loading="loading"
+        >
+            <div class="text-primary-900 text-4xl leading-none font-black">
+                {{ trainingAttendancePercentage }}
+                <span class="text-primary-300 text-lg font-medium">%</span>
+            </div>
+            <template #extra>
+                <div
+                    class="bg-primary-700/10 mt-2 h-1 overflow-hidden rounded-full"
+                >
+                    <div
+                        class="h-full rounded-full bg-gradient-to-r from-teal-500 to-teal-700 transition-[width] duration-900 [transition-timing-function:cubic-bezier(0.25,0.46,0.45,0.94)]"
+                        aria-hidden="true"
+                        :style="{ width: `${animatedTrainingBarWidth}%` }"
                     />
                 </div>
             </template>
