@@ -22,6 +22,8 @@ export interface Match {
     startTime?: number;
     pausedAt?: number;
     pausedDuration?: number;
+    half?: number;
+    halfTime?: boolean;
 }
 
 export interface NewMatch {
