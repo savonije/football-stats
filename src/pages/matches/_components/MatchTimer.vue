@@ -81,7 +81,7 @@
             header: t('match.endFirstHalf'),
             rejectLabel: t('common.cancel'),
             acceptLabel: t('match.endFirstHalf'),
-            acceptClass: 'p-button-warning',
+            acceptClass: 'p-button-success',
             accept: async () => {
                 await matchStore.endFirstHalf(
                     seasonId,
