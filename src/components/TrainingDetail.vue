@@ -9,8 +9,8 @@
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
-    import { useStoreAuth } from '@/stores/authStore';
     import { isGuestInSeason } from '@/utils/playerSeason';
+    import { useCanEdit } from '@/composables/useCanEdit';
     import { TOAST_LIFE } from '@/constants';
 
     import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -25,13 +25,10 @@
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
     const playerStore = usePlayerStore();
-    const authStore = useStoreAuth();
 
     const trainingId = computed(() => route.params.id as string);
 
-    const canEdit = computed(
-        () => !!authStore.user?.id && seasonStore.isCurrentSeasonActive,
-    );
+    const canEdit = useCanEdit();
 
     const training = computed(() => trainingStore.selectedTraining);
     const isCancelled = computed(() => training.value?.cancelled === true);
@@ -42,11 +39,9 @@
             : '',
     );
 
-    // The checklist is the season squad (guests excluded, matching how
-    // trainings are generated); "present" is membership in the training's
-    // presentPlayerIds array.
     const attendees = computed(() => {
         const present = new Set(training.value?.presentPlayerIds ?? []);
+
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
             .filter((p) => !isGuestInSeason(p, seasonStore.currentSeason))
@@ -76,6 +71,7 @@
             trainingId.value,
             true,
         );
+
         toast.add({
             severity: 'success',
             summary: t('common.success'),
@@ -90,6 +86,7 @@
             trainingId.value,
             false,
         );
+
         toast.add({
             severity: 'success',
             summary: t('common.success'),
@@ -103,17 +100,20 @@
             seasonStore.currentSeason,
             trainingId.value,
         );
+
         toast.add({
             severity: 'success',
             summary: t('common.success'),
             detail: t('common.changesSaved'),
             life: TOAST_LIFE,
         });
+
         router.push({ name: 'training' });
     };
 
     onMounted(() => {
         playerStore.fetchPlayers();
+
         trainingStore.fetchTrainingDetails(
             seasonStore.currentSeason,
             trainingId.value,
@@ -148,7 +148,6 @@
             />
         </div>
 
-        <!-- Cancel / uncancel control -->
         <div v-if="canEdit" class="mb-6">
             <Button
                 v-if="!isCancelled"
@@ -169,7 +168,6 @@
             />
         </div>
 
-        <!-- Presence checklist -->
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div
                 v-for="attendee in attendees"
@@ -194,7 +192,7 @@
                 variant="outlined"
                 @click="
                     confirm.require({
-                        message: t('training.title'),
+                        message: t('training.deleteTrainingConfirm'),
                         header: t('common.delete'),
                         icon: 'pi pi-exclamation-triangle',
                         rejectLabel: t('common.cancel'),

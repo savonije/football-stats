@@ -12,7 +12,7 @@
     import { TOAST_LIFE } from '@/constants';
 
     const model = defineModel<boolean>('visible');
-    const props = defineProps<{ initialMonth?: Date }>();
+    const { initialMonth } = defineProps<{ initialMonth?: Date }>();
 
     const { t } = useI18n();
     const toast = useToast();
@@ -60,7 +60,7 @@
             toast.add({
                 severity: 'success',
                 summary: t('common.messages.success'),
-                detail: t('training.messages.trainingsGenerated', count),
+                detail: t('training.messages.trainingsGenerated', { count }),
                 life: TOAST_LIFE,
             });
             closeDialog();
@@ -79,7 +79,7 @@
 
     // Default to the month in view (or the current month) each time it opens.
     watch(model, (visible) => {
-        if (visible) month.value = props.initialMonth ?? new Date();
+        if (visible) month.value = initialMonth ?? new Date();
     });
 </script>
 
@@ -90,7 +90,6 @@
         modal
         closable
         dismissableMask
-        style="width: 420px"
     >
         <div class="flex flex-col gap-4">
             <Message
@@ -115,7 +114,11 @@
 
                 <p class="text-primary-500 text-sm font-medium">
                     <template v-if="newDates.length">
-                        {{ t('training.newTrainingsCount', newDates.length) }}
+                        {{
+                            t('training.newTrainingsCount', {
+                                count: newDates.length,
+                            })
+                        }}
                     </template>
                     <template v-else>
                         {{ t('training.allExist') }}

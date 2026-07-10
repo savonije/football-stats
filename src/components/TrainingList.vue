@@ -6,7 +6,7 @@
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
-    import { useStoreAuth } from '@/stores/authStore';
+    import { useCanEdit } from '@/composables/useCanEdit';
     import ProgressSpinner from '@/components/ProgressSpinner.vue';
     import TrainingMonthCalendar from '@/components/TrainingMonthCalendar.vue';
     import GenerateTrainingsDialog from '@/components/GenerateTrainingsDialog.vue';
@@ -15,16 +15,13 @@
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
     const playerStore = usePlayerStore();
-    const authStore = useStoreAuth();
     const { t } = useI18n();
 
     const showGenerateDialog = ref(false);
     const showTrainingDaysDialog = ref(false);
     // The month currently shown in the calendar; the generator targets it.
     const viewMonth = ref<Date>(new Date());
-    const canEdit = computed(
-        () => !!authStore.user?.id && seasonStore.isCurrentSeasonActive,
-    );
+    const canEdit = useCanEdit();
 
     const rows = computed(() =>
         trainingStore.trainings.map((training) => ({

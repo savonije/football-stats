@@ -16,8 +16,6 @@ export interface Season {
     id: string;
     active: boolean;
     teamname?: string;
-    // Weekdays the team trains, as dayjs `.day()` numbers (0=Sun … 6=Sat).
-    // Used as the default date when adding a training.
     trainingDays?: number[];
 }
 
@@ -27,8 +25,6 @@ export const useSeasonStore = defineStore('seasonStore', {
         seasons: Season[];
         seasonsLoaded: boolean;
     } => ({
-        // Empty until the season list loads; fetchSeasons() reconciles this
-        // against Firestore (active season, or newest) on startup.
         currentSeason: localStorage.getItem(STORAGE_KEY) ?? '',
         seasons: [],
         seasonsLoaded: false,

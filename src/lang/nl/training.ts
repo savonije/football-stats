@@ -13,6 +13,7 @@ export default {
     presentCount: '{present} / {total} aanwezig',
     attendancePercentage: 'Trainingsopkomst (%)',
     trainingDays: 'Trainingsdagen',
+    deleteTrainingConfirm: 'Weet je zeker dat je deze training wilt verwijderen?',
     cancelled: 'Afgelast',
     cancel: 'Training afgelasten',
     uncancel: 'Afgelasting ongedaan maken',

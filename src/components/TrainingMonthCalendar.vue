@@ -15,10 +15,8 @@
         presentCount: number;
     }
 
-    const props = defineProps<{ trainings: TrainingCell[] }>();
+    const { trainings } = defineProps<{ trainings: TrainingCell[] }>();
 
-    // The month in view, owned by the parent so the "generate" action can
-    // target it. Normalised to the start of the month for rendering.
     const month = defineModel<Date>('month', { required: true });
 
     const router = useRouter();
@@ -35,10 +33,9 @@
         weekdayOptions().map((o) => o.label.slice(0, 2)),
     );
 
-    // Trainings keyed by day for quick lookup while rendering the grid.
     const trainingByDay = computed(() => {
         const map = new Map<string, TrainingCell>();
-        for (const training of props.trainings) {
+        for (const training of trainings) {
             if (!training.date) continue;
             map.set(
                 dayjs(training.date.toDate()).format('YYYY-MM-DD'),
@@ -79,7 +76,7 @@
                 text
                 rounded
                 size="small"
-                :aria-label="t('common.view')"
+                :aria-label="t('common.previousMonth')"
                 @click="prevMonth"
             />
             <div class="flex flex-1 items-center justify-center gap-3">
@@ -96,7 +93,7 @@
                 text
                 rounded
                 size="small"
-                :aria-label="t('common.view')"
+                :aria-label="t('common.nextMonth')"
                 @click="nextMonth"
             />
         </div>
@@ -105,7 +102,7 @@
             <span
                 v-for="label in weekdayLabels"
                 :key="label"
-                class="text-[0.6rem] font-bold tracking-wide text-gray-400 uppercase"
+                class="text-xs font-bold tracking-wide text-gray-400 uppercase"
             >
                 {{ label }}
             </span>
@@ -134,15 +131,15 @@
                 <template v-if="day.training">
                     <Tag
                         v-if="day.training.cancelled"
-                        class="!text-[0.55rem]"
+                        class="!text-xs"
                         severity="danger"
                         :value="t('training.cancelled')"
                     />
                     <span
                         v-else
-                        class="inline-flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-[0.7rem] font-bold text-green-700"
+                        class="inline-flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-bold text-green-700"
                     >
-                        <i class="pi pi-check text-[0.5rem]" />
+                        <i class="pi pi-check text-xs" />
                         {{ day.training.presentCount }}
                     </span>
                 </template>

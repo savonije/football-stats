@@ -17,7 +17,7 @@
 <template>
     <nav
         v-if="crumbs.length"
-        class="mb-4 flex items-center gap-1.5 text-[0.8rem] font-medium"
+        class="mb-4 flex items-center gap-1.5 text-xs font-medium"
     >
         <template v-for="(crumb, i) in crumbs" :key="i">
             <Router-Link
@@ -27,7 +27,7 @@
                 <i v-if="crumb.icon" :class="crumb.icon" />
                 {{ t(crumb.labelKey, crumb.count ?? 1) }}
             </Router-Link>
-            <i class="pi pi-chevron-right text-primary-300 text-[0.55rem]" />
+            <i class="pi pi-chevron-right text-primary-300 text-xs" />
         </template>
         <span class="text-primary-300 flex items-center">
             <Skeleton v-if="label === undefined" height="14px" width="80px" />

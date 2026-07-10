@@ -24,15 +24,6 @@
                 ?.trainingDays ?? [],
     );
 
-    // Seed the picker whenever the dialog opens or the season changes.
-    watch(
-        [model, currentSeasonTrainingDays],
-        ([visible, days]) => {
-            if (visible) selectedTrainingDays.value = [...days];
-        },
-        { immediate: true },
-    );
-
     const save = async () => {
         saving.value = true;
         try {
@@ -57,6 +48,14 @@
             saving.value = false;
         }
     };
+
+    watch(
+        [model, currentSeasonTrainingDays],
+        ([visible, days]) => {
+            if (visible) selectedTrainingDays.value = [...days];
+        },
+        { immediate: true },
+    );
 </script>
 
 <template>
@@ -66,7 +65,6 @@
         modal
         closable
         dismissableMask
-        style="width: 380px"
     >
         <div class="flex flex-col gap-2">
             <label>{{ t('training.trainingDays') }}</label>

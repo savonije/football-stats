@@ -4,7 +4,7 @@ import dayjs, { type Dayjs } from 'dayjs';
  * Weekdays in Monday-first display order, as dayjs `.day()` numbers
  * (0=Sun … 6=Sat). Labels are pulled from the active dayjs locale (nl).
  */
-export function weekdayOptions(): { label: string; value: number }[] {
+export const weekdayOptions = (): { label: string; value: number }[] => {
     const mondayFirst = [1, 2, 3, 4, 5, 6, 0];
     return mondayFirst.map((value) => {
         const name = dayjs().day(value).format('dddd');
@@ -19,10 +19,10 @@ export function weekdayOptions(): { label: string; value: number }[] {
  * All dates within the month of `month` whose weekday is one of
  * `trainingDays`. Used to bulk-generate a month of training sessions.
  */
-export function trainingDatesInMonth(
+export const trainingDatesInMonth = (
     month: Date | Dayjs,
     trainingDays: number[],
-): Date[] {
+): Date[] => {
     if (!trainingDays.length) return [];
     const start = dayjs(month).startOf('month');
     const dates: Date[] = [];
@@ -39,7 +39,7 @@ export function trainingDatesInMonth(
  * The full grid of days to render a Monday-first month calendar: every day of
  * `month` plus the leading/trailing days needed to complete whole weeks.
  */
-export function monthCalendarDays(month: Date | Dayjs): Dayjs[] {
+export const monthCalendarDays = (month: Date | Dayjs): Dayjs[] => {
     const start = dayjs(month).startOf('month');
     const end = dayjs(month).endOf('month');
 

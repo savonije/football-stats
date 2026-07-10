@@ -45,6 +45,13 @@ This applies to spacing (`p/m/gap/space`), sizing (`w/h/size/min/max`), `text-*`
 resort — the codebase uses only a handful (`w-[400px]`, `border-[3px]`,
 `transition-[width]`) and only where no scale step fits.
 
+**Font size is never a last resort — always use a preset size.** Never write an
+arbitrary font size like `text-[0.7rem]` or `text-[14px]`. Use only the named text
+sizes: the standard scale (`text-xs`, `text-sm`, `text-base`, `text-lg`, …) plus the
+project token `text-xxs` (0.65rem) for anything smaller than `text-xs`. If you need a
+size that none of these provide, add a `--text-*` token to the `@theme` block (see
+§3) rather than inlining a bracket value.
+
 ## 2. Use the project's theme tokens, not raw hex / one-off values
 
 Custom tokens are defined in the `@theme` block of `src/styles/main.css`. Always
