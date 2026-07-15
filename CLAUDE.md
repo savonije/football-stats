@@ -7,10 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run dev          # dev server with hot-reload
 npm run build        # type-check + build for production
-npm run lint         # run oxlint then eslint (both with --fix)
-npm run type-check   # vue-tsc type checking
-npm run format       # prettier format src/
-npm run test     # Playwright end-to-end tests
+npm run lint         # eslint then oxlint (run-s lint:*, both with --fix)
+npm run type-check   # vue-tsc --build type checking
+npm run prettier     # prettier --write src/ (prettier:check to verify only)
+npm run test         # Playwright end-to-end tests
 ```
 
 Playwright tests live in `e2e/` and run against a production preview build (`playwright.config.ts` boots `npm run preview` on port 4173 as its `webServer`). Run a single spec/test:
@@ -35,6 +35,7 @@ seasons/{seasonId}                         # { active: bool, teamname?: string }
 players/{playerId}                         # { ..., seasons: { [seasonId]: {...} } }
 seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
+seasons/{seasonId}/trainings/{trainingId}  # { date, presentPlayerIds: string[], ... }
 ```
 
 Seasons are dynamic Firestore documents, not a constant. `seasonStore` fetches the season list and tracks `currentSeason`, persisted to `localStorage` (`selectedSeason`) and reconciled on startup against the `active` season doc (falling back to the newest by id). Match/appearance queries are scoped by passing `seasonStore.currentSeason` into store actions — components read it and `watch(() => seasonStore.currentSeason)` to refetch when the user switches seasons.
@@ -48,15 +49,17 @@ Players are a single top-level collection but carry a per-season `seasons` map (
 
 ### State management (Pinia)
 
-Four stores: `authStore`, `matchStore`, `playerStore`, `seasonStore`. The router is injected into every store via a Pinia plugin in `main.ts`, so stores can navigate with `this.router.push(...)`.
+Five stores: `authStore`, `matchStore`, `playerStore`, `seasonStore`, `trainingStore`. The router is injected into every store via a Pinia plugin in `main.ts`, so stores can navigate with `this.router.push(...)`.
 
-`matchStore` also drives the live match timer (`startMatch`/`pauseMatch`/`resumeMatch`/`endMatch`), which mutates the match doc directly.
+`matchStore` also drives the live match timer (`startMatch`/`pauseMatch`/`resumeMatch`/`endMatch`), which mutates the match doc directly. `trainingStore` follows the same reactive-store shape (`trainings`/`selectedTraining` with `*Loaded` flags), scoped by `seasonId`; training presence is a `presentPlayerIds` array on each training doc.
 
-`authStore.init()` is called once in `App.vue` `onMounted` to subscribe to Firebase auth state — unauthenticated users are not redirected from most routes, but write operations require auth.
+`authStore.init()` is called once in `App.vue` `onMounted` to subscribe to Firebase auth state — unauthenticated users are not redirected from most routes, but write operations require auth. Use the `useCanEdit()` composable (`src/composables/`) to gate edit UI — it is true only when a user is authenticated *and* the currently selected season is active.
 
-### UI layer
+### Routing & UI layer
 
-Views (`src/views/`) are thin wrappers: they apply `DefaultLayout` and render a single component. All logic lives in `src/components/`.
+Routes are defined manually in `src/router/index.ts` (not file-system auto-routing) but point at page components under `src/pages/` that follow a file-based naming convention: `pages/<domain>/index.vue` for list/index routes and `pages/<domain>/[id].vue` for detail routes. Route `meta` is typed (`title`, `layout`, `heading`, `breadcrumb`) and drives the page header and breadcrumbs.
+
+Each page keeps its own private sub-components in a co-located `_components/` folder (e.g. `pages/matches/_components/MatchTimer.vue`). Truly shared components live under `src/components/` (`ui/`, `layout/`, `dialogs/`). Domains: home, matches, players, topscorers, training, washing (wasschema), login.
 
 PrimeVue (Aura preset) handles UI components. The primary color palette is sourced from Tailwind CSS custom properties and unified in `main.ts` via `definePreset`. Global PrimeVue services (`Toast`, `ConfirmDialog`, `ConfirmationService`) are registered in `main.ts` and rendered in `App.vue`.
 
