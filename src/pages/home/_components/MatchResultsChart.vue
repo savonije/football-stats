@@ -17,6 +17,12 @@
 
     const vTooltip = Tooltip;
 
+    // Touch devices have no hover, and tapping a tabindex div doesn't reliably
+    // focus it (notably iOS Safari), so focus it explicitly to trigger the tooltip.
+    const focusBar = (e: Event) => {
+        (e.currentTarget as HTMLElement).focus();
+    };
+
     const barWidth = computed(() => (containerWidth.value < 640 ? 30 : 60));
     const MAX_BAR_H = 75;
     const DRAW_H = 6;
@@ -111,7 +117,7 @@
         {{ t('match.noMatches') }}
     </div>
 
-    <div v-else ref="containerRef" class="mt-2 w-full">
+    <div v-else ref="containerRef" class="relative mt-2 w-full">
         <svg
             v-if="containerWidth > 0"
             width="100%"
@@ -130,21 +136,19 @@
 
             <g v-for="(bar, i) in bars" :key="i">
                 <rect
-                    v-tooltip.focus="bar.opponent"
                     :x="bar.barX"
                     :y="bar.barY"
                     :width="bar.barW"
                     :height="bar.barH"
                     :fill="bar.color"
                     opacity="0.85"
-                    style="cursor: pointer"
                 />
 
                 <text
                     :x="bar.cx"
                     :y="bar.labelY"
                     text-anchor="middle"
-                    font-size="11"
+                    font-size="16"
                     font-weight="600"
                     :fill="bar.labelColor"
                 >
@@ -152,5 +156,20 @@
                 </text>
             </g>
         </svg>
+
+        <div
+            v-for="(bar, i) in bars"
+            :key="i"
+            v-tooltip.top="{ value: bar.opponent, event: 'both' }"
+            class="absolute cursor-pointer"
+            :style="{
+                left: `${bar.barX}px`,
+                top: `${bar.barY}px`,
+                width: `${bar.barW}px`,
+                height: `${bar.barH}px`,
+            }"
+            tabindex="0"
+            @click="focusBar"
+        />
     </div>
 </template>
