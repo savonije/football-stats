@@ -56,11 +56,27 @@ npm run dev
 npm run build
 ```
 
-### Linting
+### Linting & Formatting
 
 ```sh
-# Check code style with ESLint
+# Lint with ESLint + oxlint (both auto-fix)
 npm run lint
+
+# Type-check with vue-tsc
+npm run type-check
+
+# Format source with Prettier
+npm run prettier
+```
+
+### Testing
+
+End-to-end tests use [Playwright](https://playwright.dev/) and live in `e2e/`. They run against a production preview build (Playwright boots `npm run preview` on port 4173 automatically).
+
+```sh
+npm run test                              # run all e2e tests
+npx playwright test e2e/home.spec.ts      # a single file
+npx playwright test -g "shows top scorers" # by test title
 ```
 
 ---
@@ -87,9 +103,10 @@ VITE_FIREBASE_AUTH_DOMAIN=""
 VITE_FIREBASE_MESSAGE_SENDER_ID=""
 VITE_FIREBASE_PROJECT_ID=""
 VITE_FIREBASE_STORAGE_BUCKET=""
+VITE_CLUBNAME=""
 ```
 
-Fill in the values from your Firebase project settings (**Project Settings > General > Your apps**).
+See `.env.example` for the full list. Fill in the Firebase values from your project settings (**Project Settings > General > Your apps**), and set `VITE_CLUBNAME` to your team's name (used across the UI).
 
 ### 3. Firebase CLI Configuration
 
@@ -104,9 +121,9 @@ Your `firebase.json` should include:
 
 ```json
 {
-  "projects": {
-    "default": ""
-  }
+    "projects": {
+        "default": ""
+    }
 }
 ```
 
@@ -127,12 +144,20 @@ firebase deploy
 
 ```plaintext
 src/
-├── assets/        # Static assets (images, icons, etc.)
-├── components/    # Reusable Vue components
-├── views/         # Main app views/pages
-├── store/         # Pinia stores
+├── pages/         # Route pages (index.vue / [id].vue) with co-located _components/
+├── components/    # Shared components (ui/, layout/, dialogs/)
+├── layouts/       # Page layouts (DefaultLayout, BlankLayout)
+├── stores/        # Pinia stores (auth, match, player, season, training)
+├── services/      # One-shot Firestore reads/writes
+├── composables/   # Reusable composition functions (e.g. useCanEdit)
 ├── router/        # App routes
-├── firebase/      # Firebase config & services
+├── firebase/      # Firebase config & init
+├── lang/          # i18n strings (Dutch)
+├── utils/         # Helpers (playerSeason, match, training, tailwind)
+├── types/         # Shared TypeScript types
+├── config/        # i18n & dayjs setup
+├── constants/     # App-wide constants
+├── styles/        # Global CSS
 └── App.vue        # Root component
 ```
 
@@ -141,4 +166,3 @@ src/
 ## 📜 License
 
 This project is licensed under the **MIT License**.
-
