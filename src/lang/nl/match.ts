@@ -20,7 +20,9 @@ export default {
     },
     goalsAgainst: 'Doelpunten tegen',
     goalsFor: 'Doelpunten voor',
+    gamesWon: 'Gewonnen',
     halfTime: 'Rust',
+    matchesPlayed: 'Wedstrijden gespeeld',
     isPaused: 'Wedstrijd gepauzeerd',
     isEnded: 'Wedstrijd beëindigd',
     live: 'Live',
@@ -34,5 +36,7 @@ export default {
     running: 'Wedstrijd is bezig...',
     secondHalf: '2e helft',
     startSecondHalf: 'Tweede helft starten',
+    teamStats: 'Teamstatistieken',
     viewMatchDetails: 'Bekijk wedstrijd details',
+    winPercentage: 'Winstpercentage',
 };

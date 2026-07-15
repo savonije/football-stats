@@ -3,7 +3,7 @@
     import MatchList from '@/pages/home/_components/MatchList.vue';
     import MatchResultsChart from '@/pages/home/_components/MatchResultsChart.vue';
     import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
-    import { Card } from 'primevue';
+    import TeamStats from '@/pages/home/_components/TeamStats.vue';
 
     import { useMatchStore } from '@/stores/matchStore';
 
@@ -39,17 +39,15 @@
         <LiveMatchWidget />
     </div>
 
-    <Card v-if="recentMatchData.length > 0">
-        <template #title>
-            <h2 class="mb-2">{{ $t('match.recentResults') }}</h2>
-        </template>
-        <template #content>
-            <MatchResultsChart
-                v-if="matchStore.matchesLoaded"
-                :data="recentMatchData"
-            />
-        </template>
-    </Card>
+    <TeamStats class="mt-8" />
+
+    <section v-if="recentMatchData.length > 0" class="mt-20">
+        <h2 class="mb-6">{{ $t('match.recentResults') }}</h2>
+        <MatchResultsChart
+            v-if="matchStore.matchesLoaded"
+            :data="recentMatchData"
+        />
+    </section>
 
     <h1 class="mt-8 mb-3">{{ $t('match.game', 2) }}</h1>
     <MatchList />
