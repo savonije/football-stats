@@ -66,12 +66,6 @@
 
     const totalMatches = computed(() => matchStore.matches.length);
 
-    const totalWashes = computed(
-        () =>
-            matchStore.matches.filter((m) => m.washing === playerId.value)
-                .length,
-    );
-
     const goalsPerMatch = computed(() =>
         totalAppearances.value > 0
             ? (totalGoals.value / totalAppearances.value).toFixed(2)
@@ -229,7 +223,6 @@
 <template>
     <AppBreadcrumb :label="player?.name" />
 
-    <!-- Hero banner -->
     <div
         class="shadow-hero relative mb-6 overflow-hidden rounded-2xl [background:var(--gradient-brand)]"
     >
@@ -283,7 +276,7 @@
     </div>
 
     <!-- Stat tiles -->
-    <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-7">
+    <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-6">
         <PlayerStatTile
             icon="pi-trophy"
             gradient="var(--gradient-accent-amber)"
@@ -292,21 +285,6 @@
         >
             <div class="text-primary-900 text-4xl leading-none font-black">
                 {{ totalGoals }}
-            </div>
-        </PlayerStatTile>
-
-        <PlayerStatTile
-            icon="pi-calendar"
-            gradient="var(--gradient-accent-blue)"
-            :label="$t('player.totalAppearances')"
-            :loading="loading"
-            skeleton-width="80px"
-        >
-            <div class="text-primary-900 text-4xl leading-none font-black">
-                {{ totalAppearances
-                }}<span class="text-primary-300 text-lg font-medium"
-                    >/{{ totalMatches }}</span
-                >
             </div>
         </PlayerStatTile>
 
@@ -334,13 +312,17 @@
         </PlayerStatTile>
 
         <PlayerStatTile
-            icon="pi-sparkles"
-            gradient="var(--gradient-accent-red)"
-            :label="$t('washing.totalWashes')"
+            icon="pi-calendar"
+            gradient="var(--gradient-accent-blue)"
+            :label="$t('player.totalAppearances')"
             :loading="loading"
+            skeleton-width="80px"
         >
             <div class="text-primary-900 text-4xl leading-none font-black">
-                {{ totalWashes }}
+                {{ totalAppearances
+                }}<span class="text-primary-300 text-lg font-medium"
+                    >/{{ totalMatches }}</span
+                >
             </div>
         </PlayerStatTile>
 
