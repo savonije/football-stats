@@ -172,13 +172,27 @@
             <div
                 v-for="attendee in attendees"
                 :key="attendee.id"
-                class="shadow-card flex items-center justify-between rounded-xl bg-white px-4 py-3"
-                :class="{ 'opacity-60': isCancelled }"
+                class="shadow-card flex items-center justify-between gap-3 rounded-xl border-l-4 px-4 py-3"
+                :class="[
+                    attendee.present
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-red-400 bg-red-50',
+                    { 'opacity-30': isCancelled },
+                ]"
             >
-                <span class="font-medium">{{ attendee.playerName }}</span>
+                <span
+                    class="font-medium"
+                    :class="
+                        attendee.present ? 'text-green-900' : 'text-red-900'
+                    "
+                >
+                    {{ attendee.playerName }}
+                </span>
+
                 <ToggleSwitch
+                    v-if="canEdit && !isCancelled"
+                    :aria-label="attendee.playerName"
                     :model-value="attendee.present"
-                    :disabled="!canEdit || isCancelled"
                     @update:model-value="togglePresent(attendee.id, $event)"
                 />
             </div>
