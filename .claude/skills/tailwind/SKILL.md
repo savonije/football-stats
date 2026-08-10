@@ -1,5 +1,5 @@
 ---
-name: tailwind-conventions
+name: tailwind
 description: >-
     Use whenever writing or editing Tailwind utility classes in this repo's .vue or
     .css files. This is a Tailwind v4 project (no tailwind.config.js) — the theme is
