@@ -1,6 +1,6 @@
 export default {
     add: 'Toevoegen',
-    attendancePercentage: 'Aanwezigheid (%)',
+    attendancePercentage: 'Wedstrijdsopkomst (%)',
     away: 'Uit',
     cancel: 'Annuleren',
     changesSaved: 'Wijzigingen opgeslagen',

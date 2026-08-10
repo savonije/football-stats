@@ -3,31 +3,16 @@
 
     withDefaults(
         defineProps<{
-            icon: string;
-            gradient: string;
             label: string;
             loading: boolean;
             skeletonWidth?: string;
-            colSpan?: boolean;
         }>(),
-        {
-            skeletonWidth: '56px',
-            colSpan: false,
-        },
+        { skeletonWidth: '56px' },
     );
 </script>
 
 <template>
-    <div
-        class="shadow-card flex flex-col gap-1 rounded-xl bg-white p-5"
-        :class="{ 'col-span-2 lg:col-span-1': colSpan }"
-    >
-        <div
-            class="shadow-icon mb-2 flex size-9 items-center justify-center rounded-lg text-base text-white"
-            :style="{ background: gradient }"
-        >
-            <i :class="['pi', icon]" />
-        </div>
+    <div class="shadow-card flex flex-col gap-1 rounded-xl bg-white p-5">
         <Skeleton
             v-if="loading"
             class="my-1"
