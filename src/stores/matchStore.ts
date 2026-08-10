@@ -16,8 +16,8 @@ import { defineStore } from 'pinia';
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useSeasonStore } from '@/stores/seasonStore';
-import { getDisplaySeconds } from '@/utils/match';
 import type { Appearance, Match } from '@/types';
+import { getDisplaySeconds } from '@/utils/match';
 
 let _unsubscribeMatches: (() => void) | null = null;
 let _unsubscribeMatchDetails: (() => void) | null = null;

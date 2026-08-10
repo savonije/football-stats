@@ -8,8 +8,8 @@ import {
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
-import { db } from '@/firebase';
 import { DEFAULT_HALF_DURATION_MINUTES } from '@/constants';
+import { db } from '@/firebase';
 
 const STORAGE_KEY = 'selectedSeason';
 
@@ -46,9 +46,7 @@ export const useSeasonStore = defineStore('seasonStore', {
             const season = state.seasons.find(
                 (s) => s.id === state.currentSeason,
             );
-            return (
-                season?.halfDurationMinutes ?? DEFAULT_HALF_DURATION_MINUTES
-            );
+            return season?.halfDurationMinutes ?? DEFAULT_HALF_DURATION_MINUTES;
         },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
