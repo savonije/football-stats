@@ -4,8 +4,8 @@ description: >-
     Use when the user wants to release / deploy the app to production (e.g. "deploy to
     prod", "ship a release", "cut a new version", "/deploy"). Runs the full production
     release flow: bump the semver, create and push a git tag, publish a GitHub release
-    with generated notes, build, and deploy to Firebase Hosting. Do NOT trigger for
-    `npm run dev`, preview builds, or non-production work.
+    with a written summary of the changes, build, and deploy to Firebase Hosting. Do NOT
+    trigger for `npm run dev`, preview builds, or non-production work.
 ---
 
 # Deploy to production
@@ -38,8 +38,16 @@ Run these and confirm each before proceeding:
    tell the user to run `! firebase login` in the prompt.
 4. **GitHub auth** — `gh auth status` should succeed. If not, tell the user to run
    `! gh auth login` in the prompt (interactive; can't be done for them).
-5. **Show what's shipping** — `git log $(git describe --tags --abbrev=0)..HEAD --oneline`
-   so the user sees the commits since the last release.
+5. **Show what's shipping** — and capture the current tag as the release-notes baseline:
+
+   ```bash
+   git describe --tags --abbrev=0                                # e.g. v3.4.0
+   git log $(git describe --tags --abbrev=0)..HEAD --oneline
+   ```
+
+   Show the user that commit list. **Write the tag down** (e.g. `v3.4.0`) and paste it
+   literally into the Phase 3 commands — shell variables don't survive between Bash
+   calls, and after Phase 2 `git describe` returns the *new* tag, not this one.
 
 ## Phase 2 — Bump the version
 
@@ -64,14 +72,99 @@ step. Capture the new version string (e.g. `v3.3.0`) — you'll reuse it below.
 git push --follow-tags        # pushes the release commit AND the new tag
 ```
 
-Create the GitHub release with `gh` (installed; auth verified in Phase 1):
+### 3a. Read the changes properly
+
+This repo commits straight to `main` rather than through PRs, so GitHub's auto-generated
+notes have no PR titles to list and collapse to a single "Full Changelog" line. That is
+why the notes are written by hand here.
+
+Start from the full commit messages — bodies included, not just subjects — between the
+previous tag (captured in Phase 1) and the release:
 
 ```bash
-gh release create <vX.Y.Z> --generate-notes --title "<vX.Y.Z>"
+git log <PREV_TAG>..HEAD --pretty=format:'%h %s%n%b%n---'
 ```
 
-`--generate-notes` auto-builds the release notes from the commits/PRs since the last tag.
+If a subject is too terse to explain the user-visible effect (`fix: washing schema`),
+look at the actual change before writing about it — don't guess:
+
+```bash
+git show --stat <sha>
+```
+
+### 3b. Write the notes
+
+Write to a `release-notes.md` in your scratchpad directory. Rules:
+
+- **Describe the effect, not the commit.** `fix: filter out guest players from washing
+  schema` becomes "Guest players are no longer included in the washing schedule." Never
+  paste raw conventional-commit subjects as bullets.
+- **English**, matching the commit convention (the app UI is Dutch; these notes are not).
+- **Group under `###` headings, and only include headings that have content:**
+  - `### New` — `feat:`
+  - `### Fixes` — `fix:`
+  - `### Under the hood` — `refactor:`, `perf:`, `build:`, `ci:`, `test:`, `docs:`,
+    and dependency bumps that users would never notice
+- **One line per change**, no trailing period pile-up, no essays. If a section would run
+  past ~8 bullets, merge related commits into one bullet instead of listing each.
+- **Skip pure noise**: the `chore(release):` commit itself, merge commits, formatting-only
+  passes.
+- **Don't invent anything** that isn't in the commits — no speculative "improved
+  performance" claims.
+- For a `minor`/`major` release, open with one plain sentence framing the release before
+  the first heading. A `patch` can go straight to the bullets.
+
+Use the app's own vocabulary: matches, players, top scorers, training, washing schedule
+(wasschema), seasons.
+
+<details>
+<summary>Example for a patch release</summary>
+
+```markdown
+### Fixes
+
+- Guest players are no longer included in the washing schedule.
+- Statistics now only count matches that have actually finished, so an in-progress match
+  no longer skews the totals.
+
+### Under the hood
+
+- Split the player detail page into smaller components.
+```
+
+</details>
+
+### 3c. Publish
+
+```bash
+gh release create <vX.Y.Z> --title "<vX.Y.Z>" \
+  --notes-file <scratchpad>/release-notes.md \
+  --generate-notes
+```
+
+Keep **both** flags. GitHub prepends the `--notes-file` content to the generated notes, so
+the release page shows the written summary on top and still gets the
+`**Full Changelog**: …compare/vA.B.C...vX.Y.Z` link at the bottom (verified behaviour, not
+an assumption). Passing `--title` explicitly stops `--generate-notes` from overriding it.
+
 The command prints the release URL — capture it for the final report.
+
+### Amending notes on an already-published release
+
+```bash
+gh release edit <vX.Y.Z> --notes-file <scratchpad>/release-notes.md
+```
+
+Two differences from `create`, both easy to get wrong:
+
+- `edit` **replaces the whole body** — it doesn't merge with what's there.
+- `edit` has **no `--generate-notes` flag**, so the compare link is not re-added for you.
+
+So before amending, append the link to the notes file yourself, or you'll silently drop it:
+
+```markdown
+**Full Changelog**: https://github.com/savonije/football-stats/compare/<PREV_TAG>...<vX.Y.Z>
+```
 
 ## Phase 4 — Build and deploy
 
@@ -87,5 +180,6 @@ the user explicitly asks to roll it back.
 
 ## Done
 
-Report: the new version, the pushed tag, the GitHub release URL, and the Firebase Hosting
-URL from the `firebase deploy` output.
+Report: the new version, the pushed tag, the GitHub release URL, the Firebase Hosting URL
+from the `firebase deploy` output, and the release notes you published (so the user can
+spot a wording fix without opening GitHub — amend with `gh release edit`).
