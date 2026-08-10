@@ -85,6 +85,7 @@ Tailwind v4 via `@tailwindcss/vite` — **there is no `tailwind.config.js`**; th
 
 - **Always use Tailwind CSS.** Never use `<style>` blocks, CSS modules, or CSS-in-JS.
 - Use the existing `@theme` tokens (`primary-*` scale, `shadow-card`, `text-xxs`, `tracking-label`, …) and scale utilities instead of arbitrary `[Npx]` or hex values. Add a new token to `@theme` if nothing fits.
+- **Dialog width is set exactly one way:** a Tailwind container width class on the `<Dialog>` itself — `class="w-md"` (the `w-3xs … w-7xl` scale). Never `style="width: 450px"`, `:style="{ width: … }"`, `w-96`, or `w-[400px]`. `.p-dialog { max-w-[95%] }` in `main.css` handles small screens, so no responsive variant is needed.
 - Dark mode is not enabled (PrimeVue `darkModeSelector: false`), so don't add `dark:` variants — they have no effect. Revisit only if dark mode is turned on.
 - Use Tailwind breakpoints (`sm`, `md`, `lg`, `xl`) for responsive layout.
 - PrimeVue part overrides (`.p-drawer`, `.p-datatable`, `.p-dialog`, `.p-toast`) are global rules in `src/styles/main.css` and need `!important` to beat Aura. Teleported components can't be styled locally at all.

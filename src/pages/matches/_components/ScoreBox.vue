@@ -127,7 +127,7 @@
 
     <Dialog
         v-model:visible="modal"
-        class="w-96"
+        class="w-md"
         modal
         :draggable="false"
         :header="t('match.goalScorer')"

@@ -149,9 +149,9 @@
 <template>
     <Dialog
         v-model:visible="model"
+        class="w-md"
         modal
         :header="t('player.addPlayer')"
-        :style="{ width: '400px' }"
         :draggable="false"
     >
         <div class="flex flex-col gap-4">

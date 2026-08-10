@@ -42,8 +42,8 @@ class="h-[36px] w-[36px] px-[20px] text-[14px] rounded-[12px]"
 
 This applies to spacing (`p/m/gap/space`), sizing (`w/h/size/min/max`), `text-*`,
 `rounded-*`, `leading-*`, insets, etc. Arbitrary `[Npx]` values are a genuine last
-resort — the codebase uses only a handful (`w-[400px]`, `border-[3px]`,
-`transition-[width]`) and only where no scale step fits.
+resort — the codebase uses only a handful (`border-[3px]`, `transition-[width]`)
+and only where no scale step fits.
 
 **Font size is never a last resort — always use a preset size.** Never write an
 arbitrary font size like `text-[0.7rem]` or `text-[14px]`. Use only the named text
@@ -120,7 +120,27 @@ component uses any `dark:` variant. **Don't add `dark:` classes** — they have 
 effect today. Enabling dark mode would require flipping the PrimeVue
 `darkModeSelector` and adopting a dark color strategy first; revisit only then.
 
-## 5. Component styles vs. global styles vs. PrimeVue overrides
+## 5. Dialog widths: one way only
+
+Every `<Dialog>` gets its width from a **Tailwind container width class on the
+component itself**, taken from the `w-3xs … w-7xl` scale. `w-md` is the default across
+the app; step up (`w-lg`, `w-2xl`, …) only when the content genuinely needs it.
+
+```html
+<!-- ✅ the only accepted form -->
+<Dialog v-model:visible="model" class="w-md" modal :header="t('…')" />
+
+<!-- ❌ never -->
+<Dialog style="width: 450px" />
+<Dialog :style="{ width: '400px' }" />
+<Dialog class="w-96" />
+<Dialog class="w-[400px]" />
+```
+
+Don't add responsive variants for the small-screen case — the global
+`.p-dialog { @apply max-w-[95%] }` rule in `main.css` already caps it.
+
+## 6. Component styles vs. global styles vs. PrimeVue overrides
 
 - **Component-local styling:** utility classes in the template. **Never use `<style>`
   blocks, CSS modules, or CSS-in-JS** (per `CLAUDE.md`).

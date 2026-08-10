@@ -442,7 +442,7 @@
     <Dialog
         v-if="AuthStore.user?.id"
         v-model:visible="editVisible"
-        class="w-[400px]"
+        class="w-md"
         modal
         :header="t('player.editPlayer')"
         :draggable="false"

@@ -113,11 +113,11 @@
 <template>
     <Dialog
         v-model:visible="model"
+        class="w-md"
         :header="t('match.addMatch')"
         modal
         closable
         dismissableMask
-        style="width: 450px"
     >
         <div class="flex flex-col gap-3">
             <div>

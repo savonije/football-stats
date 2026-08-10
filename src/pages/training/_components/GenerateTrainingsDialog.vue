@@ -86,6 +86,7 @@
 <template>
     <Dialog
         v-model:visible="model"
+        class="w-md"
         :header="t('training.generateForMonth')"
         modal
         closable

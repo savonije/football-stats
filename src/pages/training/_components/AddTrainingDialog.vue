@@ -71,6 +71,7 @@
 <template>
     <Dialog
         v-model:visible="model"
+        class="w-md"
         :header="t('training.addForDate')"
         modal
         closable
