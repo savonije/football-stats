@@ -6,6 +6,7 @@
     import { useStoreAuth } from '@/stores/authStore';
     import { useRouter } from 'vue-router';
     import { TOAST_LIFE } from '@/constants';
+    import { isGuestInSeason } from '@/utils/playerSeason';
     import dayjs from 'dayjs';
     import {
         DataTable,
@@ -34,10 +35,12 @@
     const washingOptions = computed(() =>
         playerStore
             .playersInSeason(seasonStore.currentSeason)
+            .filter(
+                (player) => !isGuestInSeason(player, seasonStore.currentSeason),
+            )
             .map((player) => ({ label: player.name, value: player.id })),
     );
 
-    /** All matches of the season, newest first, with the washer's name. */
     const scheduleRows = computed(() =>
         [...matchStore.matches]
             .sort((a, b) => (b.date?.seconds ?? 0) - (a.date?.seconds ?? 0))
@@ -52,7 +55,6 @@
             })),
     );
 
-    /** Per-player wash counts for the current season, most washes first. */
     const washCounts = computed(() => {
         const counts = new Map<string, number>();
         for (const match of matchStore.matches) {
