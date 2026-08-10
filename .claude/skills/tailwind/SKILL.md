@@ -25,7 +25,7 @@ reach for them first, every time.
 - **No class prefix.** Use plain utilities (`flex`, `text-sm`, `bg-white`).
 - `@` is aliased to `src/`. CSS partials are imported with `@import '@/styles/…'`.
 - **prettier-plugin-tailwindcss** sorts class lists automatically. Don't hand-order
-  classes; run `npm run format` after editing and let it sort.
+  classes; run `npm run prettier` after editing and let it sort.
 - Templates are indented with **4 spaces**. Vue 3 `<script setup lang="ts">` + Composition API.
 
 ## 1. Use scale utilities, not arbitrary px
@@ -59,8 +59,8 @@ use the named utility they generate:
 
 ```html
 <!-- ✅ -->
-class="bg-primary-50 text-primary-400 shadow-card hover:shadow-card-hover
-font-display tracking-label text-xxs max-w-8xl duration-900"
+class="bg-primary-50 text-primary-400 shadow-card font-display
+tracking-label text-xxs max-w-8xl duration-900"
 <!-- ❌ -->
 class="bg-[#f2f5fb] text-[#6285d1] shadow-[0_2px_12px_rgba(39,66,138,.08)]"
 ```
@@ -70,10 +70,36 @@ Currently defined custom tokens (confirm against `src/styles/main.css` before us
 - **Brand color scale:** `primary-50 … primary-950`, plus bare `primary` (#27428a).
   Generates `bg-/text-/border-primary-*`, etc. This same scale is fed to the PrimeVue
   Aura preset in `main.ts`, so app chrome and utilities stay in sync.
+- **Accent color:** bare `amber` (#f59e0b) → `text-amber`, `bg-amber`. Note this is a
+  *single* color, separate from Tailwind's built-in `amber-50…950` scale — `text-amber`
+  and `text-amber-500` are different values.
 - **Font:** `font-display` (Roboto).
 - **Shadows:** `shadow-hero`, `shadow-card`, `shadow-icon`.
 - **Type/spacing extras:** `text-xxs` (0.65rem), `tracking-label` (0.06em),
   `tracking-badge` (0.08em), `max-w-8xl` (90rem), `duration-900` (900ms).
+- **Animation:** `animate-score-pop` — the scale-and-flash-amber pulse used when a
+  goal lands (see `LiveMatchWidget.vue`).
+
+### Gradients are variables, not utilities
+
+`--gradient-brand` (the dark-blue banner used by the page header and player hero) and
+the six accent gradients — `--gradient-accent-blue` / `-amber` / `-teal` / `-purple` /
+`-green` / `-red` (stat tiles and nav icons) — are defined in `@theme`, but
+`--gradient-*` is **not** a Tailwind v4 theme namespace, so **no `bg-gradient-brand`
+utility exists**. Reference them as CSS variables instead, matching how the codebase
+already does it:
+
+```html
+<!-- ✅ inline style (NavDrawer.vue, PlayerStatTile props) -->
+style="background: var(--gradient-accent-blue)"
+<!-- ✅ arbitrary property utility (players/[id].vue) -->
+class="[background:var(--gradient-brand)]"
+<!-- ❌ never re-spell the gradient by hand -->
+class="bg-[linear-gradient(135deg,#3b82f6,#1d4ed8)]"
+```
+
+Adding a *new* recurring gradient means adding a `--gradient-*` token to `@theme` and
+referencing it the same way — not inlining a `linear-gradient(...)` at the call site.
 
 The full default Tailwind palette (`gray-300`, `white`, etc.) is also available for
 neutrals.
@@ -83,8 +109,9 @@ neutrals.
 If you genuinely need a new token (a recurring color, shadow, spacing, duration),
 **add it to the `@theme` block in `src/styles/main.css`** using the v4 naming
 convention (`--color-*`, `--shadow-*`, `--text-*`, `--tracking-*`, `--max-width-*`,
-`--duration-*`), so it becomes a reusable utility. Don't scatter one-off arbitrary
-values the next person has to guess at.
+`--duration-*`, `--animate-*`), so it becomes a reusable utility. Don't scatter one-off
+arbitrary values the next person has to guess at. (`--gradient-*` is the exception —
+it's a plain variable with no generated utility; see §2.)
 
 ## 4. Dark mode
 
@@ -116,4 +143,4 @@ effect today. Enabling dark mode would require flipping the PrimeVue
 3. Reach for the scale utility or theme token. Only fall back to `[arbitrary]` when
    nothing fits, and prefer adding a token to `@theme` for anything recurring.
 4. Use Tailwind responsive breakpoints (`sm/md/lg/xl`) for layout, per `CLAUDE.md`.
-5. Run `npm run format` (sorts classes) and `npm run type-check` after edits.
+5. Run `npm run prettier` (sorts classes) and `npm run type-check` after edits.
