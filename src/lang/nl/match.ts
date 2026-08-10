@@ -1,10 +1,14 @@
 export default {
     addMatch: 'Wedstrijd toevoegen',
+    addPlayers: 'Spelers toevoegen',
+    allPlayersInMatch: 'Alle spelers van dit seizoen doen al mee',
     deleteMatch: 'Wedstrijd verwijderen',
     deleteMatchConfirm: 'Weet je zeker dat je deze wedstrijd wilt verwijderen?',
     deleteMatchSuccess: 'Wedstrijd succesvol verwijderd',
+    deletePlayer: 'Speler uit wedstrijd verwijderen',
     deletePlayerConfirm:
         'Weet je zeker dat je {0} wilt verwijderen uit deze wedstrijd?',
+    editAppearance: 'Statistieken bewerken',
     endFirstHalf: 'Eerste helft beëindigen',
     endFirstHalfConfirm:
         'Weet je zeker dat je de eerste helft wilt beëindigen? Dit kan niet ongedaan worden gemaakt.',
@@ -30,6 +34,9 @@ export default {
         firstHalfEnded: 'Eerste helft beëindigd',
         matchAdded: 'Wedstrijd succesvol toegevoegd',
         matchAddError: 'Kon de wedstrijd niet toevoegen',
+        playersAdded:
+            'Speler toegevoegd aan de wedstrijd | Spelers toegevoegd aan de wedstrijd',
+        playersAddError: 'Kon de spelers niet toevoegen',
     },
     noMatches: 'Geen wedstrijden gevonden...',
     recentResults: 'Recente resultaten',

@@ -1,59 +1,55 @@
 <script setup lang="ts">
     import { ref, computed, onMounted } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
-    import { useStoreAuth } from '@/stores/authStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { useCanEdit } from '@/composables/useCanEdit';
     import { TOAST_LIFE } from '@/constants';
     import { useRoute, useRouter } from 'vue-router';
-    import { ToggleButton, Button, useConfirm } from 'primevue';
+    import { Button, useConfirm } from 'primevue';
     import { useToast } from 'primevue/usetoast';
 
+    import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
+    import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
     import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
     import PlayerAppearanceItem from '@/pages/matches/_components/PlayerAppearanceItem.vue';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
+    import type { AppearanceWithName } from '@/types';
     import { useI18n } from 'vue-i18n';
 
     const toast = useToast();
     const router = useRouter();
     const matchStore = useMatchStore();
-    const authStore = useStoreAuth();
     const seasonStore = useSeasonStore();
     const route = useRoute();
     const matchId = computed(() => route.params.id as string);
     const confirm = useConfirm();
+    const canEdit = useCanEdit();
 
     const { t } = useI18n();
-    const editing = ref(false);
+    const addingPlayers = ref(false);
+    const editingAppearanceId = ref<string | null>(null);
+    const editingAppearance = ref(false);
 
     const appearancesWithName = computed(
         () => matchStore.presentPlayersWithNames,
     );
 
-    const saveAll = async () => {
-        await Promise.all(
-            appearancesWithName.value.map((appearance) =>
-                matchStore.updateAppearance(
-                    seasonStore.currentSeason,
-                    matchId.value,
-                    appearance.id,
-                    {
-                        goals: appearance.goals,
-                        isGoalkeeper: appearance.isGoalkeeper,
-                    },
-                ),
-            ),
-        );
+    const canEditAppearances = computed(
+        () => canEdit.value && !matchStore.selectedMatch?.ended,
+    );
 
-        editing.value = false;
+    const selectedAppearance = computed(
+        () =>
+            appearancesWithName.value.find(
+                (appearance) => appearance.id === editingAppearanceId.value,
+            ) ?? null,
+    );
 
-        toast.add({
-            severity: 'success',
-            summary: t('common.success'),
-            detail: t('common.changesSaved'),
-            life: TOAST_LIFE,
-        });
+    const openEditDialog = (appearance: AppearanceWithName) => {
+        editingAppearanceId.value = appearance.id;
+        editingAppearance.value = true;
     };
 
     const confirmDeleteMatch = async () => {
@@ -89,48 +85,42 @@
             <h2 class="mb-2 text-xl font-semibold">
                 {{ t('player.player', 2) }}
             </h2>
-
-            <div class="flex gap-2">
-                <Transition name="fade" mode="out-in">
-                    <Button
-                        v-if="authStore.user?.id && editing"
-                        :label="t('common.save')"
-                        icon="pi pi-save"
-                        size="small"
-                        @click="saveAll"
-                    />
-                </Transition>
-
-                <template
-                    v-if="
-                        authStore.user?.id &&
-                        seasonStore.isCurrentSeasonActive &&
-                        !matchStore.selectedMatch?.ended
-                    "
-                >
-                    <ToggleButton
-                        v-model="editing"
-                        :on-label="t('common.cancel')"
-                        :off-label="t('common.edit')"
-                        off-icon="pi pi-pencil"
-                    />
-                </template>
-            </div>
         </div>
 
         <div class="space-y-4">
             <PlayerAppearanceItem
-                v-for="(appearance, index) in appearancesWithName"
+                v-for="appearance in appearancesWithName"
                 :key="appearance.id"
-                v-model:appearance="appearancesWithName[index]"
-                :editing="editing"
+                :appearance="appearance"
+                :editable="canEditAppearances"
+                @edit="openEditDialog"
             />
         </div>
 
-        <div
-            v-if="authStore.user?.id && seasonStore.isCurrentSeasonActive"
-            class="mt-12 flex justify-between gap-6"
-        >
+        <template v-if="canEditAppearances">
+            <AddMatchPlayersDialog
+                v-model:visible="addingPlayers"
+                :season-id="seasonStore.currentSeason"
+                :match-id="matchId"
+            />
+
+            <EditAppearanceDialog
+                v-model:visible="editingAppearance"
+                :appearance="selectedAppearance"
+                :season-id="seasonStore.currentSeason"
+                :match-id="matchId"
+            />
+        </template>
+
+        <div v-if="canEdit" class="mt-12 flex justify-between gap-6">
+            <Button
+                v-if="canEditAppearances"
+                :label="t('match.addPlayers')"
+                icon="pi pi-user-plus"
+                size="small"
+                @click="addingPlayers = true"
+            />
+
             <Button
                 :label="t('match.deleteMatch')"
                 severity="danger"

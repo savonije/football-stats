@@ -47,6 +47,8 @@ export interface Appearance {
     seasonId: string;
     matchId: string;
 }
+export type AppearanceWithName = Appearance & { playerName: string };
+
 export interface Training {
     id: string;
     date: Timestamp;

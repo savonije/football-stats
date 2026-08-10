@@ -19,6 +19,7 @@ export default {
     playerInfo: 'Spelerinformatie',
     playerStats: 'Spelerstatistieken',
     selectPlayer: 'Selecteer speler',
+    selectPlayers: 'Selecteer spelers',
     totalAppearances: 'Totaal wedstrijden',
     totalGoals: 'Totaal doelpunten',
     totalKeeper: 'Totaal keeper',
