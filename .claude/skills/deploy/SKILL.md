@@ -103,8 +103,14 @@ Write to a `release-notes.md` in your scratchpad directory. Rules:
 - **Group under `###` headings, and only include headings that have content:**
   - `### New` — `feat:`
   - `### Fixes` — `fix:`
+  - `### Changes` — user-visible behaviour that changed or was removed, which is neither
+    a new feature nor a bug fix
   - `### Under the hood` — `refactor:`, `perf:`, `build:`, `ci:`, `test:`, `docs:`,
     and dependency bumps that users would never notice
+- **The commit prefix is a hint, not the rule — the actual effect decides the section.**
+  `chore: remove washing from player stats` deleted a tile from the player page: that is
+  `### Changes`, not `### Under the hood`. Check the diff whenever the prefix and the
+  subject disagree about how visible a change is.
 - **One line per change**, no trailing period pile-up, no essays. If a section would run
   past ~8 bullets, merge related commits into one bullet instead of listing each.
 - **Skip pure noise**: the `chore(release):` commit itself, merge commits, formatting-only
