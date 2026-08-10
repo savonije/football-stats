@@ -48,8 +48,17 @@
             : false,
     );
 
+    const endedMatchIds = computed(
+        () =>
+            new Set(matchStore.matches.filter((m) => m.ended).map((m) => m.id)),
+    );
+
     const playerAppearances = computed(() =>
-        matchStore.appearances.filter((a) => a.playerId === playerId.value),
+        matchStore.appearances.filter(
+            (a) =>
+                a.playerId === playerId.value &&
+                endedMatchIds.value.has(a.matchId),
+        ),
     );
 
     const totalGoals = computed(() =>
@@ -64,7 +73,7 @@
         () => playerAppearances.value.filter((a) => a.isGoalkeeper).length,
     );
 
-    const totalMatches = computed(() => matchStore.matches.length);
+    const totalMatches = computed(() => endedMatchIds.value.size);
 
     const goalsPerMatch = computed(() =>
         totalAppearances.value > 0
@@ -134,8 +143,8 @@
     );
 
     const goalsChartData = computed(() =>
-        matchStore.appearances
-            .filter((a) => a.playerId === playerId.value && a.present)
+        playerAppearances.value
+            .filter((a) => a.present)
             .map((a) => {
                 const match = matchStore.matches.find(
                     (m) => m.id === a.matchId,
@@ -438,7 +447,6 @@
         </Card>
     </div>
 
-    <!-- Edit dialog -->
     <Dialog
         v-if="AuthStore.user?.id"
         v-model:visible="editVisible"
