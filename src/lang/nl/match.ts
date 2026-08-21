@@ -9,6 +9,7 @@ export default {
     deletePlayerConfirm:
         'Weet je zeker dat je {0} wilt verwijderen uit deze wedstrijd?',
     editAppearance: 'Statistieken bewerken',
+    editMatch: 'Wedstrijd bewerken',
     endFirstHalf: 'Eerste helft beëindigen',
     endFirstHalfConfirm:
         'Weet je zeker dat je de eerste helft wilt beëindigen? Dit kan niet ongedaan worden gemaakt.',
@@ -34,6 +35,7 @@ export default {
         firstHalfEnded: 'Eerste helft beëindigd',
         matchAdded: 'Wedstrijd succesvol toegevoegd',
         matchAddError: 'Kon de wedstrijd niet toevoegen',
+        matchEditError: 'Kon de wedstrijd niet bijwerken',
         playersAdded:
             'Speler toegevoegd aan de wedstrijd | Spelers toegevoegd aan de wedstrijd',
         playersAddError: 'Kon de spelers niet toevoegen',

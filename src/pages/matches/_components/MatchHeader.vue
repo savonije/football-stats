@@ -1,12 +1,15 @@
 <script setup lang="ts">
     import { computed } from 'vue';
     import dayjs from 'dayjs';
-    import type { Match } from '@/types';
+
+    import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
     import ScoreBox from '@/pages/matches/_components/ScoreBox.vue';
     import { CLUBNAME } from '@/constants';
+    import type { Match } from '@/types';
     import { hasStarted } from '@/utils/match';
 
     const props = defineProps<{ match: Match | null }>();
+
     const homeClass = computed(() =>
         props.match?.home ? 'flex-row' : 'flex-row-reverse',
     );
@@ -14,14 +17,18 @@
 
 <template>
     <div v-if="props.match">
-        <h1
-            class="text-primary mb-0 flex inline-flex items-center gap-2 text-xl sm:text-3xl"
-            :class="homeClass"
-        >
-            <span>{{ CLUBNAME }}</span>
-            <span> - </span>
-            <span>{{ props.match?.opponent }}</span>
-        </h1>
+        <div class="flex items-center justify-between gap-2">
+            <h1
+                class="text-primary mb-0 flex inline-flex items-center gap-2 text-xl sm:text-3xl"
+                :class="homeClass"
+            >
+                <span>{{ CLUBNAME }}</span>
+                <span> - </span>
+                <span>{{ props.match?.opponent }}</span>
+            </h1>
+
+            <MatchActionsMenu :match="props.match" />
+        </div>
 
         <div v-if="props.match?.date" class="text-sm text-gray-600">
             {{ dayjs(props.match.date.toDate()).format('D MMMM YYYY') }}

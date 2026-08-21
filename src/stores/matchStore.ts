@@ -73,6 +73,15 @@ export const useMatchStore = defineStore('matchStore', {
             );
         },
 
+        updateMatch(
+            seasonId: string,
+            matchId: string,
+            data: { opponent: string; date: Date; home: boolean },
+        ) {
+            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+            return updateDoc(matchRef, data);
+        },
+
         async deleteMatch(seasonId: string, matchId: string) {
             const appearancesRef = collection(
                 db,

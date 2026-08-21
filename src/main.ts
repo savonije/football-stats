@@ -44,6 +44,27 @@ const CustomPreset = definePreset(Aura, {
             900: theme('--color-primary-900'),
         },
     },
+    components: {
+        button: {
+            colorScheme: {
+                light: {
+                    root: {
+                        secondary: {
+                            background: '{surface.200}',
+                            hoverBackground: '{surface.300}',
+                            activeBackground: '{surface.400}',
+                            borderColor: '{surface.200}',
+                            hoverBorderColor: '{surface.300}',
+                            activeBorderColor: '{surface.400}',
+                            color: '{surface.700}',
+                            hoverColor: '{surface.800}',
+                            activeColor: '{surface.900}',
+                        },
+                    },
+                },
+            },
+        },
+    },
 });
 
 app.use(Config, {
