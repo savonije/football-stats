@@ -15,6 +15,10 @@ export default {
         'Er zijn nog geen trainingsdagen ingesteld voor dit seizoen. Stel ze in via de configuratie.',
     today: 'Vandaag',
     presentCount: '{present} / {total} aanwezig',
+    unmarked: 'Niet ingevuld',
+    unmarkedCount:
+        'Alles ingevuld | 1 speler nog niet ingevuld | {count} spelers nog niet ingevuld',
+    clearAttendance: 'Aanwezigheid wissen',
     attendancePercentage: 'Trainingsopkomst (%)',
     trainingDays: 'Trainingsdagen',
     deleteTrainingConfirm:

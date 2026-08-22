@@ -55,6 +55,7 @@ export interface Training {
     createdAt?: Timestamp;
     cancelled?: boolean;
     presentPlayerIds?: string[];
+    absentPlayerIds?: string[];
 }
 
 export interface PlayerSeasonInfo {

@@ -11,6 +11,7 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import type { Training } from '@/types';
+import type { AttendanceStatus } from '@/utils/training';
 
 let _unsubscribeTrainings: (() => void) | null = null;
 let _unsubscribeTrainingDetails: (() => void) | null = null;
@@ -77,20 +78,25 @@ export const useTrainingStore = defineStore('trainingStore', {
             );
         },
 
-        setPlayerPresent(
+        setPlayerAttendance(
             seasonId: string,
             trainingId: string,
             playerId: string,
-            present: boolean,
+            status: AttendanceStatus,
         ) {
             const trainingRef = doc(
                 db,
                 `seasons/${seasonId}/trainings/${trainingId}`,
             );
             return updateDoc(trainingRef, {
-                presentPlayerIds: present
-                    ? arrayUnion(playerId)
-                    : arrayRemove(playerId),
+                presentPlayerIds:
+                    status === 'present'
+                        ? arrayUnion(playerId)
+                        : arrayRemove(playerId),
+                absentPlayerIds:
+                    status === 'absent'
+                        ? arrayUnion(playerId)
+                        : arrayRemove(playerId),
             });
         },
     },

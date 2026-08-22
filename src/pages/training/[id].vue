@@ -10,6 +10,7 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { isGuestInSeason } from '@/utils/playerSeason';
+    import { attendanceStatus, type AttendanceStatus } from '@/utils/training';
     import { useCanEdit } from '@/composables/useCanEdit';
     import { TOAST_LIFE } from '@/constants';
 
@@ -40,7 +41,7 @@
     );
 
     const attendees = computed(() => {
-        const present = new Set(training.value?.presentPlayerIds ?? []);
+        const current = training.value;
 
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
@@ -48,22 +49,39 @@
             .map((p) => ({
                 id: p.id,
                 playerName: p.name,
-                present: present.has(p.id),
+                status: current
+                    ? attendanceStatus(p.id, current)
+                    : ('unmarked' as AttendanceStatus),
             }));
     });
 
     const presentCount = computed(
-        () => attendees.value.filter((a) => a.present).length,
+        () => attendees.value.filter((a) => a.status === 'present').length,
     );
 
-    const togglePresent = (playerId: string, present: boolean) => {
-        trainingStore.setPlayerPresent(
+    const cardClasses: Record<AttendanceStatus, string> = {
+        present: 'border-green-500 bg-green-50',
+        absent: 'border-red-400 bg-red-50',
+        unmarked: 'border-gray-300 bg-gray-50',
+    };
+
+    const nameClasses: Record<AttendanceStatus, string> = {
+        present: 'text-green-900',
+        absent: 'text-red-900',
+        unmarked: 'text-gray-500',
+    };
+
+    const setStatus = (playerId: string, status: AttendanceStatus) => {
+        trainingStore.setPlayerAttendance(
             seasonStore.currentSeason,
             trainingId.value,
             playerId,
-            present,
+            status,
         );
     };
+
+    const togglePresent = (playerId: string, present: boolean) =>
+        setStatus(playerId, present ? 'present' : 'absent');
 
     const cancelTraining = async () => {
         await trainingStore.setTrainingCancelled(
@@ -174,27 +192,32 @@
                 :key="attendee.id"
                 class="shadow-card flex items-center justify-between gap-3 rounded-xl border-l-4 px-4 py-3"
                 :class="[
-                    attendee.present
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-red-400 bg-red-50',
+                    cardClasses[attendee.status],
                     { 'opacity-30': isCancelled },
                 ]"
             >
-                <span
-                    class="font-medium"
-                    :class="
-                        attendee.present ? 'text-green-900' : 'text-red-900'
-                    "
-                >
-                    {{ attendee.playerName }}
-                </span>
+                <div>
+                    <span
+                        class="font-medium"
+                        :class="nameClasses[attendee.status]"
+                    >
+                        {{ attendee.playerName }}
+                    </span>
+                    <span
+                        v-if="attendee.status === 'unmarked'"
+                        class="text-xxs tracking-label block text-gray-400 uppercase"
+                    >
+                        {{ t('training.unmarked') }}
+                    </span>
+                </div>
 
-                <ToggleSwitch
-                    v-if="canEdit && !isCancelled"
-                    :aria-label="attendee.playerName"
-                    :model-value="attendee.present"
-                    @update:model-value="togglePresent(attendee.id, $event)"
-                />
+                <div v-if="canEdit && !isCancelled" class="flex items-center">
+                    <ToggleSwitch
+                        :aria-label="attendee.playerName"
+                        :model-value="attendee.status === 'present'"
+                        @update:model-value="togglePresent(attendee.id, $event)"
+                    />
+                </div>
             </div>
         </div>
 

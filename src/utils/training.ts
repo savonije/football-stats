@@ -1,4 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs';
+import type { Timestamp } from 'firebase/firestore';
+
+import type { Training } from '@/types';
 
 /**
  * Weekdays in Monday-first display order, as dayjs `.day()` numbers
@@ -50,4 +53,31 @@ export const monthCalendarDays = (month: Date | Dayjs): Dayjs[] => {
     const totalDays = end.add(trailing, 'day').diff(gridStart, 'day') + 1;
 
     return Array.from({ length: totalDays }, (_, i) => gridStart.add(i, 'day'));
+};
+
+export type AttendanceStatus = 'present' | 'absent' | 'unmarked';
+
+/** Whether a training's day is today or still to come. */
+export const isUpcomingTraining = (
+    date: Timestamp | undefined,
+    now: Date = new Date(),
+): boolean => !date || !dayjs(date.toDate()).isBefore(dayjs(now), 'day');
+
+/**
+ * Attendance of one player at one training. Present and absent are both stored
+ * explicitly, so a player in neither array has simply not been marked yet —
+ * which is exactly what a coach needs to see for a training still to come.
+ * For a training whose day has passed, never being marked has always counted
+ * as absent (that is what the attendance percentage is based on), so there the
+ * unmarked state resolves to absent instead of lingering as neutral.
+ */
+export const attendanceStatus = (
+    playerId: string,
+    training: Pick<Training, 'date' | 'presentPlayerIds' | 'absentPlayerIds'>,
+    now: Date = new Date(),
+): AttendanceStatus => {
+    if (training.presentPlayerIds?.includes(playerId)) return 'present';
+    if (training.absentPlayerIds?.includes(playerId)) return 'absent';
+
+    return isUpcomingTraining(training.date, now) ? 'unmarked' : 'absent';
 };

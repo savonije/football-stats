@@ -13,6 +13,7 @@
         date: Timestamp;
         cancelled: boolean;
         presentCount: number;
+        unmarkedCount: number;
     }
 
     const { trainings } = defineProps<{ trainings: TrainingCell[] }>();
@@ -135,13 +136,26 @@
                         severity="danger"
                         :value="t('training.cancelled')"
                     />
-                    <span
-                        v-else
-                        class="inline-flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-bold text-green-700"
-                    >
-                        <i class="pi pi-check text-xs" />
-                        {{ day.training.presentCount }}
-                    </span>
+                    <template v-else>
+                        <span
+                            v-if="
+                                day.training.presentCount ||
+                                !day.training.unmarkedCount
+                            "
+                            class="inline-flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-bold text-green-700"
+                        >
+                            <i class="pi pi-check text-xs" />
+                            {{ day.training.presentCount }}
+                        </span>
+                        <span
+                            v-if="day.training.unmarkedCount"
+                            class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-bold text-gray-500"
+                            :title="t('training.unmarked')"
+                        >
+                            <i class="pi pi-question-circle text-xs" />
+                            {{ day.training.unmarkedCount }}
+                        </span>
+                    </template>
                 </template>
             </button>
         </div>

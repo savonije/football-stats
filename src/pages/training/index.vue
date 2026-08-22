@@ -7,6 +7,8 @@
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
+    import { attendanceStatus } from '@/utils/training';
     import { useCanEdit } from '@/composables/useCanEdit';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import TrainingMonthCalendar from '@/pages/training/_components/TrainingMonthCalendar.vue';
@@ -30,12 +32,22 @@
     const viewMonth = ref<Date>(stored ? dayjs(stored).toDate() : new Date());
     const canEdit = useCanEdit();
 
+    const attendeeIds = computed(() =>
+        playerStore
+            .playersInSeason(seasonStore.currentSeason)
+            .filter((p) => !isGuestInSeason(p, seasonStore.currentSeason))
+            .map((p) => p.id),
+    );
+
     const rows = computed(() =>
         trainingStore.trainings.map((training) => ({
             id: training.id,
             date: training.date,
             cancelled: training.cancelled ?? false,
             presentCount: training.presentPlayerIds?.length ?? 0,
+            unmarkedCount: attendeeIds.value.filter(
+                (id) => attendanceStatus(id, training) === 'unmarked',
+            ).length,
         })),
     );
 

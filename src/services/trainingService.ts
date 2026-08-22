@@ -8,10 +8,11 @@ import {
 import { db } from '@/firebase';
 
 /**
- * Bulk-create a training per date, committed in a single batch. Presence is
- * tracked as a `presentPlayerIds` array on each training doc (empty at
- * creation) rather than a seeded record per player, so each date is a single
- * write — a full season of sessions stays far below Firestore's 500-op limit.
+ * Bulk-create a training per date, committed in a single batch. Attendance is
+ * tracked as `presentPlayerIds`/`absentPlayerIds` arrays on each training doc
+ * (both empty at creation, so every player starts unmarked) rather than a
+ * seeded record per player, so each date is a single write — a full season of
+ * sessions stays far below Firestore's 500-op limit.
  */
 export const addTrainings = async (seasonId: string, dates: Date[]) => {
     if (!dates.length) return 0;
@@ -25,6 +26,7 @@ export const addTrainings = async (seasonId: string, dates: Date[]) => {
             createdAt: serverTimestamp(),
             cancelled: false,
             presentPlayerIds: [],
+            absentPlayerIds: [],
         });
     }
 
