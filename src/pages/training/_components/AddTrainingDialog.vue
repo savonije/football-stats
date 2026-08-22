@@ -79,9 +79,10 @@
     >
         <div class="flex flex-col gap-4">
             <div>
-                <label>{{ t('training.selectDate') }}</label>
+                <label for="trainingDate">{{ t('training.selectDate') }}</label>
                 <DatePicker
                     v-model="date"
+                    input-id="trainingDate"
                     dateFormat="dd-mm-yy"
                     showIcon
                     fluid

@@ -9,6 +9,7 @@
     "scripts": {
         "build-only": "vite build",
         "build": "run-p type-check \"build-only {@}\" --",
+        "build:e2e": "vite build --mode staging",
         "dev": "vite",
         "knip": "knip",
         "lint:eslint": "eslint . --fix",

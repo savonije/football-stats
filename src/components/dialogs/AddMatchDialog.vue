@@ -121,17 +121,23 @@
     >
         <div class="flex flex-col gap-3">
             <div>
-                <label
-                    >{{ t('common.opponent') }}
-                    <small>({{ t('common.required') }})</small></label
-                >
-                <InputText v-model="form.opponent" fluid required />
+                <label for="opponent">
+                    {{ t('common.opponent') }}
+                    <small>({{ t('common.required') }})</small>
+                </label>
+                <InputText
+                    id="opponent"
+                    v-model="form.opponent"
+                    fluid
+                    required
+                />
             </div>
 
             <div>
-                <label>{{ t('common.date') }}</label>
+                <label for="date">{{ t('common.date') }}</label>
                 <DatePicker
                     v-model="form.date"
+                    input-id="date"
                     dateFormat="dd-mm-yy"
                     showIcon
                     fluid
@@ -139,9 +145,10 @@
             </div>
 
             <div>
-                <label>{{ t('common.homeOrAway') }}</label>
+                <label for="home">{{ t('common.homeOrAway') }}</label>
                 <Select
                     v-model="form.home"
+                    input-id="home"
                     :options="homeOptions"
                     optionLabel="label"
                     optionValue="value"
@@ -150,9 +157,10 @@
             </div>
 
             <div>
-                <label>{{ t('player.player', 2) }}</label>
+                <label for="players">{{ t('player.player', 2) }}</label>
                 <MultiSelect
                     v-model="form.players"
+                    input-id="players"
                     :options="playerOptions"
                     optionLabel="label"
                     optionValue="value"
@@ -163,9 +171,10 @@
             </div>
 
             <div>
-                <label>{{ t('washing.washer') }}</label>
+                <label for="washing">{{ t('washing.washer') }}</label>
                 <Select
                     v-model="form.washing"
+                    input-id="washing"
                     :options="playerOptions"
                     optionLabel="label"
                     optionValue="value"

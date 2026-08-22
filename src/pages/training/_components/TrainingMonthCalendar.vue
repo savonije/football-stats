@@ -125,6 +125,7 @@
                 ]"
                 type="button"
                 :disabled="!day.training"
+                :data-date="day.key"
                 @click="day.training && openTraining(day.training.id)"
             >
                 <span class="text-xs font-semibold">{{ day.label }}</span>

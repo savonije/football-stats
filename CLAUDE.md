@@ -14,20 +14,38 @@ npm run test         # Playwright end-to-end tests
 npm run knip         # find unused files, exports and dependencies
 ```
 
-Playwright tests live in `e2e/` and run against a production preview build (`playwright.config.ts` boots `npm run preview` on port 4173 as its `webServer`). Run a single spec/test:
+Playwright tests live in `e2e/` and run against a preview build that `playwright.config.ts` builds and serves itself on port **4174** (`npm run build:e2e && npm run preview`). Port 4173 is deliberately avoided: a hand-started `npm run preview` there is built from `.env.production`, and reusing it would point the writing specs at the production project. Run a single spec/test:
 
 ```bash
 npx playwright test e2e/home.spec.ts            # one file
 npx playwright test -g "shows top scorers"      # by test title
 ```
 
-The e2e tests hit **real Firestore data** through the preview build (no emulator, no fixtures), so assertions are written defensively — e.g. `card.or(emptyMatches)` rather than expecting specific matches to exist. Keep new specs data-agnostic and unauthenticated (they never log in).
+The e2e tests hit **real Firestore data** through the preview build (no emulator — the Firestore emulator needs a JVM, and there is none here — and no fixtures). They come in two kinds:
+
+- **Read-only specs** (`home`, `navigation`, `players`, `topscorers`) never log in, so their assertions are written defensively — e.g. `card.or(emptyMatches)` rather than expecting specific matches to exist. Keep new read-only specs data-agnostic.
+- **Write specs** (`match-lifecycle`, `match-players`, `training`) sign in and mutate Firestore, so they run against the **staging** project: `build:e2e` builds with `--mode staging`, which loads `.env` instead of `.env.production`. Each creates its own match/training with a `uniqueLabel()` name, drives it, and deletes it again in `afterEach`. Shared plumbing lives in `e2e/helpers/app.ts`.
+
+Two safety nets keep writes off production. `login()` watches the Firestore traffic on first paint and aborts unless the project is `E2E_PROJECT_ID` (default `football-ryan-staging`), and the test account only exists in staging, so a production build cannot get past sign-in. Credentials come from a gitignored `.env.e2e` (see `.env.e2e.example`), which `playwright.config.ts` loads via `process.loadEnvFile`. Without them the write specs **skip** rather than fail; they also skip when the staging project has no active season or no players, since `useCanEdit()` then hides every edit control.
+
+**Never assert persistence with `page.reload()`.** Firestore applies writes to its local cache first and this app configures no offline persistence, so reloading straight after a click silently drops the mutation and the assertion passes or fails for the wrong reason. Waiting for the write to leave the browser is no good either: mutations go over `POST …Firestore/Write/channel`, but so does the channel handshake, so `waitForResponse` resolves too early. Instead open a second tab (`page.context().newPage()`) — it runs its own Firestore client, so whatever it renders came back from the server, which is also a truer test of the real-time sync the app relies on.
+
+Selectors lean on roles and labels, with `data-pc-section="…"` (PrimeVue's own DOM hook) where nothing else fits. Four PrimeVue traps, all hit while writing these specs:
+
+- A `ConfirmDialog` is `role="alertdialog"`, never `dialog`, so `acceptConfirm()` targets it without colliding with the dialog underneath.
+- `MultiSelect` puts `role="combobox"` on a *hidden* input that the visible label covers — click the `.p-multiselect` root instead.
+- The `DatePicker` panel is positioned over the whole dialog, title included, so there is nothing left to click to dismiss it. Pick the day inside the panel (`[data-pc-section="daycell"]`); selecting a single date closes it. Neighbouring months' cells share the same `aria-label` and are the only ones carrying `data-p-other-month`.
+- Vue renders `data-*="false"`, but PrimeVue leaves the attribute off entirely when the value is `undefined` — match with `:not([attr="true"])` rather than `[attr="false"]`.
+
+The global test timeout is raised to 90s: an authenticated spec spends several seconds on Firebase round trips before it reaches the feature under test, which overruns Playwright's 30s default under parallel workers.
 
 Knip (`knip.json`) runs on its auto-detected defaults — it picks up the Vite, Playwright, ESLint and Prettier configs on its own, and follows `src/styles/main.css` for CSS-only dependencies like `tailwindcss` and `primeicons`. Only `public/**` is ignored, because those assets are referenced by absolute URL from `index.html` and can't be resolved statically. Don't narrow `project` to `.ts`/`.vue` — that drops the CSS graph and produces false "unused dependency" hits.
 
-Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials plus `VITE_CLUBNAME`. There is no hardcoded config in source.
+Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials plus `VITE_CLUBNAME`. There is no hardcoded config in source. `.env` points at the **staging** project and `.env.production` at production, which is why `build:e2e` builds in staging mode. The Playwright CI job needs `VITE_CLUBNAME` in its secrets as well — without it the club name renders empty and `navigation.spec.ts` fails.
 
-CI (`.github/workflows/`) runs `prettier:check`, `type-check`, `knip`, and the Playwright suite on every push/PR to `main` — run `npm run prettier` and `npm run type-check` before handing work off, or CI will fail on formatting alone. The `knip` job is currently expected to fail: it reports pre-existing dead code (see `npm run knip`) and exits non-zero on any finding.
+`npm run type-check` covers `e2e/**` too (it is in `tsconfig.node.json`), so spec type errors surface before the suite runs. Note `npm run prettier` only formats `src/`; e2e files are not checked by CI, but match the same style.
+
+CI (`.github/workflows/`) runs `prettier:check`, `type-check`, `knip`, and the Playwright suite on every push/PR to `main` — run `npm run prettier` and `npm run type-check` before handing work off, or CI will fail on formatting alone. `knip` currently passes clean and exits non-zero on any finding, so don't leave unused files or exports behind — an internal e2e helper should stay unexported rather than become an unused export.
 
 Releases go through the `deploy` skill (`.claude/skills/deploy/SKILL.md`): bump semver → tag → GitHub release → `npm run build` → `firebase deploy`. Don't run a bare `firebase deploy` for a production release.
 
