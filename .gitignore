@@ -1,5 +1,6 @@
 .DS_Store
 .env
+.env.e2e
 .env.production
 .firebase
 .firebaserc

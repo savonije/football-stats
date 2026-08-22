@@ -14,6 +14,7 @@
     <div
         v-if="appearance && appearance.playerName"
         class="flex min-h-18 items-center justify-between gap-4 rounded bg-white p-4 shadow"
+        data-testid="appearance"
     >
         <div class="flex items-center gap-1">
             <Button

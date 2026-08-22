@@ -17,7 +17,11 @@ jobs:
                   cache: 'npm'
             - run: npm ci
             - run: npx playwright install chromium --with-deps
-            - run: npm run build-only
+            # Playwright's webServer builds and serves the app itself (see
+            # playwright.config.ts), so the VITE_* values have to be on this
+            # step. They must point at the staging project: the specs that sign
+            # in write to Firestore, and abort if they see any other project.
+            - run: npm run test
               env:
                   VITE_FIREBASE_APIKEY: ${{ secrets.VITE_FIREBASE_APIKEY }}
                   VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -25,7 +29,9 @@ jobs:
                   VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
                   VITE_FIREBASE_MESSAGE_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGE_SENDER_ID }}
                   VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-            - run: npm run test
+                  VITE_CLUBNAME: ${{ secrets.VITE_CLUBNAME }}
+                  E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+                  E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:

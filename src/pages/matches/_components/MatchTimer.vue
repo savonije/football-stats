@@ -144,7 +144,10 @@
                             class="relative inline-flex h-3 w-3 rounded-full bg-red-500"
                         />
                     </span>
-                    <span :class="{ 'text-red-600': overtime }">
+                    <span
+                        :class="{ 'text-red-600': overtime }"
+                        data-testid="match-clock"
+                    >
                         {{ duration }}
                     </span>
                 </div>

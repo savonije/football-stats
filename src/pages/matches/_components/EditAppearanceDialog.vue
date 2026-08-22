@@ -129,6 +129,7 @@
                     severity="danger"
                     variant="outlined"
                     size="small"
+                    :aria-label="$t('match.deletePlayer')"
                     @click="confirmDelete"
                 />
             </div>
