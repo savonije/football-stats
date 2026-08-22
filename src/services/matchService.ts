@@ -1,28 +1,12 @@
 import {
     addDoc,
     collection,
-    doc,
-    getDocs,
     serverTimestamp,
     Timestamp,
-    updateDoc,
 } from 'firebase/firestore';
 
 import { db } from '@/firebase';
-import type { Appearance, Match, NewMatch } from '@/types';
-
-export async function getMatches(seasonId: string): Promise<Match[]> {
-    const matchesRef = collection(db, 'seasons', seasonId, 'matches');
-    const snapshot = await getDocs(matchesRef);
-
-    return snapshot.docs.map(
-        (doc) =>
-            ({
-                id: doc.id,
-                ...doc.data(),
-            }) as Match,
-    );
-}
+import type { NewMatch } from '@/types';
 
 export const addMatch = async (seasonId: string, match: NewMatch) => {
     const date =
@@ -62,16 +46,3 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
 
     return matchRef;
 };
-
-export async function updateAppearance(
-    seasonId: string,
-    matchId: string,
-    appearanceId: string,
-    data: Partial<Appearance>,
-) {
-    const ref = doc(
-        db,
-        `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`,
-    );
-    await updateDoc(ref, data);
-}

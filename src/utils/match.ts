@@ -19,7 +19,7 @@ type TimedMatch = Pick<
  * `startTime`/`pausedDuration` are reset when a half starts, so this always
  * measures from the start of the current half.
  */
-export const getElapsedMs = (
+const getElapsedMs = (
     match: TimedMatch | null | undefined,
     now: number,
 ): number => {

@@ -58,7 +58,7 @@ export const monthCalendarDays = (month: Date | Dayjs): Dayjs[] => {
 export type AttendanceStatus = 'present' | 'absent' | 'unmarked';
 
 /** Whether a training's day is today or still to come. */
-export const isUpcomingTraining = (
+const isUpcomingTraining = (
     date: Timestamp | undefined,
     now: Date = new Date(),
 ): boolean => !date || !dayjs(date.toDate()).isBefore(dayjs(now), 'day');
