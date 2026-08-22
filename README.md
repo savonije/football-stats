@@ -26,6 +26,7 @@ Built with **Vite**, styled with **Tailwind CSS** and **PrimeVue**, powered by *
 - [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework
 - [Firebase](https://firebase.google.com/) – Backend services (Auth, Firestore, Hosting)
 - [ESLint](https://eslint.org/) – Code quality
+- [Playwright](https://playwright.dev/) – End-to-end testing
 
 ---
 
@@ -71,13 +72,24 @@ npm run prettier
 
 ### Testing
 
-End-to-end tests use [Playwright](https://playwright.dev/) and live in `e2e/`. They run against a production preview build (Playwright boots `npm run preview` on port 4173 automatically).
+End-to-end tests use [Playwright](https://playwright.dev/) and live in `e2e/`. Playwright builds and serves the app itself on port 4174, so there is no dev server to start first.
 
 ```sh
-npm run test                              # run all e2e tests
-npx playwright test e2e/home.spec.ts      # a single file
+npx playwright install chromium            # once, to get the browser
+
+npm run test                               # run all e2e tests
+npx playwright test e2e/home.spec.ts       # a single file
 npx playwright test -g "shows top scorers" # by test title
 ```
+
+The read-only specs run as-is. The specs that sign in and write (`match-lifecycle`, `match-players`, `training`) create data, drive it through the UI and delete it again, so they need a **staging** Firebase project — never production:
+
+1. Point `.env` at a staging project (`npm run test` builds with `--mode staging`, ignoring `.env.production`).
+2. Add an email/password user in that project only: Firebase Console → **Authentication → Users**.
+3. `cp .env.e2e.example .env.e2e` and fill in `E2E_EMAIL` / `E2E_PASSWORD`, plus `E2E_PROJECT_ID` if your staging project isn't this repo's default. Playwright loads the file automatically.
+4. Give staging an active season (`active: true`) with players in it — the edit UI is hidden otherwise.
+
+Until that is done the write specs skip rather than fail. For CI, add the same variables to your repository secrets (see `.github/workflows/playwright.yml`).
 
 ---
 
@@ -117,17 +129,18 @@ firebase login
 firebase init
 ```
 
-Your `firebase.json` should include:
+This writes two files. `firebase.json` holds the hosting config (it serves `dist/` and rewrites everything to `index.html`), while the project aliases live in `.firebaserc`:
 
 ```json
 {
     "projects": {
-        "default": ""
+        "default": "",
+        "prod": ""
     }
 }
 ```
 
-Replace `""` with your Firebase project ID.
+Replace each `""` with a Firebase project ID — see `.firebaserc.example`. This project keeps two: `default` is the staging project the e2e tests write to, and `prod` is production. `.firebaserc` is gitignored, so each clone sets its own.
 
 ### 4. Deploy (Optional)
 
