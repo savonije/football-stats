@@ -1,11 +1,21 @@
 <script lang="ts" setup>
     const version = __APP_VERSION__;
+    const releaseUrl = `https://github.com/savonije/football-stats/releases/tag/v${version}`;
 </script>
 
 <template>
     <footer class="footer-root mt-12 py-6 text-white">
         <div class="container flex justify-between text-xs">
-            <div class="text-white/60">Voetbal stats - {{ version }}</div>
+            <div class="text-white/60">
+                Voetbal stats -
+                <a
+                    class="transition-colors duration-200 hover:text-white"
+                    :href="releaseUrl"
+                    target="_blank"
+                >
+                    {{ version }}
+                </a>
+            </div>
             <div class="text-right">
                 <a
                     class="text-white/60 transition-colors duration-200 hover:text-white"
