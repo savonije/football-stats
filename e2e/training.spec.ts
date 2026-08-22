@@ -10,6 +10,10 @@ import {
 
 const pad = (value: number) => value.toString().padStart(2, '0');
 
+/** The add/generate/settings actions live behind the overflow menu. */
+const openTrainingActions = (page: Page) =>
+    page.getByRole('button', { name: 'Meer opties' }).click();
+
 /** A day with no training yet: those cells are the disabled ones. */
 const findFreeDay = async (page: Page) => {
     const today = new Date();
@@ -59,8 +63,9 @@ test.describe('Trainings', () => {
         const dayCell = page.locator(`[data-date="${free!.key}"]`);
 
         await test.step('add a training for a free date', async () => {
+            await openTrainingActions(page);
             await page
-                .getByRole('button', { name: 'Training toevoegen' })
+                .getByRole('menuitem', { name: 'Training toevoegen' })
                 .click();
 
             const dialog = page.getByRole('dialog', {
@@ -144,7 +149,8 @@ test.describe('Trainings', () => {
 
     test('reports what the bulk generator would create', async ({ page }) => {
         await page.goto('/training');
-        await page.getByRole('button', { name: 'Bulk genereren' }).click();
+        await openTrainingActions(page);
+        await page.getByRole('menuitem', { name: 'Bulk genereren' }).click();
 
         const dialog = page.getByRole('dialog', {
             name: 'Trainingen voor een maand genereren',
