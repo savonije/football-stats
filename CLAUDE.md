@@ -11,6 +11,7 @@ npm run lint         # eslint then oxlint (run-s lint:*, both with --fix)
 npm run type-check   # vue-tsc --build type checking
 npm run prettier     # prettier --write src/ (prettier:check to verify only)
 npm run test         # Playwright end-to-end tests
+npm run knip         # find unused files, exports and dependencies
 ```
 
 Playwright tests live in `e2e/` and run against a production preview build (`playwright.config.ts` boots `npm run preview` on port 4173 as its `webServer`). Run a single spec/test:
@@ -22,9 +23,11 @@ npx playwright test -g "shows top scorers"      # by test title
 
 The e2e tests hit **real Firestore data** through the preview build (no emulator, no fixtures), so assertions are written defensively — e.g. `card.or(emptyMatches)` rather than expecting specific matches to exist. Keep new specs data-agnostic and unauthenticated (they never log in).
 
+Knip (`knip.json`) runs on its auto-detected defaults — it picks up the Vite, Playwright, ESLint and Prettier configs on its own, and follows `src/styles/main.css` for CSS-only dependencies like `tailwindcss` and `primeicons`. Only `public/**` is ignored, because those assets are referenced by absolute URL from `index.html` and can't be resolved statically. Don't narrow `project` to `.ts`/`.vue` — that drops the CSS graph and produces false "unused dependency" hits.
+
 Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials plus `VITE_CLUBNAME`. There is no hardcoded config in source.
 
-CI (`.github/workflows/`) runs `prettier:check`, `type-check`, and the Playwright suite on every push/PR to `main` — run `npm run prettier` and `npm run type-check` before handing work off, or CI will fail on formatting alone.
+CI (`.github/workflows/`) runs `prettier:check`, `type-check`, `knip`, and the Playwright suite on every push/PR to `main` — run `npm run prettier` and `npm run type-check` before handing work off, or CI will fail on formatting alone. The `knip` job is currently expected to fail: it reports pre-existing dead code (see `npm run knip`) and exits non-zero on any finding.
 
 Releases go through the `deploy` skill (`.claude/skills/deploy/SKILL.md`): bump semver → tag → GitHub release → `npm run build` → `firebase deploy`. Don't run a bare `firebase deploy` for a production release.
 
