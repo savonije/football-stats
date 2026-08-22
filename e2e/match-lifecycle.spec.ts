@@ -10,11 +10,6 @@ import {
     uniqueLabel,
 } from './helpers/app';
 
-/**
- * The live match clock writes raw timestamps to the match document on every
- * transition, so the only way to cover it is to walk a real match through all
- * four states. The match is created here and deleted again afterwards.
- */
 test.describe('Match timer lifecycle', () => {
     let matchUrl = '';
 
@@ -41,7 +36,6 @@ test.describe('Match timer lifecycle', () => {
                 .click();
 
             await expect(page.getByText('1e helft')).toBeVisible();
-            // The clock is derived from the stored startTime, so it must tick.
             await expect(clock).not.toHaveText('0:00', { timeout: 5000 });
         });
 
@@ -63,8 +57,7 @@ test.describe('Match timer lifecycle', () => {
                 .click();
 
             await expect(page.getByText('2e helft')).toBeVisible();
-            // The second half is offset by the season's half duration, so the
-            // clock resumes there rather than restarting at zero.
+            // The clock resumes at the half-duration offset, not at zero.
             await expect(clock).not.toHaveText('0:00');
         });
 
@@ -79,10 +72,9 @@ test.describe('Match timer lifecycle', () => {
         });
 
         await test.step('a second viewer sees the ended match', async () => {
-            // The timer writes straight to the match document so every viewer
-            // stays in sync. A second tab runs its own Firestore client, so
-            // what it renders came back from the server rather than out of the
-            // acting page's local cache — which a reload cannot tell apart.
+            // A second tab has its own Firestore client, so what it renders
+            // came from the server. A reload cannot tell that apart from the
+            // acting page's local cache.
             const viewer = await page.context().newPage();
             await viewer.goto(matchUrl);
 

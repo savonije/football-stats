@@ -11,11 +11,6 @@ import {
     uniqueLabel,
 } from './helpers/app';
 
-/**
- * Appearances are their own subcollection under a match, edited from three
- * different places in the UI. One match is created here and the same player is
- * edited, removed and added back, so the squad ends where it started.
- */
 test.describe('Match players', () => {
     let matchUrl = '';
 
@@ -33,8 +28,6 @@ test.describe('Match players', () => {
     test('edits, removes and re-adds a player in a match', async ({ page }) => {
         matchUrl = await createMatch(page, uniqueLabel('E2E squad'));
 
-        // A new match starts with the season's squad already selected, so the
-        // appearance list doubles as the check that creation seeded it.
         const squad = page.getByTestId('appearance');
         const hasSquad = await becomesVisible(squad.first(), 15_000);
 
@@ -59,7 +52,7 @@ test.describe('Match players', () => {
             const dialog = page.getByRole('dialog', { name: playerName });
             const goals = dialog.getByLabel('Doelpunten');
 
-            // The spinner keys sidestep any locale parsing of typed numbers.
+            // Spinner keys, so no locale parsing of typed numbers.
             await goals.click();
             await goals.press('ArrowUp');
             await goals.press('ArrowUp');
@@ -100,22 +93,19 @@ test.describe('Match players', () => {
             const dialog = page.getByRole('dialog', {
                 name: 'Spelers toevoegen',
             });
-            // role=combobox sits on MultiSelect's hidden input, which the
-            // visible label covers, so drive the root the way a user does.
+            // role=combobox sits on MultiSelect's hidden, covered input.
             const players = dialog.locator('.p-multiselect');
 
             await players.click();
             await page
                 .getByRole('option', { name: playerName, exact: true })
                 .click();
-            // Close the overlay again, it covers the dialog footer.
-            await players.click();
+            await players.click(); // close the overlay off the dialog footer
 
             await dialog.getByRole('button', { name: 'Toevoegen' }).click();
             await expect(dialog).toBeHidden();
 
             await expect(squad).toHaveCount(squadSize);
-            // The re-added appearance is a fresh document, back at zero goals.
             await expect(card).not.toContainText('⚽');
         });
     });

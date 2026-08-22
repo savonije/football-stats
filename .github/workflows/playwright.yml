@@ -17,10 +17,6 @@ jobs:
                   cache: 'npm'
             - run: npm ci
             - run: npx playwright install chromium --with-deps
-            # Playwright's webServer builds and serves the app itself (see
-            # playwright.config.ts), so the VITE_* values have to be on this
-            # step. They must point at the staging project: the specs that sign
-            # in write to Firestore, and abort if they see any other project.
             - run: npm run test
               env:
                   VITE_FIREBASE_APIKEY: ${{ secrets.VITE_FIREBASE_APIKEY }}

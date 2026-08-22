@@ -10,12 +10,7 @@ import {
 
 const pad = (value: number) => value.toString().padStart(2, '0');
 
-/**
- * A day in the month on show that has no training yet. Day cells are disabled
- * until a training exists for them, so a disabled cell is a free date. Counting
- * down from the end of the month keeps the new training in the future, where a
- * coach would actually be filling attendance in.
- */
+/** A day with no training yet: those cells are the disabled ones. */
 const findFreeDay = async (page: Page) => {
     const today = new Date();
     const year = today.getFullYear();
@@ -72,14 +67,14 @@ test.describe('Trainings', () => {
                 name: 'Training toevoegen',
             });
 
-            // The picker panel overlays the whole dialog, so pick the day in
-            // the panel rather than typing: selecting a date closes it again.
+            // The panel overlays the whole dialog, so pick the day inside it;
+            // selecting a date closes it again.
             const picker = page.locator('[data-pc-section="panel"]');
             await dialog.getByLabel('Datum').click();
             await expect(picker).toBeVisible();
 
-            // Days of the neighbouring months share the same aria-label, and
-            // only they carry data-p-other-month.
+            // Neighbouring months share the aria-label, and only they carry
+            // data-p-other-month.
             await picker
                 .locator(
                     `[data-pc-section="daycell"][aria-label="${free!.day}"]:not([data-p-other-month="true"])`,
@@ -91,8 +86,6 @@ test.describe('Trainings', () => {
                 .getByRole('button', { name: 'Training toevoegen' })
                 .click();
             await expect(dialog).toBeHidden();
-
-            // The day becomes clickable once its training exists.
             await expect(dayCell).toBeEnabled();
         });
 
@@ -115,11 +108,9 @@ test.describe('Trainings', () => {
 
         await expect(page.getByText(`0 / ${total} aanwezig`)).toBeVisible();
 
-        // Attendance is an arrayUnion/arrayRemove on the training document, so
-        // the assertion that matters is that it reached the server. A second
-        // tab runs its own Firestore client, so what it shows came back over
-        // the wire — unlike a reload, which cannot be told apart from the
-        // acting page's own local cache.
+        // A second tab has its own Firestore client, so what it shows came
+        // from the server. A reload cannot tell that apart from the acting
+        // page's local cache.
         const viewer = await page.context().newPage();
         await viewer.goto(trainingUrl);
         await expect(viewer.getByText(`0 / ${total} aanwezig`)).toBeVisible();
@@ -159,8 +150,6 @@ test.describe('Trainings', () => {
             name: 'Trainingen voor een maand genereren',
         });
 
-        // Either the season has training days configured, so the dialog counts
-        // what is still missing, or it warns that none are set yet.
         await expect(
             dialog.getByText(
                 /nieuwe training|bestaan al|nog geen trainingsdagen/i,
