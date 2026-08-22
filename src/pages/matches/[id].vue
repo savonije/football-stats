@@ -28,9 +28,7 @@
         () => matchStore.presentPlayersWithNames,
     );
 
-    const canEditAppearances = computed(
-        () => canEdit.value && !matchStore.selectedMatch?.ended,
-    );
+    const canEditAppearances = computed(() => canEdit.value);
 
     const selectedAppearance = computed(
         () =>
