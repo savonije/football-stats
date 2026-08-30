@@ -24,6 +24,13 @@ export default defineConfig({
           primary: 'primary',
           neutral: 'slate',
         },
+        // Replaces the old global `.p-dialog { max-w-[95%] }` rule so narrow
+        // screens still get a margin. Per-dialog widths stay on the component.
+        modal: {
+          slots: {
+            content: 'max-w-[95%]',
+          },
+        },
       },
     }),
     eslint(),

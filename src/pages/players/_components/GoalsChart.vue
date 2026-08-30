@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { computed } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import Tooltip from 'primevue/tooltip';
 
     interface DataPoint {
         goals: number;
@@ -13,8 +12,6 @@
     }>();
 
     const { t } = useI18n();
-
-    const vTooltip = Tooltip;
 
     const COL_WIDTH = 90;
     const H = 230;
@@ -95,14 +92,16 @@
                     {{ p.goals }}
                 </text>
 
-                <circle
-                    v-tooltip.top.focus="p.opponent"
-                    :cx="p.x"
-                    :cy="p.y"
-                    r="10"
-                    fill="transparent"
-                    style="cursor: pointer"
-                />
+                <UTooltip :content="{ side: 'top' }" :text="p.opponent">
+                    <circle
+                        :cx="p.x"
+                        :cy="p.y"
+                        r="10"
+                        fill="transparent"
+                        style="cursor: pointer"
+                        tabindex="0"
+                    />
+                </UTooltip>
                 <circle
                     :cx="p.x"
                     :cy="p.y"

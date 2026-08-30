@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { nl } from '@nuxt/ui/locale';
-    import { Toast, ConfirmDialog } from 'primevue';
     import { RouterView } from 'vue-router';
 
     import { useStoreAuth } from '@/stores/authStore';
@@ -17,7 +16,7 @@
 </script>
 
 <template>
-    <UApp :locale="nl">
+    <UApp :locale="nl" :toaster="{ ui: { viewport: 'max-w-[90%]' } }">
         <RouterView v-slot="{ Component, route }">
             <component
                 :is="
@@ -27,7 +26,5 @@
                 <component :is="Component" />
             </component>
         </RouterView>
-        <ConfirmDialog />
-        <Toast />
     </UApp>
 </template>

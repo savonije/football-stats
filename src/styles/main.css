@@ -2,8 +2,6 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-@import 'primeicons/primeicons.css';
-
 @theme static {
     --color-primary-50: #f2f5fb;
     --color-primary-100: #dbe3f5;
@@ -117,65 +115,4 @@ body {
 
 label {
     @apply mb-0 block text-sm font-bold;
-}
-
-/* PrimeVue dialog customization */
-.p-dialog {
-    @apply max-w-[95%];
-}
-
-.p-toast {
-    @apply left-[10px] max-w-[90%];
-}
-
-/* DataTable header gradient */
-.p-datatable .p-datatable-thead > tr > th {
-    background: linear-gradient(180deg, #dbe3f5 0%, #edf1fa 100%) !important;
-    color: #213672 !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.02em;
-}
-
-/* DataTable row hover transition */
-.p-datatable .p-datatable-tbody > tr {
-    transition: background-color 0.15s ease !important;
-    cursor: pointer;
-}
-
-/* NavDrawer - dark gradient shell (teleported to body, must be global) */
-.p-drawer {
-    background: linear-gradient(
-        160deg,
-        #111a36 0%,
-        #1d2e5d 40%,
-        #27428a 100%
-    ) !important;
-    box-shadow: -8px 0 40px rgba(17, 26, 54, 0.6) !important;
-}
-
-.p-drawer .p-drawer-header {
-    background: rgba(255, 255, 255, 0.04) !important;
-    color: white !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.p-drawer .p-drawer-title {
-    color: white !important;
-    font-size: 0.7rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
-}
-
-.p-drawer .p-drawer-close-button {
-    color: rgba(255, 255, 255, 0.6) !important;
-}
-
-.p-drawer .p-drawer-close-button:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
-}
-
-.p-drawer .p-drawer-content {
-    background: transparent !important;
 }

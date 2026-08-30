@@ -25,13 +25,10 @@
     "dependencies": {
         "@iconify-json/lucide": "^1.2.126",
         "@nuxt/ui": "^4.11.0",
-        "@primeuix/themes": "^2.0.2",
-        "@tailwindcss/vite": "^4.3.3",
+        "@tanstack/vue-table": "^8.21.3",
         "dayjs": "^1.11.23",
         "firebase": "^12.18.0",
         "pinia": "^3.0.3",
-        "primeicons": "^7.0.0",
-        "primevue": "^4.3.9",
         "vue": "^3.5.41",
         "vue-i18n": "^11.4.9"
     },

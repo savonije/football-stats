@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { computed } from 'vue';
-    import { Button, Skeleton } from 'primevue';
 
     import { useStoreAuth } from '@/stores/authStore';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -38,16 +37,11 @@
                 <span v-if="player">
                     {{ player.name.charAt(0).toUpperCase() }}
                 </span>
-                <i v-else class="pi pi-user" />
+                <UIcon v-else name="i-lucide-user" />
             </div>
 
             <div class="min-w-0 flex-1">
-                <Skeleton
-                    v-if="loading || !player"
-                    class="mb-2"
-                    height="36px"
-                    width="180px"
-                />
+                <USkeleton v-if="loading || !player" class="mb-2 h-9 w-45" />
                 <h1
                     v-else
                     class="mb-0 truncate text-3xl font-black text-white lg:text-4xl"
@@ -62,14 +56,15 @@
                 </span>
             </div>
 
-            <Button
+            <UButton
                 v-if="player && authStore.user?.id"
                 class="shrink-0 border-white/30! bg-white/12! px-2! text-white! hover:border-white/50! hover:bg-white/22! sm:px-4!"
-                icon="pi pi-pencil"
+                color="neutral"
+                icon="i-lucide-pencil"
                 :label="$t('common.edit')"
-                variant="outlined"
-                size="small"
-                :pt="{ label: { class: 'hidden sm:inline-block' } }"
+                size="sm"
+                :ui="{ label: 'hidden sm:inline-block' }"
+                variant="outline"
                 @click="$emit('edit')"
             />
         </div>

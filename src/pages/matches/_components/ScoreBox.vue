@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { Button, Dialog, useToast, Select } from 'primevue';
+    import { useToast } from '@nuxt/ui/composables/useToast';
     import type { Match } from '@/types';
     import { useStoreAuth } from '@/stores/authStore';
     import { useMatchStore } from '@/stores/matchStore';
@@ -52,11 +52,13 @@
         }
 
         if (delta > 0) {
+            // Deliberately long-lived: it doubles as the prompt to record
+            // who scored, so it must outlast a normal toast.
             toast.add({
-                severity: 'info',
-                summary: t('common.goal'),
-                detail: t(`match.goalTypes.${props.type}`),
-                life: 20000,
+                title: t('common.goal'),
+                description: t(`match.goalTypes.${props.type}`),
+                color: 'info',
+                duration: 20000,
             });
         }
     };
@@ -100,22 +102,24 @@
             "
             class="mx-6 flex flex-col justify-between gap-3"
         >
-            <Button
-                icon="pi pi-chevron-up"
-                severity="secondary"
-                text
+            <UButton
+                color="neutral"
+                icon="i-lucide-chevron-up"
+                variant="ghost"
                 @click="updateGoals(1)"
             />
 
-            <Button
-                icon="pi pi-chevron-down"
-                severity="secondary"
-                text
+            <UButton
+                color="neutral"
+                icon="i-lucide-chevron-down"
+                variant="ghost"
                 @click="updateGoals(-1)"
             />
         </div>
 
-        <div class="score-box">
+        <div
+            class="flex size-24 items-center justify-center rounded bg-white text-4xl font-bold shadow sm:size-32 sm:text-6xl"
+        >
             <template v-if="type === 'for'">
                 {{ match?.result?.goalsFor }}
             </template>
@@ -125,38 +129,28 @@
         </div>
     </div>
 
-    <Dialog
-        v-model:visible="modal"
-        class="w-md"
-        modal
-        :draggable="false"
-        :header="t('match.goalScorer')"
+    <UModal
+        v-model:open="modal"
+        :title="t('match.goalScorer')"
+        :ui="{ content: 'w-md' }"
     >
-        <template #default>
-            <Select
+        <template #body>
+            <USelect
                 v-model="selectedPlayer"
-                :options="players"
-                optionLabel="playerName"
-                optionValue="playerId"
+                class="w-full"
+                :items="players"
+                label-key="playerName"
                 :placeholder="t('player.selectPlayer')"
-                fluid
+                value-key="playerId"
             />
         </template>
 
         <template #footer>
-            <Button
+            <UButton
+                icon="i-lucide-check"
                 :label="t('common.save')"
-                icon="pi pi-check"
                 @click="saveGoal"
             />
         </template>
-    </Dialog>
+    </UModal>
 </template>
-
-<style scoped>
-    @reference '@/styles/main.css';
-
-    .score-box {
-        @apply flex size-24 items-center justify-center rounded bg-white text-4xl font-bold shadow sm:size-32 sm:text-6xl;
-    }
-</style>

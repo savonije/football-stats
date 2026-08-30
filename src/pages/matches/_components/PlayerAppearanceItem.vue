@@ -1,5 +1,4 @@
 <script setup lang="ts">
-    import { Button, Skeleton } from 'primevue';
     import type { AppearanceWithName } from '@/types';
 
     const { appearance, editable } = defineProps<{
@@ -17,12 +16,12 @@
         data-testid="appearance"
     >
         <div class="flex items-center gap-1">
-            <Button
+            <UButton
                 v-if="editable"
-                icon="pi pi-pencil"
-                severity="secondary"
-                variant="text"
-                rounded
+                class="rounded-full"
+                color="neutral"
+                icon="i-lucide-pencil"
+                variant="ghost"
                 :aria-label="$t('match.editAppearance')"
                 @click="emit('edit', appearance)"
             />
@@ -48,6 +47,6 @@
         </div>
     </div>
     <div v-else>
-        <Skeleton width="100%" height="4rem" />
+        <USkeleton class="h-16 w-full" />
     </div>
 </template>
