@@ -16,14 +16,10 @@
         },
     );
 
-    // `useOverlay` binds this from OverlayProvider; UModal manages its own
-    // state without it, which leaves the dialog on screen after a choice.
     const open = defineModel<boolean>('open', { default: false });
 
     const emit = defineEmits<{ close: [confirmed: boolean] }>();
 
-    // Closing the modal is the single exit path, so dismissing with Esc or the
-    // close button resolves the promise as a decline rather than hanging.
     let confirmed = false;
 
     const respond = (value: boolean) => {

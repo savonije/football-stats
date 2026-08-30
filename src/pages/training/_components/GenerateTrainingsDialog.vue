@@ -20,7 +20,6 @@
 
     const month = ref<Date>(new Date());
 
-    // Nuxt UI has no month picker, so the month is chosen with two selects.
     const monthOptions = Array.from({ length: 12 }, (_, index) => ({
         label: dayjs().month(index).format('MMMM'),
         value: index,

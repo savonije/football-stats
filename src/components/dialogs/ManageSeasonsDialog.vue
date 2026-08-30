@@ -76,7 +76,6 @@
     const addSeason = async () => {
         const id = newSeason.value.trim();
 
-        // InputMask enforced this shape before; Nuxt UI has no masked input.
         if (!/^\d{4}-\d{4}$/.test(id)) {
             toast.warn(t('seasons.messages.invalidFormat'));
             return;

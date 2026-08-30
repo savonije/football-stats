@@ -29,7 +29,6 @@
     const sorting = ref([{ id: 'date', desc: true }]);
     const pagination = ref({ pageIndex: 0, pageSize: 10 });
 
-    // Drives the "{shown} / {total}" badge that the PrimeVue @filter event fed.
     const filteredCount = computed(
         () =>
             table.value?.tableApi?.getFilteredRowModel().rows.length ??
@@ -51,8 +50,6 @@
         return 'text-yellow-700';
     };
 
-    // Only the opponent column feeds the search box, matching the old
-    // :global-filter-fields="['opponent']".
     const columns = computed<TableColumn<Match>[]>(() => [
         {
             accessorKey: 'date',
@@ -115,7 +112,6 @@
         },
     );
 
-    // A narrowed search should not leave the user stranded on an empty page.
     watch(globalFilter, () => (pagination.value.pageIndex = 0));
 
     const onSelect = (_event: Event, row: TableRow<Match>) => {

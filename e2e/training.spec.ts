@@ -61,9 +61,6 @@ const addTrainingForDay = async (page: Page, day: number) => {
 
     const dialog = page.getByRole('dialog', { name: 'Training toevoegen' });
 
-    // UInputDate is a segmented field, not a text input: focus the day
-    // segment and type it. The field already defaults to today, so only the
-    // day needs changing, and each digit auto-advances the focus.
     const daySegment = dialog
         .locator('[data-testid="date-input"]')
         .locator('[data-reka-date-field-segment="day"]');
@@ -210,8 +207,6 @@ test.describe('Trainings', () => {
         await expect(region).toBeVisible({ timeout: 15_000 });
         await region.getByRole('tab', { name: 'Maand', exact: true }).click();
 
-        // UTable gives a selectable row role="button" rather than "row", so
-        // match the <tr> itself instead of going through the row role.
         const playerRow = region
             .locator('tbody tr')
             .filter({ has: viewer.getByRole('cell', { name: playerName }) });

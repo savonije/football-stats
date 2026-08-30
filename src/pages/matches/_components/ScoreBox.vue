@@ -52,8 +52,6 @@
         }
 
         if (delta > 0) {
-            // Deliberately long-lived: it doubles as the prompt to record
-            // who scored, so it must outlast a normal toast.
             toast.add({
                 title: t('common.goal'),
                 description: t(`match.goalTypes.${props.type}`),

@@ -10,11 +10,6 @@ type ConfirmOptions = {
     icon?: string;
 };
 
-/**
- * Replaces PrimeVue's `confirm.require({ accept })` callback with a promise,
- * so call sites read `if (await confirm({ ... }))` instead of branching in a
- * handler.
- */
 export const useConfirmDialog = () => {
     const overlay = useOverlay();
 

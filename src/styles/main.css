@@ -35,7 +35,6 @@
         var(--color-primary-500) 100%
     );
 
-    /* nav drawer shell */
     --gradient-drawer: linear-gradient(
         160deg,
         #111a36 0%,
@@ -43,7 +42,6 @@
         #27428a 100%
     );
 
-    /* table header */
     --gradient-table-header: linear-gradient(180deg, #dbe3f5 0%, #edf1fa 100%);
 
     /* accent gradients for stat-tile / nav icons */
@@ -65,7 +63,6 @@
 
     --animate-score-pop: score-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    /* nav drawer entrance; stagger comes from --i on each item */
     --animate-nav-slide-in: nav-slide-in 0.3s ease-out forwards;
 
     @keyframes nav-slide-in {

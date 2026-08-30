@@ -56,7 +56,6 @@
         }
     };
 
-    // Shared shape for every row in the drawer; `--i` drives the entrance stagger.
     const navItem =
         'flex w-full items-center gap-3 rounded-[10px] border-none bg-transparent px-3 py-2.5 text-left text-[0.95rem] font-medium text-white/80 no-underline opacity-0 transition-colors duration-200 [animation-delay:calc(0.05s+var(--i,0)*0.07s)] hover:bg-white/10 hover:text-white';
     const navIcon =

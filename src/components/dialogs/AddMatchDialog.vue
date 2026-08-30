@@ -25,7 +25,6 @@
         result: { goalsFor: 0, goalsAgainst: 0 },
     });
 
-    // UInputDate speaks CalendarDate; the service wants a plain Date.
     const date = shallowRef<CalendarDate | undefined>(
         toCalendarDate(new Date()),
     );

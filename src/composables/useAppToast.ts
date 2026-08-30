@@ -3,11 +3,6 @@ import { useI18n } from 'vue-i18n';
 
 import { TOAST_LIFE } from '@/constants';
 
-/**
- * Thin wrapper over Nuxt UI's toast so call sites only pass the message.
- * The heading and lifetime are the same everywhere, and were repeated at
- * every `toast.add()` under PrimeVue.
- */
 export const useAppToast = () => {
     const toast = useToast();
     const { t } = useI18n();
