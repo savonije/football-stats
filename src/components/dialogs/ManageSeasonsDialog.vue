@@ -1,24 +1,14 @@
 <script setup lang="ts">
     import { ref, reactive, computed, watch } from 'vue';
-    import {
-        Dialog,
-        Select,
-        InputText,
-        InputMask,
-        InputNumber,
-        Button,
-        Tag,
-        Divider,
-        useToast,
-    } from 'primevue';
     import { useI18n } from 'vue-i18n';
 
+    import { useAppToast } from '@/composables/useAppToast';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { TOAST_LIFE, DEFAULT_HALF_DURATION_MINUTES } from '@/constants';
+    import { DEFAULT_HALF_DURATION_MINUTES } from '@/constants';
 
     const model = defineModel<boolean>('visible');
     const seasonStore = useSeasonStore();
-    const toast = useToast();
+    const toast = useAppToast();
     const { t } = useI18n();
 
     const selectedId = ref('');
@@ -50,11 +40,7 @@
         if (!selectedId.value) return;
 
         if (form.halfDurationMinutes == null || form.halfDurationMinutes <= 0) {
-            toast.add({
-                severity: 'warn',
-                summary: t('common.validation.warning'),
-                life: TOAST_LIFE,
-            });
+            toast.warn(t('seasons.messages.invalidHalfDuration'));
             return;
         }
 
@@ -64,19 +50,10 @@
                 teamname: form.teamname,
                 halfDurationMinutes: form.halfDurationMinutes,
             });
-            toast.add({
-                severity: 'success',
-                summary: t('common.success'),
-                detail: t('seasons.messages.settingsSaved'),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('seasons.messages.settingsSaved'));
             model.value = false;
         } catch {
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('seasons.messages.saveError'));
         } finally {
             saving.value = false;
         }
@@ -88,18 +65,9 @@
         activating.value = true;
         try {
             await seasonStore.setActiveSeason(selectedId.value);
-            toast.add({
-                severity: 'success',
-                summary: t('common.success'),
-                detail: t('seasons.messages.activeChanged'),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('seasons.messages.activeChanged'));
         } catch {
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('seasons.messages.saveError'));
         } finally {
             activating.value = false;
         }
@@ -108,13 +76,14 @@
     const addSeason = async () => {
         const id = newSeason.value.trim();
 
+        // InputMask enforced this shape before; Nuxt UI has no masked input.
+        if (!/^\d{4}-\d{4}$/.test(id)) {
+            toast.warn(t('seasons.messages.invalidFormat'));
+            return;
+        }
+
         if (seasonStore.seasons.some((season) => season.id === id)) {
-            toast.add({
-                severity: 'warn',
-                summary: t('common.validation.warning'),
-                detail: t('seasons.messages.seasonExists'),
-                life: TOAST_LIFE,
-            });
+            toast.warn(t('seasons.messages.seasonExists'));
             return;
         }
 
@@ -124,18 +93,9 @@
             newSeason.value = '';
             selectedId.value = id;
 
-            toast.add({
-                severity: 'success',
-                summary: t('common.success'),
-                detail: t('seasons.messages.seasonAdded'),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('seasons.messages.seasonAdded'));
         } catch {
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('seasons.messages.saveError'));
         } finally {
             addLoading.value = false;
         }
@@ -159,138 +119,142 @@
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="model"
-        class="w-md"
-        modal
-        closable
-        dismissableMask
-        :header="t('seasons.title')"
-        :draggable="false"
+    <UModal
+        v-model:open="model"
+        :title="t('seasons.title')"
+        :ui="{ content: 'w-md' }"
     >
-        <div class="flex flex-col gap-5">
-            <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium">
-                    {{ t('common.season') }}
-                </label>
-                <Select
-                    v-model="selectedId"
-                    :options="seasonStore.seasons"
-                    option-label="id"
-                    option-value="id"
-                    :placeholder="t('seasons.selectSeason')"
-                    fluid
-                >
-                    <template #option="{ option }">
-                        <div
-                            class="flex w-full items-center justify-between gap-2"
-                        >
-                            <span>{{ option.id }}</span>
-                            <Tag
-                                v-if="option.active"
-                                :value="t('seasons.active')"
-                                severity="success"
+        <template #body>
+            <div class="flex flex-col gap-5">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium">
+                        {{ t('common.season') }}
+                    </label>
+                    <USelect
+                        v-model="selectedId"
+                        class="w-full"
+                        :items="seasonStore.seasons"
+                        label-key="id"
+                        :placeholder="t('seasons.selectSeason')"
+                        value-key="id"
+                    >
+                        <template #item="{ item }">
+                            <div
+                                class="flex w-full items-center justify-between gap-2"
+                            >
+                                <span>{{ item.id }}</span>
+                                <UBadge
+                                    v-if="item.active"
+                                    color="success"
+                                    variant="subtle"
+                                >
+                                    {{ t('seasons.active') }}
+                                </UBadge>
+                            </div>
+                        </template>
+                    </USelect>
+                </div>
+
+                <template v-if="selectedSeason">
+                    <div
+                        class="flex flex-col gap-4 rounded-lg border border-gray-200 p-4"
+                    >
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium">
+                                {{ t('seasons.activeSeason') }}
+                            </span>
+                            <UBadge
+                                v-if="selectedSeason.active"
+                                color="success"
+                                variant="subtle"
+                            >
+                                {{ t('seasons.active') }}
+                            </UBadge>
+                            <UButton
+                                v-else
+                                color="neutral"
+                                icon="i-lucide-circle-check"
+                                :label="t('seasons.setActive')"
+                                :loading="activating"
+                                size="sm"
+                                variant="subtle"
+                                @click="setActive"
                             />
                         </div>
-                    </template>
-                </Select>
-            </div>
 
-            <template v-if="selectedSeason">
-                <div
-                    class="flex flex-col gap-4 rounded-lg border border-gray-200 p-4"
-                >
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">
-                            {{ t('seasons.activeSeason') }}
-                        </span>
-                        <Tag
-                            v-if="selectedSeason.active"
-                            :value="t('seasons.active')"
-                            severity="success"
-                        />
-                        <Button
-                            v-else
-                            :label="t('seasons.setActive')"
-                            icon="pi pi-check-circle"
-                            size="small"
-                            severity="secondary"
-                            :loading="activating"
-                            @click="setActive"
-                        />
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium">
+                                {{ t('seasons.teamName') }}
+                            </label>
+                            <UInput
+                                v-model="form.teamname"
+                                class="w-full"
+                                :placeholder="t('seasons.teamNamePlaceholder')"
+                                @keyup.enter="saveSettings"
+                            />
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium">
+                                {{ t('seasons.halfDuration') }}
+                            </label>
+                            <UInputNumber
+                                v-model="form.halfDurationMinutes"
+                                class="w-full"
+                                :max="60"
+                                :min="1"
+                                :placeholder="
+                                    t('seasons.halfDurationPlaceholder')
+                                "
+                                @keyup.enter="saveSettings"
+                            />
+                        </div>
                     </div>
+                </template>
 
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-sm font-medium">{{
-                            t('seasons.teamName')
-                        }}</label>
-                        <InputText
-                            v-model="form.teamname"
-                            :placeholder="t('seasons.teamNamePlaceholder')"
-                            fluid
-                            @keyup.enter="saveSettings"
+                <USeparator />
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium" for="newSeason">
+                        {{ t('seasons.addSeason') }}
+                    </label>
+                    <div class="flex gap-2">
+                        <UInput
+                            id="newSeason"
+                            v-model="newSeason"
+                            class="flex-1"
+                            :placeholder="t('seasons.newSeasonPlaceholder')"
+                            @keyup.enter="addSeason"
                         />
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-sm font-medium">{{
-                            t('seasons.halfDuration')
-                        }}</label>
-                        <InputNumber
-                            v-model="form.halfDurationMinutes"
-                            :min="1"
-                            :max="60"
-                            suffix=" min"
-                            :placeholder="t('seasons.halfDurationPlaceholder')"
-                            fluid
-                            @keyup.enter="saveSettings"
+                        <UButton
+                            color="neutral"
+                            icon="i-lucide-plus"
+                            :label="t('common.add')"
+                            :loading="addLoading"
+                            variant="subtle"
+                            @click="addSeason"
                         />
                     </div>
                 </div>
-            </template>
-
-            <Divider class="!my-0" />
-
-            <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium" for="newSeason">{{
-                    t('seasons.addSeason')
-                }}</label>
-                <div class="flex gap-2">
-                    <InputMask
-                        id="newSeason"
-                        v-model="newSeason"
-                        mask="9999-9999"
-                        :placeholder="t('seasons.newSeasonPlaceholder')"
-                        fluid
-                        @keyup.enter="addSeason"
-                    />
-                    <Button
-                        :label="t('common.add')"
-                        icon="pi pi-plus"
-                        severity="secondary"
-                        :loading="addLoading"
-                        @click="addSeason"
-                    />
-                </div>
             </div>
-        </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="t('common.cancel')"
-                    severity="secondary"
-                    text
+                    variant="ghost"
                     @click="model = false"
                 />
-                <Button
-                    :label="t('common.save')"
-                    icon="pi pi-check"
-                    :loading="saving"
+                <UButton
                     :disabled="!selectedSeason"
+                    icon="i-lucide-check"
+                    :label="t('common.save')"
+                    :loading="saving"
                     @click="saveSettings"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>

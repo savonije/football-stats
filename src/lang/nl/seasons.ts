@@ -15,6 +15,8 @@ export default {
         'Dit seizoen is niet actief. Gegevens kunnen alleen worden bekeken.',
     messages: {
         seasonAdded: 'Seizoen toegevoegd',
+        saveError: 'Opslaan is mislukt',
+        invalidHalfDuration: 'Vul een geldige speelduur in (1-60 minuten)',
         seasonExists: 'Dit seizoen bestaat al',
         activeChanged: 'Actief seizoen gewijzigd',
         teamNameChanged: 'Teamnaam opgeslagen',

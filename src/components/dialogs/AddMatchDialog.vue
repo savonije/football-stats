@@ -141,10 +141,10 @@
                         id="players"
                         v-model="form.players"
                         class="w-full"
-                        data-testid="match-players"
                         :items="playerOptions"
                         multiple
                         value-key="value"
+                        data-testid="match-players"
                     />
                 </div>
 

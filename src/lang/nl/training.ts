@@ -43,5 +43,6 @@ export default {
         cancelledSaved: 'Training afgelast',
         uncancelledSaved: 'Afgelasting ongedaan gemaakt',
         trainingDaysSaved: 'Trainingsdagen opgeslagen',
+        trainingDaysSaveError: 'Kon de trainingsdagen niet opslaan',
     },
 };
