@@ -116,10 +116,13 @@ it's a plain variable with no generated utility; see §2.)
 
 ## 4. Dark mode
 
-**Dark mode is not enabled** and no component uses any `dark:` variant.
-**Don't add `dark:` classes** — they have no effect today. Enabling it would mean
-turning on Nuxt UI's color mode and adopting a dark color strategy first; revisit
-only then.
+**Dark mode is not enabled** (`colorMode: false` in `vite.config.ts`) and no
+component uses any `dark:` variant. **Don't add `dark:` classes** — they have no
+effect today. That flag is load-bearing: with Nuxt UI's color mode on, it calls
+VueUse's `useDark()`, which follows the OS preference and puts `.dark` on `<html>`,
+turning every component dark while `main.css` keeps the page light. Enabling dark
+mode means flipping that flag *and* adopting a dark color strategy for the app's own
+tokens; revisit only then.
 
 ## 5. Dialog widths: one way only
 

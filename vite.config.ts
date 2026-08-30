@@ -16,6 +16,11 @@ export default defineConfig({
     // `ui()` bundles @tailwindcss/vite, so that plugin is not registered separately.
     ui({
       autoImport: false,
+      // This app is light-only. Left on, Nuxt UI registers a plugin that calls
+      // VueUse's useDark(), which follows prefers-color-scheme and puts `.dark`
+      // on <html> — the page keeps its own light background while every
+      // component turns dark.
+      colorMode: false,
       // Bundle the icons actually used in source, so nothing is fetched from
       // the Iconify API at runtime.
       icon: { clientBundle: { scan: true } },
