@@ -1,11 +1,8 @@
 import '@/styles/main.css';
 import '@/config/dayjs';
 
-import { definePreset } from '@primeuix/themes';
-import Aura from '@primeuix/themes/aura';
+import ui from '@nuxt/ui/vue-plugin';
 import { createPinia } from 'pinia';
-import { Config, ToastService } from 'primevue';
-import ConfirmationService from 'primevue/confirmationservice';
 import { createApp, markRaw } from 'vue';
 import type { Router } from 'vue-router';
 
@@ -13,7 +10,6 @@ import App from '@/App.vue';
 
 import i18n from '@/config/i18n';
 import router from '@/router';
-import { theme } from '@/utils/tailwind';
 
 declare module 'pinia' {
     export interface PiniaCustomProperties {
@@ -29,61 +25,10 @@ pinia.use(({ store }) => {
 
 const app = createApp(App);
 
-const CustomPreset = definePreset(Aura, {
-    semantic: {
-        primary: {
-            50: theme('--color-primary-50'),
-            100: theme('--color-primary-100'),
-            200: theme('--color-primary-200'),
-            300: theme('--color-primary-300'),
-            400: theme('--color-primary-400'),
-            500: theme('--color-primary-500'),
-            600: theme('--color-primary-600'),
-            700: theme('--color-primary-700'),
-            800: theme('--color-primary-800'),
-            900: theme('--color-primary-900'),
-        },
-    },
-    components: {
-        button: {
-            colorScheme: {
-                light: {
-                    root: {
-                        secondary: {
-                            background: '{surface.200}',
-                            hoverBackground: '{surface.300}',
-                            activeBackground: '{surface.400}',
-                            borderColor: '{surface.200}',
-                            hoverBorderColor: '{surface.300}',
-                            activeBorderColor: '{surface.400}',
-                            color: '{surface.700}',
-                            hoverColor: '{surface.800}',
-                            activeColor: '{surface.900}',
-                        },
-                    },
-                },
-            },
-        },
-    },
-});
-
-app.use(Config, {
-    theme: {
-        options: {
-            darkModeSelector: false,
-        },
-        preset: CustomPreset,
-    },
-    locale: {
-        firstDayOfWeek: 1,
-    },
-});
-
-app.use(ToastService);
+app.use(ui);
 app.use(i18n);
 app.use(router);
 app.use(pinia);
-app.use(ConfirmationService);
 
 router.afterEach((to) => {
     if (to.meta.title) {

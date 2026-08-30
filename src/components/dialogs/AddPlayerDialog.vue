@@ -1,25 +1,19 @@
 <script setup lang="ts">
     import { ref, reactive, computed, onMounted } from 'vue';
+    import { useI18n } from 'vue-i18n';
+
+    import { useAppToast } from '@/composables/useAppToast';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { isActiveInSeason } from '@/utils/playerSeason';
-    import { TOAST_LIFE } from '@/constants';
-    import { useToast } from 'primevue/usetoast';
-    import { useI18n } from 'vue-i18n';
-    import {
-        Dialog,
-        InputText,
-        Select,
-        SelectButton,
-        Checkbox,
-        Button,
-    } from 'primevue';
 
     const model = defineModel<boolean>('visible');
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
-    const toast = useToast();
+    const toast = useAppToast();
     const { t } = useI18n();
+
+    const CLOTHING_SIZES = ['164', '158', '152', '146', '140', '134', '128'];
 
     const modeOptions = computed(() => [
         { label: t('player.existingPlayer'), value: 'existing' },
@@ -68,14 +62,7 @@
         model.value = false;
     };
 
-    const warn = () => {
-        toast.add({
-            severity: 'warn',
-            summary: t('common.validation.warning'),
-            detail: t('common.validation.fillAll'),
-            life: TOAST_LIFE,
-        });
-    };
+    const warn = () => toast.warn(t('common.validation.fillAll'));
 
     const addExisting = async () => {
         if (!selectedPlayerId.value) {
@@ -87,12 +74,7 @@
             seasonStore.currentSeason,
             { active: true, guestPlayer: existingGuest.value },
         );
-        toast.add({
-            severity: 'success',
-            summary: t('common.messages.success'),
-            detail: t('player.messages.playerAddedToSeason'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('player.messages.playerAddedToSeason'));
     };
 
     const addNew = async () => {
@@ -113,12 +95,7 @@
                 },
             },
         });
-        toast.add({
-            severity: 'success',
-            summary: t('common.messages.success'),
-            detail: t('player.messages.playerAdded'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('player.messages.playerAdded'));
     };
 
     const submit = async () => {
@@ -131,11 +108,7 @@
             }
             closeDialog();
         } catch {
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('player.messages.playerAddError'));
         } finally {
             loading.value = false;
         }
@@ -147,135 +120,108 @@
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="model"
-        class="w-md"
-        modal
-        :header="t('player.addPlayer')"
-        :draggable="false"
+    <UModal
+        v-model:open="model"
+        :title="t('player.addPlayer')"
+        :ui="{ content: 'w-md' }"
     >
-        <div class="flex flex-col gap-4">
-            <SelectButton
-                v-model="mode"
-                :options="modeOptions"
-                option-label="label"
-                option-value="value"
-                :allow-empty="false"
-                fluid
-            />
+        <template #body>
+            <div class="flex flex-col gap-4">
+                <UTabs
+                    v-model="mode"
+                    :content="false"
+                    :items="modeOptions"
+                    :ui="{ list: 'w-full', trigger: 'flex-1' }"
+                    variant="pill"
+                />
 
-            <!-- Existing player -->
-            <template v-if="mode === 'existing'">
-                <p
-                    v-if="!availablePlayers.length"
-                    class="text-sm text-gray-600"
-                >
-                    {{ $t('player.allPlayersActive') }}
-                </p>
+                <!-- Existing player -->
+                <template v-if="mode === 'existing'">
+                    <p
+                        v-if="!availablePlayers.length"
+                        class="text-sm text-gray-600"
+                    >
+                        {{ $t('player.allPlayersActive') }}
+                    </p>
+                    <template v-else>
+                        <div>
+                            <label for="existingPlayer">
+                                {{ $t('player.player', 1) }}
+                                <small>({{ $t('common.required') }})</small>
+                            </label>
+                            <USelectMenu
+                                id="existingPlayer"
+                                v-model="selectedPlayerId"
+                                class="w-full"
+                                :items="availablePlayers"
+                                :placeholder="$t('player.selectPlayer')"
+                                value-key="value"
+                            />
+                        </div>
+                        <UCheckbox
+                            v-model="existingGuest"
+                            :label="$t('player.guestPlayer')"
+                        />
+                    </template>
+                </template>
+
+                <!-- New player -->
                 <template v-else>
                     <div>
-                        <label for="existingPlayer">
-                            {{ $t('player.player', 1) }}
+                        <label for="name">
+                            {{ $t('common.name') }}
                             <small>({{ $t('common.required') }})</small>
                         </label>
-                        <Select
-                            v-model="selectedPlayerId"
-                            :options="availablePlayers"
-                            option-label="label"
-                            option-value="value"
-                            :placeholder="$t('player.selectPlayer')"
-                            input-id="existingPlayer"
-                            filter
-                            fluid
-                        />
+                        <UInput id="name" v-model="form.name" class="w-full" />
                     </div>
-                    <div class="flex items-center gap-2">
-                        <Checkbox
-                            v-model="existingGuest"
-                            binary
-                            input-id="existingGuest"
-                        />
-                        <label for="existingGuest">
-                            {{ $t('player.guestPlayer') }}
+
+                    <div>
+                        <label for="clothingSize">
+                            {{ $t('common.clothingSize') }}
                         </label>
+                        <USelect
+                            id="clothingSize"
+                            v-model="form.clothingSize"
+                            class="w-full"
+                            :items="CLOTHING_SIZES"
+                            :placeholder="$t('common.clothingSize')"
+                        />
                     </div>
-                </template>
-            </template>
 
-            <!-- New player -->
-            <template v-else>
-                <div>
-                    <label for="name">
-                        {{ $t('common.name') }}
-                        <small>({{ $t('common.required') }})</small>
-                    </label>
-                    <InputText v-model="form.name" fluid input-id="name" />
-                </div>
-
-                <div>
-                    <label for="clothingSize">
-                        {{ $t('common.clothingSize') }}
-                    </label>
-                    <Select
-                        v-model="form.clothingSize"
-                        :options="[
-                            '164',
-                            '158',
-                            '152',
-                            '146',
-                            '140',
-                            '134',
-                            '128',
-                        ]"
-                        :placeholder="$t('common.clothingSize')"
-                        input-id="clothingSize"
-                        fluid
-                    />
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <Checkbox
+                    <UCheckbox
                         v-model="form.hasJacket"
-                        binary
-                        input-id="hasJacket"
+                        :label="$t('common.hasJacket')"
                     />
-                    <label for="hasJacket">{{ $t('common.hasJacket') }}</label>
-                </div>
 
-                <div class="flex items-center gap-2">
-                    <Checkbox v-model="form.hasBag" binary input-id="hasBag" />
-                    <label for="hasBag">{{ $t('common.hasBag') }}</label>
-                </div>
+                    <UCheckbox
+                        v-model="form.hasBag"
+                        :label="$t('common.hasBag')"
+                    />
 
-                <div class="flex items-center gap-2">
-                    <Checkbox
+                    <UCheckbox
                         v-model="form.guestPlayer"
-                        binary
-                        input-id="guestPlayer"
+                        :label="$t('player.guestPlayer')"
                     />
-                    <label for="guestPlayer">
-                        {{ $t('player.guestPlayer') }}
-                    </label>
-                </div>
-            </template>
-        </div>
+                </template>
+            </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="$t('common.cancel')"
-                    severity="secondary"
-                    text
+                    variant="ghost"
                     @click="closeDialog"
                 />
-                <Button
-                    :label="$t('common.save')"
-                    icon="pi pi-check"
-                    :loading="loading"
+                <UButton
                     :disabled="mode === 'existing' && !availablePlayers.length"
+                    icon="i-lucide-check"
+                    :label="$t('common.save')"
+                    :loading="loading"
                     @click="submit"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>

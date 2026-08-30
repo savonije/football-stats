@@ -93,8 +93,7 @@ test.describe('Match players', () => {
             const dialog = page.getByRole('dialog', {
                 name: 'Spelers toevoegen',
             });
-            // role=combobox sits on MultiSelect's hidden, covered input.
-            const players = dialog.locator('.p-multiselect');
+            const players = dialog.locator('[data-testid="match-players"]');
 
             await players.click();
             await page

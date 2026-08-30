@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { computed, ref, onMounted, onUnmounted } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import Tooltip from 'primevue/tooltip';
 
     interface MatchBar {
         opponent: string;
@@ -14,8 +13,6 @@
     }>();
 
     const { t } = useI18n();
-
-    const vTooltip = Tooltip;
 
     // Touch devices have no hover, and tapping a tabindex div doesn't reliably
     // focus it (notably iOS Safari), so focus it explicitly to trigger the tooltip.
@@ -157,19 +154,23 @@
             </g>
         </svg>
 
-        <div
+        <UTooltip
             v-for="(bar, i) in bars"
             :key="i"
-            v-tooltip.top="{ value: bar.opponent, event: 'both' }"
-            class="absolute cursor-pointer"
-            :style="{
-                left: `${bar.barX}px`,
-                top: `${bar.barY}px`,
-                width: `${bar.barW}px`,
-                height: `${bar.barH}px`,
-            }"
-            tabindex="0"
-            @click="focusBar"
-        />
+            :content="{ side: 'top' }"
+            :text="bar.opponent"
+        >
+            <div
+                class="absolute cursor-pointer"
+                :style="{
+                    left: `${bar.barX}px`,
+                    top: `${bar.barY}px`,
+                    width: `${bar.barW}px`,
+                    height: `${bar.barH}px`,
+                }"
+                tabindex="0"
+                @click="focusBar"
+            />
+        </UTooltip>
     </div>
 </template>

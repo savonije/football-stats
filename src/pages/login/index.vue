@@ -1,12 +1,4 @@
 <script setup lang="ts">
-    import {
-        Button,
-        FloatLabel,
-        InputText,
-        IconField,
-        InputIcon,
-        Message,
-    } from 'primevue';
     import { reactive, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -66,53 +58,47 @@
                 data-testid="login-form"
                 @submit.prevent="submitForm"
             >
-                <FloatLabel class="mb-7" variant="on">
-                    <IconField>
-                        <InputIcon class="pi pi-user" />
-                        <InputText
-                            id="username"
-                            v-model="credentials.email"
-                            type="email"
-                            fluid
-                            autocomplete="email"
-                            data-testid="input-email"
-                        />
-                    </IconField>
-                    <label for="username">{{ t('common.email') }}</label>
-                </FloatLabel>
+                <UFormField class="mb-7" :label="t('common.email')">
+                    <UInput
+                        id="username"
+                        v-model="credentials.email"
+                        class="w-full"
+                        autocomplete="email"
+                        icon="i-lucide-user"
+                        type="email"
+                        data-testid="input-email"
+                    />
+                </UFormField>
 
-                <FloatLabel class="mb-2" variant="on">
-                    <IconField>
-                        <InputIcon class="pi pi-lock" />
-                        <InputText
-                            id="password"
-                            v-model="credentials.password"
-                            toggle-mask
-                            fluid
-                            type="password"
-                            autocomplete="current-password"
-                            data-testid="input-password"
-                        />
-                    </IconField>
-                    <label for="password">{{ t('auth.password') }}</label>
-                </FloatLabel>
+                <UFormField class="mb-2" :label="t('auth.password')">
+                    <UInput
+                        id="password"
+                        v-model="credentials.password"
+                        class="w-full"
+                        autocomplete="current-password"
+                        icon="i-lucide-lock"
+                        type="password"
+                        data-testid="input-password"
+                    />
+                </UFormField>
 
-                <Message
+                <UAlert
                     v-if="errorMessage"
                     class="mt-2"
-                    severity="error"
-                    icon="pi pi-exclamation-triangle"
+                    color="error"
+                    :description="errorMessage"
+                    icon="i-lucide-triangle-alert"
+                    variant="subtle"
                     data-testid="error-message"
-                >
-                    {{ errorMessage }}
-                </Message>
+                />
 
-                <Button
-                    class="mt-6 w-full"
-                    type="submit"
+                <UButton
+                    class="mt-6"
+                    block
+                    icon="i-lucide-log-in"
                     :label="t('auth.login')"
-                    icon="pi pi-sign-in"
-                    size="large"
+                    size="lg"
+                    type="submit"
                     data-testid="btn-submit"
                 />
             </form>

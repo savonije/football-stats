@@ -5,17 +5,13 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useStoreAuth } from '@/stores/authStore';
     import { useRouter } from 'vue-router';
-    import { TOAST_LIFE } from '@/constants';
     import { isGuestInSeason } from '@/utils/playerSeason';
+    import { TABLE_UI, sortableHeader } from '@/utils/table';
     import dayjs from 'dayjs';
-    import {
-        DataTable,
-        Column,
-        Tag,
-        Select,
-        type DataTableRowClickEvent,
-    } from 'primevue';
-    import { useToast } from 'primevue/usetoast';
+    import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
+    import { getPaginationRowModel } from '@tanstack/vue-table';
+    import { ref } from 'vue';
+    import { useAppToast } from '@/composables/useAppToast';
     import { useI18n } from 'vue-i18n';
 
     const playerStore = usePlayerStore();
@@ -23,7 +19,7 @@
     const seasonStore = useSeasonStore();
     const authStore = useStoreAuth();
     const router = useRouter();
-    const toast = useToast();
+    const toast = useAppToast();
     const { t } = useI18n();
 
     const loading = computed(
@@ -32,14 +28,18 @@
 
     const isAdmin = computed(() => !!authStore.user?.id);
 
-    const washingOptions = computed(() =>
-        playerStore
+    const washingOptions = computed(() => [
+        { label: t('washing.notAssigned'), value: null },
+        ...playerStore
             .playersInSeason(seasonStore.currentSeason)
             .filter(
                 (player) => !isGuestInSeason(player, seasonStore.currentSeason),
             )
-            .map((player) => ({ label: player.name, value: player.id })),
-    );
+            .map((player) => ({
+                label: player.name,
+                value: player.id as string | null,
+            })),
+    ]);
 
     const scheduleRows = computed(() =>
         [...matchStore.matches]
@@ -71,8 +71,37 @@
             .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
     });
 
-    const onCountRowClick = (event: DataTableRowClickEvent) => {
-        router.push({ name: 'playerDetail', params: { id: event.data.id } });
+    type ScheduleRow = (typeof scheduleRows.value)[number];
+    type CountRow = (typeof washCounts.value)[number];
+
+    const scheduleColumns = computed<TableColumn<ScheduleRow>[]>(() => [
+        {
+            accessorKey: 'date',
+            header: sortableHeader<ScheduleRow>(t('common.date')),
+        },
+        {
+            accessorKey: 'opponent',
+            header: sortableHeader<ScheduleRow>(t('common.opponent')),
+        },
+        { id: 'responsible', header: t('washing.responsible') },
+    ]);
+
+    const countColumns = computed<TableColumn<CountRow>[]>(() => [
+        {
+            accessorKey: 'name',
+            header: sortableHeader<CountRow>(t('common.name')),
+        },
+        {
+            accessorKey: 'count',
+            header: sortableHeader<CountRow>(t('washing.washing', 2)),
+        },
+    ]);
+
+    const countSorting = ref([{ id: 'count', desc: true }]);
+    const schedulePagination = ref({ pageIndex: 0, pageSize: 10 });
+
+    const onCountSelect = (_event: Event, row: TableRow<CountRow>) => {
+        router.push({ name: 'playerDetail', params: { id: row.original.id } });
     };
 
     const setWasher = async (matchId: string, playerId: string | null) => {
@@ -81,12 +110,7 @@
             matchId,
             playerId,
         );
-        toast.add({
-            severity: 'success',
-            summary: t('common.success'),
-            detail: t('common.changesSaved'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('common.changesSaved'));
     };
 
     onMounted(() => {
@@ -106,82 +130,88 @@
     <div class="mb-8">
         <h2 class="mb-3 text-xl font-semibold">{{ t('washing.schedule') }}</h2>
 
-        <DataTable
+        <UTable
+            v-model:pagination="schedulePagination"
             class="rounded-2xl shadow-lg"
-            :value="scheduleRows"
+            :columns="scheduleColumns"
+            :data="scheduleRows"
             :loading="loading"
-            striped-rows
-            paginator
-            :rows="10"
-            data-key="id"
+            :pagination-options="{
+                getPaginationRowModel: getPaginationRowModel(),
+            }"
+            :ui="TABLE_UI"
         >
-            <Column field="date" :header="$t('common.date')" sortable>
-                <template #body="{ data }">
-                    {{
-                        data.date
-                            ? dayjs(data.date.toDate()).format('DD-MM-YYYY')
-                            : '-'
-                    }}
-                </template>
-            </Column>
-            <Column field="opponent" :header="$t('common.opponent')" sortable />
-            <Column :header="$t('washing.responsible')">
-                <template #body="{ data }">
-                    <Select
-                        v-if="isAdmin"
-                        class="w-full sm:w-56"
-                        :model-value="data.washing"
-                        :options="washingOptions"
-                        option-label="label"
-                        option-value="value"
-                        :placeholder="t('washing.notAssigned')"
-                        show-clear
-                        size="small"
-                        @update:model-value="setWasher(data.id, $event)"
-                    />
-                    <router-link
-                        v-else-if="data.washing"
-                        class="text-primary font-medium"
-                        :to="{
-                            name: 'playerDetail',
-                            params: { id: data.washing },
-                        }"
-                    >
-                        <Tag :value="data.washerName" />
-                    </router-link>
-                    <span v-else class="text-gray-500">
-                        {{ t('washing.notAssigned') }}
-                    </span>
-                </template>
-            </Column>
+            <template #date-cell="{ row }">
+                {{
+                    row.original.date
+                        ? dayjs(row.original.date.toDate()).format('DD-MM-YYYY')
+                        : '-'
+                }}
+            </template>
+
+            <template #responsible-cell="{ row }">
+                <USelect
+                    v-if="isAdmin"
+                    class="w-full sm:w-56"
+                    :items="washingOptions"
+                    :model-value="row.original.washing"
+                    :placeholder="t('washing.notAssigned')"
+                    size="sm"
+                    value-key="value"
+                    @update:model-value="setWasher(row.original.id, $event)"
+                />
+                <router-link
+                    v-else-if="row.original.washing"
+                    class="text-primary font-medium"
+                    :to="{
+                        name: 'playerDetail',
+                        params: { id: row.original.washing },
+                    }"
+                >
+                    <UBadge>{{ row.original.washerName }}</UBadge>
+                </router-link>
+                <span v-else class="text-gray-500">
+                    {{ t('washing.notAssigned') }}
+                </span>
+            </template>
+
             <template #empty>
                 <p class="py-4 text-center text-gray-500">
                     {{ t('match.noMatches') }}
                 </p>
             </template>
-        </DataTable>
+        </UTable>
+
+        <div
+            v-if="scheduleRows.length > schedulePagination.pageSize"
+            class="mt-4 flex justify-center"
+        >
+            <UPagination
+                :items-per-page="schedulePagination.pageSize"
+                :page="schedulePagination.pageIndex + 1"
+                :total="scheduleRows.length"
+                @update:page="schedulePagination.pageIndex = $event - 1"
+            />
+        </div>
     </div>
 
     <div class="mb-8">
         <h2 class="mb-3 text-xl font-semibold">{{ t('washing.overview') }}</h2>
 
-        <DataTable
+        <UTable
+            v-model:sorting="countSorting"
             class="rounded-2xl shadow-lg"
-            :value="washCounts"
+            :columns="countColumns"
+            :data="washCounts"
             :loading="loading"
-            striped-rows
-            sort-field="count"
-            :sort-order="-1"
-            data-key="id"
-            @row-click="onCountRowClick"
+            :ui="TABLE_UI"
+            @select="onCountSelect"
         >
-            <Column field="name" :header="$t('common.name')" sortable />
-            <Column field="count" :header="$t('washing.washing', 2)" sortable />
             <template #empty>
                 <p class="py-4 text-center text-gray-500">
                     {{ t('washing.noWashing') }}
                 </p>
             </template>
-        </DataTable>
+        </UTable>
     </div>
 </template>

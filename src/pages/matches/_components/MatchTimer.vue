@@ -3,9 +3,8 @@
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useI18n } from 'vue-i18n';
-    import { useToast } from 'primevue/usetoast';
-    import { Button, useConfirm, Tag } from 'primevue';
-    import { TOAST_LIFE } from '@/constants';
+    import { useAppToast } from '@/composables/useAppToast';
+    import { useConfirmDialog } from '@/composables/useConfirmDialog';
     import {
         formatMatchTime,
         getDisplaySeconds,
@@ -20,8 +19,8 @@
     const { seasonId } = defineProps<Props>();
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
-    const toast = useToast();
-    const confirm = useConfirm();
+    const toast = useAppToast();
+    const confirm = useConfirmDialog();
     const { t } = useI18n();
 
     const now = ref(Date.now());
@@ -76,25 +75,16 @@
     const endFirstHalf = async () => {
         if (!matchStore.selectedMatch?.id) return;
 
-        confirm.require({
+        const confirmed = await confirm({
+            title: t('match.endFirstHalf'),
             message: t('match.endFirstHalfConfirm'),
-            header: t('match.endFirstHalf'),
-            rejectLabel: t('common.cancel'),
-            acceptLabel: t('match.endFirstHalf'),
-            acceptClass: 'p-button-success',
-            accept: async () => {
-                await matchStore.endFirstHalf(
-                    seasonId,
-                    matchStore.selectedMatch!.id,
-                );
-                toast.add({
-                    severity: 'success',
-                    summary: t('common.success'),
-                    detail: t('match.messages.firstHalfEnded'),
-                    life: TOAST_LIFE,
-                });
-            },
+            confirmLabel: t('match.endFirstHalf'),
         });
+
+        if (!confirmed) return;
+
+        await matchStore.endFirstHalf(seasonId, matchStore.selectedMatch.id);
+        toast.success(t('match.messages.firstHalfEnded'));
     };
 
     const startSecondHalf = () => {
@@ -105,25 +95,16 @@
     const endMatch = async () => {
         if (!matchStore.selectedMatch?.id) return;
 
-        confirm.require({
+        const confirmed = await confirm({
+            title: t('match.endMatch'),
             message: t('match.endMatchConfirm'),
-            header: t('match.endMatch'),
-            rejectLabel: t('common.cancel'),
-            acceptLabel: t('match.endMatch'),
-            acceptClass: 'p-button-success',
-            accept: async () => {
-                await matchStore.endMatch(
-                    seasonId,
-                    matchStore.selectedMatch!.id,
-                );
-                toast.add({
-                    severity: 'success',
-                    summary: t('common.success'),
-                    detail: t('match.endMatchSuccess'),
-                    life: TOAST_LIFE,
-                });
-            },
+            confirmLabel: t('match.endMatch'),
         });
+
+        if (!confirmed) return;
+
+        await matchStore.endMatch(seasonId, matchStore.selectedMatch.id);
+        toast.success(t('match.endMatchSuccess'));
     };
 </script>
 
@@ -161,37 +142,40 @@
                 v-if="seasonStore.isCurrentSeasonActive"
                 class="mt-4 flex gap-2 md:mt-0"
             >
-                <Button
+                <UButton
                     v-if="!started"
+                    color="success"
                     :label="t('common.start')"
-                    severity="success"
                     @click="startMatch"
                 />
-                <Button
+                <UButton
                     v-if="isRunning && half === 1"
+                    color="warning"
                     :label="t('match.endFirstHalf')"
-                    severity="warning"
                     @click="endFirstHalf"
                 />
-                <Button
+                <UButton
                     v-if="isHalfTime"
+                    color="success"
                     :label="t('match.startSecondHalf')"
-                    severity="success"
                     @click="startSecondHalf"
                 />
-                <Button
+                <UButton
                     v-if="isRunning && half === 2"
+                    color="error"
                     :label="t('match.endMatch')"
-                    severity="danger"
                     @click="endMatch"
                 />
             </div>
         </div>
         <div v-else class="flex justify-end">
-            <Tag
+            <UBadge
                 class="mb-6 text-gray-500 italic"
-                :value="t('match.isEnded')"
-            />
+                color="neutral"
+                variant="subtle"
+            >
+                {{ t('match.isEnded') }}
+            </UBadge>
         </div>
     </div>
 </template>

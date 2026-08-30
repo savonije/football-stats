@@ -3,7 +3,6 @@
     import { useRouter } from 'vue-router';
     import { useI18n } from 'vue-i18n';
     import dayjs from 'dayjs';
-    import { Button, Tag } from 'primevue';
     import type { Timestamp } from 'firebase/firestore';
 
     import { monthCalendarDays, weekdayOptions } from '@/utils/training';
@@ -72,28 +71,31 @@
 <template>
     <div class="rounded-2xl bg-white p-3 shadow-lg sm:p-4">
         <div class="mb-3 flex items-center justify-between gap-2">
-            <Button
-                icon="pi pi-chevron-left"
-                text
-                rounded
-                size="small"
+            <UButton
+                class="rounded-full"
+                color="neutral"
+                icon="i-lucide-chevron-left"
+                size="sm"
+                variant="ghost"
                 :aria-label="t('common.previousMonth')"
                 @click="prevMonth"
             />
             <div class="flex flex-1 items-center justify-center gap-3">
                 <h3 class="text-lg font-semibold">{{ monthLabel }}</h3>
-                <Button
+                <UButton
+                    color="neutral"
                     :label="t('training.today')"
-                    text
-                    size="small"
+                    size="sm"
+                    variant="ghost"
                     @click="goToday"
                 />
             </div>
-            <Button
-                icon="pi pi-chevron-right"
-                text
-                rounded
-                size="small"
+            <UButton
+                class="rounded-full"
+                color="neutral"
+                icon="i-lucide-chevron-right"
+                size="sm"
+                variant="ghost"
                 :aria-label="t('common.nextMonth')"
                 @click="nextMonth"
             />
@@ -131,12 +133,14 @@
                 <span class="text-xs font-semibold">{{ day.label }}</span>
 
                 <template v-if="day.training">
-                    <Tag
+                    <UBadge
                         v-if="day.training.cancelled"
-                        class="!text-xs"
-                        severity="danger"
-                        :value="t('training.cancelled')"
-                    />
+                        class="text-xs!"
+                        color="error"
+                        variant="subtle"
+                    >
+                        {{ t('training.cancelled') }}
+                    </UBadge>
                     <template v-else>
                         <span
                             v-if="
@@ -145,7 +149,7 @@
                             "
                             class="inline-flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-bold text-green-700"
                         >
-                            <i class="pi pi-check text-xs" />
+                            <UIcon class="text-xs" name="i-lucide-check" />
                             {{ day.training.presentCount }}
                         </span>
                         <span
@@ -153,7 +157,10 @@
                             class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-bold text-gray-500"
                             :title="t('training.unmarked')"
                         >
-                            <i class="pi pi-question-circle text-xs" />
+                            <UIcon
+                                class="text-xs"
+                                name="i-lucide-circle-question-mark"
+                            />
                             {{ day.training.unmarkedCount }}
                         </span>
                     </template>

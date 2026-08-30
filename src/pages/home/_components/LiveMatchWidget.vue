@@ -4,7 +4,6 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import { getDisplaySeconds } from '@/utils/match';
     import { useI18n } from 'vue-i18n';
-    import { Card } from 'primevue';
     import { RouterLink } from 'vue-router';
 
     const matchStore = useMatchStore();
@@ -58,61 +57,59 @@
 </script>
 
 <template>
-    <Card v-if="liveMatch" class="mb-6">
-        <template #content>
-            <RouterLink
-                class="block text-inherit no-underline"
-                :to="{ name: 'matchDetail', params: { id: liveMatch.id } }"
-            >
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="mb-2 flex items-center gap-2">
-                            <span class="relative flex h-3 w-3">
-                                <span
-                                    class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75"
-                                    aria-hidden="true"
-                                />
-                                <span
-                                    class="relative inline-flex h-3 w-3 rounded-full bg-red-500"
-                                />
-                            </span>
+    <UCard v-if="liveMatch" class="mb-6">
+        <RouterLink
+            class="block text-inherit no-underline"
+            :to="{ name: 'matchDetail', params: { id: liveMatch.id } }"
+        >
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="mb-2 flex items-center gap-2">
+                        <span class="relative flex h-3 w-3">
                             <span
-                                class="text-sm font-semibold tracking-wide text-red-500 uppercase"
-                            >
-                                {{ t('match.live') }}
-                            </span>
-                        </div>
-                        <p class="text-xl font-bold">
-                            {{ liveMatch.opponent }}
-                        </p>
+                                class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75"
+                                aria-hidden="true"
+                            />
+                            <span
+                                class="relative inline-flex h-3 w-3 rounded-full bg-red-500"
+                            />
+                        </span>
+                        <span
+                            class="text-sm font-semibold tracking-wide text-red-500 uppercase"
+                        >
+                            {{ t('match.live') }}
+                        </span>
                     </div>
-
-                    <div class="text-right">
-                        <p class="text-4xl font-bold tabular-nums">
-                            <span
-                                class="inline-block"
-                                :class="{ 'animate-score-pop': animateFor }"
-                                @animationend="animateFor = false"
-                            >
-                                {{ goalsFor }}
-                            </span>
-                            –
-                            <span
-                                class="inline-block"
-                                :class="{
-                                    'animate-score-pop': animateAgainst,
-                                }"
-                                @animationend="animateAgainst = false"
-                            >
-                                {{ goalsAgainst }}
-                            </span>
-                        </p>
-                        <p class="mt-1 text-sm text-gray-500">
-                            {{ currentMinute }}'
-                        </p>
-                    </div>
+                    <p class="text-xl font-bold">
+                        {{ liveMatch.opponent }}
+                    </p>
                 </div>
-            </RouterLink>
-        </template>
-    </Card>
+
+                <div class="text-right">
+                    <p class="text-4xl font-bold tabular-nums">
+                        <span
+                            class="inline-block"
+                            :class="{ 'animate-score-pop': animateFor }"
+                            @animationend="animateFor = false"
+                        >
+                            {{ goalsFor }}
+                        </span>
+                        –
+                        <span
+                            class="inline-block"
+                            :class="{
+                                'animate-score-pop': animateAgainst,
+                            }"
+                            @animationend="animateAgainst = false"
+                        >
+                            {{ goalsAgainst }}
+                        </span>
+                    </p>
+                    <p class="mt-1 text-sm text-gray-500">
+                        {{ currentMinute }}'
+                    </p>
+                </div>
+            </div>
+        </RouterLink>
+    </UCard>
 </template>

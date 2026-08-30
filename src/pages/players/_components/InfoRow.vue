@@ -1,14 +1,11 @@
 <script setup lang="ts">
-    withDefaults(
-        defineProps<{
-            icon: string;
-            gradient: string;
-            label: string;
-            value: string;
-            valueClass?: string;
-        }>(),
-        { valueClass: 'text-primary-900' },
-    );
+    const { valueClass = 'text-primary-900' } = defineProps<{
+        icon: string;
+        gradient: string;
+        label: string;
+        value: string;
+        valueClass?: string;
+    }>();
 </script>
 
 <template>
@@ -18,7 +15,7 @@
             aria-hidden="true"
             :style="{ background: gradient }"
         >
-            <i :class="icon" />
+            <UIcon :name="icon" />
         </span>
         <span class="text-primary-500 flex-1 text-sm font-medium">
             {{ label }}

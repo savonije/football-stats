@@ -11,6 +11,7 @@ export default {
     noMatchData: 'Geen wedstrijddata beschikbaar',
     noPlayers: 'Geen spelers gevonden...',
     messages: {
+        playerAddError: 'Kon de speler niet toevoegen',
         playerAdded: 'Speler succesvol toegevoegd',
         playerAddedToSeason: 'Speler toegevoegd aan seizoen',
         playerEditted: 'Speler succesvol bewerkt',

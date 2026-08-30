@@ -5,6 +5,7 @@ export default {
     cancel: 'Annuleren',
     changesSaved: 'Wijzigingen opgeslagen',
     clothingSize: 'Kledingmaat',
+    confirm: 'Bevestigen',
     date: 'Datum',
     delete: 'Verwijderen',
     edit: 'Bewerken',

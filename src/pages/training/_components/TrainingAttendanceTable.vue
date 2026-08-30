@@ -1,20 +1,15 @@
 <script setup lang="ts">
+    import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
     import { computed, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
     import dayjs from 'dayjs';
-    import {
-        Button,
-        Column,
-        DataTable,
-        SelectButton,
-        type DataTableRowClickEvent,
-    } from 'primevue';
 
     import router from '@/router';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useTrainingStore } from '@/stores/trainingStore';
     import { isGuestInSeason } from '@/utils/playerSeason';
+    import { TABLE_UI, sortableHeader } from '@/utils/table';
     import {
         attendancePercentage,
         heldTrainings,
@@ -91,28 +86,49 @@
             })),
     );
 
-    const onRowClick = (event: DataTableRowClickEvent) => {
-        router.push({ name: 'playerDetail', params: { id: event.data.id } });
+    type AttendanceRow = (typeof rows.value)[number];
+
+    const columns = computed<TableColumn<AttendanceRow>[]>(() => [
+        {
+            accessorKey: 'name',
+            header: sortableHeader<AttendanceRow>(t('common.name')),
+        },
+        {
+            accessorKey: 'attended',
+            header: sortableHeader<AttendanceRow>(t('training.attended')),
+        },
+        {
+            accessorKey: 'percentage',
+            header: sortableHeader<AttendanceRow>(
+                t('training.attendancePercentage'),
+            ),
+        },
+    ]);
+
+    const sorting = ref([{ id: 'percentage', desc: true }]);
+
+    const onSelect = (_event: Event, row: TableRow<AttendanceRow>) => {
+        router.push({ name: 'playerDetail', params: { id: row.original.id } });
     };
 </script>
 
 <template>
     <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <SelectButton
+        <UTabs
             v-model="period"
-            :options="periodOptions"
-            option-label="label"
-            option-value="value"
-            :allow-empty="false"
-            size="small"
+            :content="false"
+            :items="periodOptions"
+            size="sm"
+            variant="pill"
         />
 
         <div v-if="period !== 'total'" class="flex items-center gap-1">
-            <Button
-                icon="pi pi-chevron-left"
-                text
-                rounded
-                size="small"
+            <UButton
+                class="rounded-full"
+                color="neutral"
+                icon="i-lucide-chevron-left"
+                size="sm"
+                variant="ghost"
                 :aria-label="
                     t(
                         period === 'week'
@@ -125,12 +141,13 @@
             <span class="min-w-40 text-center text-sm font-semibold">
                 {{ periodLabel }}
             </span>
-            <Button
-                icon="pi pi-chevron-right"
-                text
-                rounded
-                size="small"
+            <UButton
+                class="rounded-full"
+                color="neutral"
                 :disabled="isCurrentPeriod"
+                icon="i-lucide-chevron-right"
+                size="sm"
+                variant="ghost"
                 :aria-label="
                     t(
                         period === 'week'
@@ -140,10 +157,11 @@
                 "
                 @click="step(1)"
             />
-            <Button
+            <UButton
+                color="neutral"
                 :label="t('training.today')"
-                text
-                size="small"
+                size="sm"
+                variant="ghost"
                 @click="goToToday"
             />
         </div>
@@ -156,28 +174,21 @@
         {{ $t('training.noTrainingsInPeriod') }}
     </p>
 
-    <DataTable
+    <UTable
         v-else
+        v-model:sorting="sorting"
         class="rounded-2xl shadow-lg"
-        :value="rows"
+        :columns="columns"
+        :data="rows"
         :loading="!playerStore.playersLoaded || !trainingStore.trainingsLoaded"
-        :sortField="'percentage'"
-        :sortOrder="-1"
-        striped-rows
-        @row-click="onRowClick"
+        :ui="TABLE_UI"
+        @select="onSelect"
     >
-        <Column field="name" :header="$t('common.name')" sortable />
-        <Column field="attended" :header="$t('training.attended')" sortable>
-            <template #body="{ data }">
-                {{ data.attended }} / {{ held.length }}
-            </template>
-        </Column>
-        <Column
-            field="percentage"
-            :header="$t('training.attendancePercentage')"
-            sortable
-        >
-            <template #body="{ data }"> {{ data.percentage }}% </template>
-        </Column>
-    </DataTable>
+        <template #attended-cell="{ row }">
+            {{ row.original.attended }} / {{ held.length }}
+        </template>
+        <template #percentage-cell="{ row }">
+            {{ row.original.percentage }}%
+        </template>
+    </UTable>
 </template>

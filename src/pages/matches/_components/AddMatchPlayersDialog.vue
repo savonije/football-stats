@@ -1,10 +1,8 @@
 <script setup lang="ts">
     import { computed, onMounted, ref, watch } from 'vue';
-    import { Button, Dialog, MultiSelect } from 'primevue';
-    import { useToast } from 'primevue/usetoast';
     import { useI18n } from 'vue-i18n';
 
-    import { TOAST_LIFE } from '@/constants';
+    import { useAppToast } from '@/composables/useAppToast';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
 
@@ -16,7 +14,7 @@
     const visible = defineModel<boolean>('visible');
 
     const { t } = useI18n();
-    const toast = useToast();
+    const toast = useAppToast();
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
 
@@ -39,12 +37,7 @@
 
     const submit = async () => {
         if (!selectedPlayerIds.value.length) {
-            toast.add({
-                severity: 'warn',
-                summary: t('common.validation.warning'),
-                detail: t('common.validation.fillAll'),
-                life: TOAST_LIFE,
-            });
+            toast.warn(t('common.validation.fillAll'));
             return;
         }
 
@@ -77,21 +70,11 @@
                 }),
             );
 
-            toast.add({
-                severity: 'success',
-                summary: t('common.messages.success'),
-                detail: t('match.messages.playersAdded', count),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('match.messages.playersAdded', count));
             closeDialog();
         } catch (err) {
             console.error(err);
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                detail: t('match.messages.playersAddError'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('match.messages.playersAddError'));
         } finally {
             loading.value = false;
         }
@@ -107,52 +90,50 @@
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        class="w-md"
-        :header="t('match.addPlayers')"
-        :draggable="false"
-        modal
-        dismissable-mask
+    <UModal
+        v-model:open="visible"
+        :title="t('match.addPlayers')"
+        :ui="{ content: 'w-md' }"
     >
-        <p v-if="!availablePlayers.length" class="text-sm text-gray-600">
-            {{ $t('match.allPlayersInMatch') }}
-        </p>
+        <template #body>
+            <p v-if="!availablePlayers.length" class="text-sm text-gray-600">
+                {{ $t('match.allPlayersInMatch') }}
+            </p>
 
-        <div v-else>
-            <label for="matchPlayers">
-                {{ $t('player.player', 2) }}
-                <small>({{ $t('common.required') }})</small>
-            </label>
-            <MultiSelect
-                v-model="selectedPlayerIds"
-                :options="availablePlayers"
-                :placeholder="$t('player.selectPlayers')"
-                option-label="label"
-                option-value="value"
-                input-id="matchPlayers"
-                filter
-                show-clear
-                fluid
-            />
-        </div>
+            <div v-else>
+                <label for="matchPlayers">
+                    {{ $t('player.player', 2) }}
+                    <small>({{ $t('common.required') }})</small>
+                </label>
+                <USelectMenu
+                    id="matchPlayers"
+                    v-model="selectedPlayerIds"
+                    class="w-full"
+                    :items="availablePlayers"
+                    multiple
+                    :placeholder="$t('player.selectPlayers')"
+                    value-key="value"
+                    data-testid="match-players"
+                />
+            </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="$t('common.cancel')"
-                    severity="secondary"
-                    text
+                    variant="ghost"
                     @click="closeDialog"
                 />
-                <Button
-                    :label="$t('common.add')"
-                    icon="pi pi-check"
-                    :loading="loading"
+                <UButton
                     :disabled="!availablePlayers.length"
+                    icon="i-lucide-check"
+                    :label="$t('common.add')"
+                    :loading="loading"
                     @click="submit"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>

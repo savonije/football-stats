@@ -1,10 +1,8 @@
 <script setup lang="ts">
     import { ref, watch } from 'vue';
-    import { Button, Checkbox, Dialog, InputText, Select } from 'primevue';
-    import { useToast } from 'primevue/usetoast';
     import { useI18n } from 'vue-i18n';
 
-    import { TOAST_LIFE } from '@/constants';
+    import { useAppToast } from '@/composables/useAppToast';
     import { useStoreAuth } from '@/stores/authStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -15,7 +13,7 @@
     const player = defineModel<Player | null>('player');
 
     const { t } = useI18n();
-    const toast = useToast();
+    const toast = useAppToast();
     const authStore = useStoreAuth();
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
@@ -47,12 +45,7 @@
         } as Player;
 
         closeDialog();
-        toast.add({
-            severity: 'success',
-            summary: t('common.messages.success'),
-            detail: t('player.messages.playerEditted'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('player.messages.playerEditted'));
     };
 
     // Only sync on open, so the form isn't reset while the user is editing.
@@ -72,93 +65,73 @@
 </script>
 
 <template>
-    <Dialog
+    <UModal
         v-if="authStore.user?.id"
-        v-model:visible="visible"
-        class="w-md"
-        modal
-        :header="t('player.editPlayer')"
-        :draggable="false"
+        v-model:open="visible"
+        :title="t('player.editPlayer')"
+        :ui="{ content: 'w-md' }"
     >
-        <div class="flex flex-col gap-4">
-            <div>
-                <label for="name">{{ $t('common.name') }}</label>
-                <InputText v-model="editForm.name" fluid input-id="name" />
-            </div>
-            <div>
-                <label for="clothingSize">{{
-                    $t('common.clothingSize')
-                }}</label>
-                <Select
-                    v-model="editForm.clothingSize"
-                    :options="CLOTHING_SIZES"
-                    :placeholder="$t('common.clothingSize')"
-                    input-id="clothingSize"
-                    fluid
-                />
-            </div>
-            <div class="flex items-center gap-2">
-                <Checkbox
+        <template #body>
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label for="name">{{ $t('common.name') }}</label>
+                    <UInput id="name" v-model="editForm.name" class="w-full" />
+                </div>
+                <div>
+                    <label for="clothingSize">
+                        {{ $t('common.clothingSize') }}
+                    </label>
+                    <USelect
+                        id="clothingSize"
+                        v-model="editForm.clothingSize"
+                        class="w-full"
+                        :items="CLOTHING_SIZES"
+                        :placeholder="$t('common.clothingSize')"
+                    />
+                </div>
+                <UCheckbox
                     v-model="editForm.hasJacket"
-                    binary
-                    input-id="hasJacket"
+                    :label="$t('common.hasJacket')"
                 />
-                <label for="hasJacket">
-                    {{ $t('common.hasJacket') }}
-                </label>
-            </div>
-            <div class="flex items-center gap-2">
-                <Checkbox v-model="editForm.hasBag" binary input-id="hasBag" />
-                <label for="hasBag">
-                    {{ $t('common.hasBag') }}
-                </label>
-            </div>
+                <UCheckbox
+                    v-model="editForm.hasBag"
+                    :label="$t('common.hasBag')"
+                />
 
-            <div
-                class="mt-1 flex flex-col gap-3 rounded-lg border border-gray-200 p-3"
-            >
-                <p
-                    class="text-xs font-bold tracking-wide text-gray-500 uppercase"
+                <div
+                    class="mt-1 flex flex-col gap-3 rounded-lg border border-gray-200 p-3"
                 >
-                    {{ seasonStore.currentSeason }}
-                </p>
-                <div class="flex items-center gap-2">
-                    <Checkbox
+                    <p
+                        class="text-xs font-bold tracking-wide text-gray-500 uppercase"
+                    >
+                        {{ seasonStore.currentSeason }}
+                    </p>
+                    <UCheckbox
                         v-model="editSeason.active"
-                        binary
-                        input-id="seasonActive"
+                        :label="$t('player.activeThisSeason')"
                     />
-                    <label for="seasonActive">
-                        {{ $t('player.activeThisSeason') }}
-                    </label>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Checkbox
+                    <UCheckbox
                         v-model="editSeason.guestPlayer"
-                        binary
-                        input-id="guestPlayer"
+                        :label="$t('player.guestPlayer')"
                     />
-                    <label for="guestPlayer">
-                        {{ $t('player.guestPlayer') }}
-                    </label>
                 </div>
             </div>
-        </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="$t('common.cancel')"
-                    severity="secondary"
-                    text
+                    variant="ghost"
                     @click="closeDialog"
                 />
-                <Button
+                <UButton
+                    icon="i-lucide-check"
                     :label="$t('common.save')"
-                    icon="pi pi-check"
                     @click="savePlayer"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>

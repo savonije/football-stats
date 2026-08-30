@@ -3,16 +3,15 @@
     import { useRoute, useRouter } from 'vue-router';
     import { useI18n } from 'vue-i18n';
     import dayjs from 'dayjs';
-    import { Button, Tag, ToggleSwitch, useConfirm } from 'primevue';
-    import { useToast } from 'primevue/usetoast';
 
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { isGuestInSeason } from '@/utils/playerSeason';
     import { attendanceStatus, type AttendanceStatus } from '@/utils/training';
+    import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
-    import { TOAST_LIFE } from '@/constants';
+    import { useConfirmDialog } from '@/composables/useConfirmDialog';
 
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
@@ -20,8 +19,8 @@
     const route = useRoute();
     const router = useRouter();
     const { t } = useI18n();
-    const toast = useToast();
-    const confirm = useConfirm();
+    const toast = useAppToast();
+    const confirm = useConfirmDialog();
 
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
@@ -90,12 +89,7 @@
             true,
         );
 
-        toast.add({
-            severity: 'success',
-            summary: t('common.success'),
-            detail: t('training.messages.cancelledSaved'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('training.messages.cancelledSaved'));
     };
 
     const uncancelTraining = async () => {
@@ -105,26 +99,25 @@
             false,
         );
 
-        toast.add({
-            severity: 'success',
-            summary: t('common.success'),
-            detail: t('training.messages.uncancelledSaved'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('training.messages.uncancelledSaved'));
     };
 
     const confirmDelete = async () => {
+        const confirmed = await confirm({
+            title: t('common.delete'),
+            message: t('training.deleteTrainingConfirm'),
+            confirmLabel: t('common.delete'),
+            confirmColor: 'error',
+        });
+
+        if (!confirmed) return;
+
         await trainingStore.deleteTraining(
             seasonStore.currentSeason,
             trainingId.value,
         );
 
-        toast.add({
-            severity: 'success',
-            summary: t('common.success'),
-            detail: t('common.changesSaved'),
-            life: TOAST_LIFE,
-        });
+        toast.success(t('common.changesSaved'));
 
         router.push({ name: 'training' });
     };
@@ -158,30 +151,33 @@
                 </p>
             </div>
 
-            <Tag
+            <UBadge
                 v-if="isCancelled"
-                severity="danger"
-                icon="pi pi-ban"
-                :value="t('training.cancelled')"
-            />
+                color="error"
+                icon="i-lucide-ban"
+                variant="subtle"
+            >
+                {{ t('training.cancelled') }}
+            </UBadge>
         </div>
 
         <div v-if="canEdit" class="mb-6">
-            <Button
+            <UButton
                 v-if="!isCancelled"
+                color="error"
+                icon="i-lucide-ban"
                 :label="t('training.cancel')"
-                icon="pi pi-ban"
-                severity="danger"
-                variant="outlined"
-                size="small"
+                size="sm"
+                variant="outline"
                 @click="cancelTraining"
             />
-            <Button
+            <UButton
                 v-else
+                color="neutral"
+                icon="i-lucide-undo-2"
                 :label="t('training.uncancel')"
-                icon="pi pi-undo"
-                severity="secondary"
-                size="small"
+                size="sm"
+                variant="subtle"
                 @click="uncancelTraining"
             />
         </div>
@@ -212,7 +208,7 @@
                 </div>
 
                 <div v-if="canEdit && !isCancelled" class="flex items-center">
-                    <ToggleSwitch
+                    <USwitch
                         :aria-label="attendee.playerName"
                         :model-value="attendee.status === 'present'"
                         @update:model-value="togglePresent(attendee.id, $event)"
@@ -222,22 +218,12 @@
         </div>
 
         <div v-if="canEdit" class="mt-12 flex justify-between gap-6">
-            <Button
+            <UButton
+                color="error"
+                icon="i-lucide-trash"
                 :label="t('common.delete')"
-                severity="danger"
-                icon="pi pi-trash"
-                variant="outlined"
-                @click="
-                    confirm.require({
-                        message: t('training.deleteTrainingConfirm'),
-                        header: t('common.delete'),
-                        icon: 'pi pi-exclamation-triangle',
-                        rejectLabel: t('common.cancel'),
-                        acceptLabel: t('common.delete'),
-                        acceptClass: 'p-button-danger',
-                        accept: confirmDelete,
-                    })
-                "
+                variant="outline"
+                @click="confirmDelete"
             />
         </div>
     </div>

@@ -1,17 +1,14 @@
 <script setup lang="ts">
     import { ref, computed, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import { useToast } from 'primevue/usetoast';
-    import { Dialog, MultiSelect, Button } from 'primevue';
-
+    import { useAppToast } from '@/composables/useAppToast';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { weekdayOptions } from '@/utils/training';
-    import { TOAST_LIFE } from '@/constants';
 
     const model = defineModel<boolean>('visible');
 
     const { t } = useI18n();
-    const toast = useToast();
+    const toast = useAppToast();
     const seasonStore = useSeasonStore();
 
     const dayOptions = weekdayOptions();
@@ -31,19 +28,10 @@
                 seasonStore.currentSeason,
                 selectedTrainingDays.value,
             );
-            toast.add({
-                severity: 'success',
-                summary: t('common.success'),
-                detail: t('training.messages.trainingDaysSaved'),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('training.messages.trainingDaysSaved'));
             model.value = false;
         } catch {
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('training.messages.trainingDaysSaveError'));
         } finally {
             saving.value = false;
         }
@@ -59,42 +47,41 @@
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="model"
-        class="w-md"
-        :header="t('training.trainingDays')"
-        modal
-        closable
-        dismissableMask
+    <UModal
+        v-model:open="model"
+        :title="t('training.trainingDays')"
+        :ui="{ content: 'w-md' }"
     >
-        <div class="flex flex-col gap-2">
-            <label>{{ t('training.trainingDays') }}</label>
-            <MultiSelect
-                v-model="selectedTrainingDays"
-                :options="dayOptions"
-                option-label="label"
-                option-value="value"
-                display="chip"
-                :placeholder="t('training.trainingDays')"
-                :aria-label="t('training.trainingDays')"
-                fluid
-            />
-        </div>
+        <template #body>
+            <div class="flex flex-col gap-2">
+                <label>{{ t('training.trainingDays') }}</label>
+                <USelectMenu
+                    v-model="selectedTrainingDays"
+                    class="w-full"
+                    :aria-label="t('training.trainingDays')"
+                    :items="dayOptions"
+                    multiple
+                    :placeholder="t('training.trainingDays')"
+                    value-key="value"
+                />
+            </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="$t('common.cancel')"
-                    severity="secondary"
+                    variant="subtle"
                     @click="model = false"
                 />
-                <Button
+                <UButton
+                    icon="i-lucide-check"
                     :label="$t('common.save')"
-                    icon="pi pi-check"
                     :loading="saving"
                     @click="save"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>
