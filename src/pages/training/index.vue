@@ -77,10 +77,17 @@
 
     <TrainingMonthCalendar v-else v-model:month="viewMonth" :trainings="rows" />
 
-    <template v-if="authStore.user">
-        <h2 class="text-primary-900 mt-8 mb-3 text-lg font-bold">
+    <section
+        v-if="authStore.user"
+        class="mt-8"
+        aria-labelledby="attendance-overview"
+    >
+        <h2
+            id="attendance-overview"
+            class="text-primary-900 mb-3 text-lg font-bold"
+        >
             {{ $t('training.attendanceOverview') }}
         </h2>
         <TrainingAttendanceTable />
-    </template>
+    </section>
 </template>

@@ -1,5 +1,3 @@
-import { expect, test, type Page } from '@playwright/test';
-
 import {
     becomesVisible,
     deleteTraining,
@@ -7,6 +5,7 @@ import {
     skipWithoutCredentials,
     skipWithoutEditableSeason,
 } from './helpers/app';
+import { expect, test, type Page } from '@playwright/test';
 
 const pad = (value: number) => value.toString().padStart(2, '0');
 
@@ -15,14 +14,11 @@ const openTrainingActions = (page: Page) =>
     page.getByRole('button', { name: 'Meer opties' }).click();
 
 /** A day with no training yet: those cells are the disabled ones. */
-const findFreeDay = async (page: Page) => {
+const firstFreeDay = async (page: Page, days: number[]) => {
     const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const lastDay = new Date(year, month + 1, 0).getDate();
 
-    for (let day = lastDay; day > 0; day--) {
-        const key = `${year}-${pad(month + 1)}-${pad(day)}`;
+    for (const day of days) {
+        const key = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(day)}`;
 
         if (await page.locator(`[data-date="${key}"]`).isDisabled()) {
             return { key, day };
@@ -31,6 +27,62 @@ const findFreeDay = async (page: Page) => {
 
     return null;
 };
+
+const daysInThisMonth = () => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+};
+
+/** Searching from the end of the month, where the date itself doesn't matter. */
+const findFreeDay = (page: Page) =>
+    firstFreeDay(
+        page,
+        Array.from(
+            { length: daysInThisMonth() },
+            (_, i) => daysInThisMonth() - i,
+        ),
+    );
+
+/**
+ * Searching from the start of the month, for a day that has already passed:
+ * only trainings that were actually held count towards attendance. Starting at
+ * the other end keeps this off the day findFreeDay() hands the sibling test,
+ * which may run in parallel.
+ */
+const findPastFreeDay = (page: Page) =>
+    firstFreeDay(
+        page,
+        Array.from({ length: new Date().getDate() - 1 }, (_, i) => i + 1),
+    );
+
+const addTrainingForDay = async (page: Page, day: number) => {
+    await openTrainingActions(page);
+    await page.getByRole('menuitem', { name: 'Training toevoegen' }).click();
+
+    const dialog = page.getByRole('dialog', { name: 'Training toevoegen' });
+
+    // The panel overlays the whole dialog, so pick the day inside it;
+    // selecting a date closes it again.
+    const picker = page.locator('[data-pc-section="panel"]');
+    await dialog.getByLabel('Datum').click();
+    await expect(picker).toBeVisible();
+
+    // Neighbouring months share the aria-label, and only they carry
+    // data-p-other-month.
+    await picker
+        .locator(
+            `[data-pc-section="daycell"][aria-label="${day}"]:not([data-p-other-month="true"])`,
+        )
+        .click();
+    await expect(picker).toBeHidden();
+
+    await dialog.getByRole('button', { name: 'Training toevoegen' }).click();
+    await expect(dialog).toBeHidden();
+};
+
+/** The attendance table sits in its own labelled region on /training. */
+const attendanceRegion = (page: Page) =>
+    page.getByRole('region', { name: 'Trainingsopkomst per speler' });
 
 test.describe('Trainings', () => {
     let trainingUrl = '';
@@ -63,34 +115,7 @@ test.describe('Trainings', () => {
         const dayCell = page.locator(`[data-date="${free!.key}"]`);
 
         await test.step('add a training for a free date', async () => {
-            await openTrainingActions(page);
-            await page
-                .getByRole('menuitem', { name: 'Training toevoegen' })
-                .click();
-
-            const dialog = page.getByRole('dialog', {
-                name: 'Training toevoegen',
-            });
-
-            // The panel overlays the whole dialog, so pick the day inside it;
-            // selecting a date closes it again.
-            const picker = page.locator('[data-pc-section="panel"]');
-            await dialog.getByLabel('Datum').click();
-            await expect(picker).toBeVisible();
-
-            // Neighbouring months share the aria-label, and only they carry
-            // data-p-other-month.
-            await picker
-                .locator(
-                    `[data-pc-section="daycell"][aria-label="${free!.day}"]:not([data-p-other-month="true"])`,
-                )
-                .click();
-            await expect(picker).toBeHidden();
-
-            await dialog
-                .getByRole('button', { name: 'Training toevoegen' })
-                .click();
-            await expect(dialog).toBeHidden();
+            await addTrainingForDay(page, free!.day);
             await expect(dayCell).toBeEnabled();
         });
 
@@ -147,6 +172,72 @@ test.describe('Trainings', () => {
         await viewer.close();
     });
 
+    test('counts a player marked present in the attendance table', async ({
+        page,
+    }) => {
+        await page.goto('/training');
+        await expect(page.locator('[data-date]').first()).toBeVisible({
+            timeout: 15_000,
+        });
+
+        const free = await findPastFreeDay(page);
+        test.skip(
+            !free,
+            'Every day of this month before today already has a training.',
+        );
+
+        const dayCell = page.locator(`[data-date="${free!.key}"]`);
+        await addTrainingForDay(page, free!.day);
+        await expect(dayCell).toBeEnabled();
+
+        await dayCell.click();
+        await expect(page).toHaveURL(/\/training\/.+/);
+        trainingUrl = page.url();
+
+        const switches = page.getByRole('switch');
+        const hasSquad = await becomesVisible(switches.first(), 15_000);
+
+        test.skip(
+            !hasSquad,
+            'The active staging season has no players to mark attendance for.',
+        );
+
+        const playerName =
+            (await switches.first().getAttribute('aria-label')) ?? '';
+
+        // A second tab runs its own Firestore client, so the figures it shows
+        // came back from the server rather than the acting page's cache.
+        const viewer = await page.context().newPage();
+        await viewer.goto('/training');
+
+        const region = attendanceRegion(viewer);
+        await expect(region).toBeVisible({ timeout: 15_000 });
+        await region
+            .getByRole('button', { name: 'Maand', exact: true })
+            .click();
+
+        const playerRow = region
+            .getByRole('row')
+            .filter({ has: viewer.getByRole('cell', { name: playerName }) });
+        const attended = playerRow.getByRole('cell').nth(1);
+
+        // The training just created is in the past, so it already counts
+        // towards the month's total: only the player's own tally may move.
+        await expect(attended).toBeVisible();
+        const [before, held] = (await attended.textContent())!
+            .split('/')
+            .map((part) => Number(part.trim()));
+
+        await page.getByRole('switch', { name: playerName }).click();
+
+        await expect(attended).toHaveText(`${before + 1} / ${held}`);
+        await expect(playerRow.getByRole('cell').nth(2)).toHaveText(
+            `${Math.round(((before + 1) / held) * 100)}%`,
+        );
+
+        await viewer.close();
+    });
+
     test('reports what the bulk generator would create', async ({ page }) => {
         await page.goto('/training');
         await openTrainingActions(page);
@@ -164,5 +255,76 @@ test.describe('Trainings', () => {
 
         await dialog.getByRole('button', { name: 'Annuleren' }).click();
         await expect(dialog).toBeHidden();
+    });
+});
+
+test.describe('Training attendance table', () => {
+    test.beforeEach(async ({ page }) => {
+        skipWithoutCredentials();
+        await login(page);
+        await page.goto('/training');
+        await expect(attendanceRegion(page)).toBeVisible({ timeout: 15_000 });
+    });
+
+    test('shows a period navigator for week and month, but not for the total', async ({
+        page,
+    }) => {
+        const region = attendanceRegion(page);
+        const previous = region.getByRole('button', { name: 'Vorige maand' });
+
+        await expect(
+            region.getByRole('button', { name: 'Totaal', exact: true }),
+        ).toHaveAttribute('aria-pressed', 'true');
+        await expect(previous).toBeHidden();
+
+        await region
+            .getByRole('button', { name: 'Maand', exact: true })
+            .click();
+        await expect(previous).toBeVisible();
+        await expect(
+            region.getByRole('button', { name: 'Vandaag' }),
+        ).toBeVisible();
+
+        await region.getByRole('button', { name: 'Week', exact: true }).click();
+        await expect(previous).toBeHidden();
+        await expect(
+            region.getByRole('button', { name: 'Vorige week' }),
+        ).toBeVisible();
+
+        await region
+            .getByRole('button', { name: 'Totaal', exact: true })
+            .click();
+        await expect(
+            region.getByRole('button', { name: 'Vorige week' }),
+        ).toBeHidden();
+    });
+
+    test('reports that the week ahead has no trainings yet', async ({
+        page,
+    }) => {
+        const region = attendanceRegion(page);
+
+        await region.getByRole('button', { name: 'Week', exact: true }).click();
+        await region.getByRole('button', { name: 'Volgende week' }).click();
+
+        // Every day of next week is still to come, so whatever staging holds,
+        // no training in it can have been held yet.
+        await expect(
+            region.getByText(
+                'In deze periode zijn er geen trainingen geweest.',
+            ),
+        ).toBeVisible();
+    });
+});
+
+// The only spec here that does not sign in: the table is for coaches alone.
+test.describe('Training attendance table, signed out', () => {
+    test('stays hidden', async ({ page }) => {
+        await page.goto('/training');
+
+        await expect(page.locator('[data-date]').first()).toBeVisible({
+            timeout: 15_000,
+        });
+        await expect(attendanceRegion(page)).toBeHidden();
     });
 });
