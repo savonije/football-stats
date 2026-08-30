@@ -1,15 +1,13 @@
 <script setup lang="ts">
-    import { computed, onMounted } from 'vue';
+    import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
+    import { computed, onMounted, ref } from 'vue';
+    import { useI18n } from 'vue-i18n';
+
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import type { Player } from '@/types';
     import { isGuestInSeason } from '@/utils/playerSeason';
-
-    import {
-        Button,
-        Column,
-        DataTable,
-        type DataTableRowClickEvent,
-    } from 'primevue';
+    import { TABLE_UI, sortableHeader } from '@/utils/table';
 
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
 
@@ -17,64 +15,63 @@
 
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
+    const { t } = useI18n();
 
     const seasonPlayers = computed(() =>
         playerStore.playersInSeason(seasonStore.currentSeason),
     );
 
+    const isGuest = (player: Player) =>
+        isGuestInSeason(player, seasonStore.currentSeason);
+
+    const columns = computed<TableColumn<Player>[]>(() => [
+        {
+            accessorKey: 'name',
+            header: sortableHeader<Player>(t('common.name')),
+        },
+        {
+            id: 'actions',
+            meta: { class: { td: 'text-right', th: 'text-right' } },
+        },
+    ]);
+
+    const sorting = ref([{ id: 'name', desc: false }]);
+
+    const onSelect = (_event: Event, row: TableRow<Player>) => {
+        router.push({ name: 'playerDetail', params: { id: row.original.id } });
+    };
+
     onMounted(() => {
         playerStore.fetchPlayers();
     });
-
-    const onRowClick = (event: DataTableRowClickEvent) => {
-        router.push({ name: 'playerDetail', params: { id: event.data.id } });
-    };
 </script>
 
 <template>
-    <DataTable
+    <UTable
         v-if="playerStore.playersLoaded && seasonPlayers.length"
+        v-model:sorting="sorting"
         class="rounded-2xl shadow-lg"
-        :value="seasonPlayers"
-        striped-rows
-        :sort-field="'name'"
-        :sort-order="1"
-        data-key="id"
-        @row-click="onRowClick"
+        :columns="columns"
+        :data="seasonPlayers"
+        :ui="TABLE_UI"
+        @select="onSelect"
     >
-        <Column field="name" :header="$t('common.name')" sortable>
-            <template #body="{ data }">
-                <span
-                    :class="{
-                        'text-gray-300': isGuestInSeason(
-                            data,
-                            seasonStore.currentSeason,
-                        ),
-                    }"
-                >
-                    {{ data.name }}
-                </span>
-            </template>
-        </Column>
+        <template #name-cell="{ row }">
+            <span :class="{ 'text-gray-300': isGuest(row.original) }">
+                {{ row.original.name }}
+            </span>
+        </template>
 
-        <Column class="!text-right">
-            <template #body="{ data }">
-                <Button
-                    :class="{
-                        'opacity-50': isGuestInSeason(
-                            data,
-                            seasonStore.currentSeason,
-                        ),
-                    }"
-                    as="router-link"
-                    size="small"
-                    :to="{ name: 'playerDetail', params: { id: data.id } }"
-                    icon="pi pi-chevron-right"
-                    :aria-label="$t('player.viewPlayerDetails')"
-                />
-            </template>
-        </Column>
-    </DataTable>
+        <template #actions-cell="{ row }">
+            <UButton
+                :class="{ 'opacity-50': isGuest(row.original) }"
+                :aria-label="$t('player.viewPlayerDetails')"
+                icon="i-lucide-chevron-right"
+                size="sm"
+                :to="{ name: 'playerDetail', params: { id: row.original.id } }"
+            />
+        </template>
+    </UTable>
 
     <div
         v-else-if="!playerStore.playersLoaded"

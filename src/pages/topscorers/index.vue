@@ -1,15 +1,19 @@
 <script setup lang="ts">
-    import { computed, onMounted, watch } from 'vue';
+    import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
+    import { computed, onMounted, ref, watch } from 'vue';
+    import { useI18n } from 'vue-i18n';
+
     import { usePlayerStore } from '@/stores/playerStore';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { DataTable, Column, type DataTableRowClickEvent } from 'primevue';
+    import { TABLE_UI, sortableHeader } from '@/utils/table';
 
     import router from '@/router';
 
     const playerStore = usePlayerStore();
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
+    const { t } = useI18n();
 
     const playerTotalStats = computed(() => {
         if (!playerStore.playersLoaded || !matchStore.appearancesLoaded)
@@ -39,8 +43,30 @@
             });
     });
 
-    const onRowClick = (event: DataTableRowClickEvent) => {
-        router.push({ name: 'playerDetail', params: { id: event.data.id } });
+    type TopscorerRow = (typeof playerTotalStats.value)[number];
+
+    const columns = computed<TableColumn<TopscorerRow>[]>(() => [
+        {
+            accessorKey: 'name',
+            header: sortableHeader<TopscorerRow>(t('common.name')),
+        },
+        {
+            accessorKey: 'totalGoals',
+            header: sortableHeader<TopscorerRow>(t('common.goal', 2)),
+        },
+        {
+            accessorKey: 'goalkeeperCount',
+            header: sortableHeader<TopscorerRow>(t('player.totalKeeper')),
+        },
+    ]);
+
+    const sorting = ref([{ id: 'totalGoals', desc: true }]);
+
+    const onSelect = (_event: Event, row: TableRow<TopscorerRow>) => {
+        router.push({
+            name: 'playerDetail',
+            params: { id: row.original.id },
+        });
     };
 
     onMounted(() => {
@@ -57,21 +83,13 @@
 </script>
 
 <template>
-    <DataTable
+    <UTable
+        v-model:sorting="sorting"
         class="rounded-2xl shadow-lg"
-        :value="playerTotalStats"
-        :sortField="'totalGoals'"
+        :columns="columns"
+        :data="playerTotalStats"
         :loading="!playerStore.playersLoaded || !matchStore.appearancesLoaded"
-        :sortOrder="-1"
-        striped-rows
-        @row-click="onRowClick"
-    >
-        <Column field="name" :header="$t('common.name')" sortable />
-        <Column field="totalGoals" :header="$t('common.goal', 2)" sortable />
-        <Column
-            field="goalkeeperCount"
-            :header="$t('player.totalKeeper')"
-            sortable
-        />
-    </DataTable>
+        :ui="TABLE_UI"
+        @select="onSelect"
+    />
 </template>
