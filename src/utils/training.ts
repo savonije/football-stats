@@ -81,3 +81,54 @@ export const attendanceStatus = (
 
     return isUpcomingTraining(training.date, now) ? 'unmarked' : 'absent';
 };
+
+/**
+ * The trainings that count towards attendance: cancelled sessions and any that
+ * have not been held yet are left out, so a player is never marked down for a
+ * training nobody could attend.
+ */
+export const heldTrainings = <T extends Pick<Training, 'date' | 'cancelled'>>(
+    trainings: T[],
+    now: Date = new Date(),
+): T[] =>
+    trainings.filter(
+        (training) =>
+            !training.cancelled && !isUpcomingTraining(training.date, now),
+    );
+
+/** Share of held trainings a player was present at, rounded to a whole percent. */
+export const attendancePercentage = (
+    playerId: string,
+    trainings: Pick<Training, 'date' | 'cancelled' | 'presentPlayerIds'>[],
+    now: Date = new Date(),
+): number => {
+    const held = heldTrainings(trainings, now);
+    if (!held.length) return 0;
+
+    const attended = held.filter((training) =>
+        training.presentPlayerIds?.includes(playerId),
+    ).length;
+
+    return Math.round((attended / held.length) * 100);
+};
+
+export type AttendancePeriod = 'week' | 'month' | 'total';
+
+/**
+ * The trainings falling inside the `period` around `anchor` — the week or the
+ * month that contains it, or everything for `'total'`. Weeks are Monday-first,
+ * following the nl dayjs locale.
+ */
+export const trainingsInPeriod = <T extends Pick<Training, 'date'>>(
+    trainings: T[],
+    period: AttendancePeriod,
+    anchor: Date | Dayjs,
+): T[] => {
+    if (period === 'total') return trainings;
+
+    return trainings.filter(
+        (training) =>
+            !!training.date &&
+            dayjs(training.date.toDate()).isSame(dayjs(anchor), period),
+    );
+};

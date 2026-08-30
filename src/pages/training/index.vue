@@ -2,6 +2,7 @@
     import { computed, onMounted, ref, watch } from 'vue';
     import dayjs from 'dayjs';
 
+    import { useStoreAuth } from '@/stores/authStore';
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { usePlayerStore } from '@/stores/playerStore';
@@ -10,8 +11,10 @@
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import TrainingMonthCalendar from '@/pages/training/_components/TrainingMonthCalendar.vue';
     import TrainingActionsMenu from '@/pages/training/_components/TrainingActionsMenu.vue';
+    import TrainingAttendanceTable from '@/pages/training/_components/TrainingAttendanceTable.vue';
 
     const trainingStore = useTrainingStore();
+    const authStore = useStoreAuth();
     const seasonStore = useSeasonStore();
     const playerStore = usePlayerStore();
 
@@ -73,4 +76,18 @@
     </div>
 
     <TrainingMonthCalendar v-else v-model:month="viewMonth" :trainings="rows" />
+
+    <section
+        v-if="authStore.user"
+        class="mt-20"
+        aria-labelledby="attendance-overview"
+    >
+        <h2
+            id="attendance-overview"
+            class="text-primary-900 mb-3 text-lg font-bold"
+        >
+            {{ $t('training.attendanceOverview') }}
+        </h2>
+        <TrainingAttendanceTable />
+    </section>
 </template>

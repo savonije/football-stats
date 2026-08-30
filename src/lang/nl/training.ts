@@ -20,6 +20,16 @@ export default {
         'Alles ingevuld | 1 speler nog niet ingevuld | {count} spelers nog niet ingevuld',
     clearAttendance: 'Aanwezigheid wissen',
     attendancePercentage: 'Trainingsopkomst (%)',
+    attendanceOverview: 'Trainingsopkomst per speler',
+    attended: 'Aanwezig',
+    noTrainingsInPeriod: 'In deze periode zijn er geen trainingen geweest.',
+    previousWeek: 'Vorige week',
+    nextWeek: 'Volgende week',
+    period: {
+        week: 'Week',
+        month: 'Maand',
+        total: 'Totaal',
+    },
     trainingDays: 'Trainingsdagen',
     deleteTrainingConfirm:
         'Weet je zeker dat je deze training wilt verwijderen?',
