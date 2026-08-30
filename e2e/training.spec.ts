@@ -299,21 +299,32 @@ test.describe('Training attendance table', () => {
         ).toBeHidden();
     });
 
-    test('reports that the week ahead has no trainings yet', async ({
+    test('does not navigate beyond the current week or month', async ({
         page,
     }) => {
         const region = attendanceRegion(page);
+        const nextWeek = region.getByRole('button', {
+            name: 'Volgende week',
+        });
 
+        // Anything ahead of today has no attendance to report on yet.
         await region.getByRole('button', { name: 'Week', exact: true }).click();
-        await region.getByRole('button', { name: 'Volgende week' }).click();
+        await expect(nextWeek).toBeDisabled();
 
-        // Every day of next week is still to come, so whatever staging holds,
-        // no training in it can have been held yet.
+        await region.getByRole('button', { name: 'Vorige week' }).click();
+        await expect(nextWeek).toBeEnabled();
+
+        await nextWeek.click();
+        await expect(nextWeek).toBeDisabled();
+
+        await region
+            .getByRole('button', { name: 'Maand', exact: true })
+            .click();
+        // A week can straddle two months, so return to today before asserting.
+        await region.getByRole('button', { name: 'Vandaag' }).click();
         await expect(
-            region.getByText(
-                'In deze periode zijn er geen trainingen geweest.',
-            ),
-        ).toBeVisible();
+            region.getByRole('button', { name: 'Volgende maand' }),
+        ).toBeDisabled();
     });
 });
 

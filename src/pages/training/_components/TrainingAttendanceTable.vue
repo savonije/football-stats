@@ -47,8 +47,16 @@
         return label.charAt(0).toUpperCase() + label.slice(1);
     });
 
+    const isCurrentPeriod = computed(
+        () =>
+            period.value !== 'total' &&
+            dayjs(anchor.value).isSame(dayjs(), period.value),
+    );
+
     const step = (amount: number) => {
         if (period.value === 'total') return;
+        if (amount > 0 && isCurrentPeriod.value) return;
+
         anchor.value = dayjs(anchor.value)
             .add(amount, period.value)
             .startOf(period.value)
@@ -122,6 +130,7 @@
                 text
                 rounded
                 size="small"
+                :disabled="isCurrentPeriod"
                 :aria-label="
                     t(
                         period === 'week'
