@@ -68,8 +68,9 @@ class="bg-[#f2f5fb] text-[#6285d1] shadow-[0_2px_12px_rgba(39,66,138,.08)]"
 Currently defined custom tokens (confirm against `src/styles/main.css` before use):
 
 - **Brand color scale:** `primary-50 … primary-950`, plus bare `primary` (#27428a).
-  Generates `bg-/text-/border-primary-*`, etc. This same scale is fed to the PrimeVue
-  Aura preset in `main.ts`, so app chrome and utilities stay in sync.
+  Generates `bg-/text-/border-primary-*`, etc. Nuxt UI's semantic `primary` is
+  mapped onto this same scale in `vite.config.ts`, so component chrome and
+  utilities stay in sync.
 - **Accent color:** bare `amber` (#f59e0b) → `text-amber`, `bg-amber`. Note this is a
   *single* color, separate from Tailwind's built-in `amber-50…950` scale — `text-amber`
   and `text-amber-500` are different values.
@@ -115,44 +116,46 @@ it's a plain variable with no generated utility; see §2.)
 
 ## 4. Dark mode
 
-**Dark mode is not enabled** (`darkModeSelector: false` in `main.ts`), and no
-component uses any `dark:` variant. **Don't add `dark:` classes** — they have no
-effect today. Enabling dark mode would require flipping the PrimeVue
-`darkModeSelector` and adopting a dark color strategy first; revisit only then.
+**Dark mode is not enabled** and no component uses any `dark:` variant.
+**Don't add `dark:` classes** — they have no effect today. Enabling it would mean
+turning on Nuxt UI's color mode and adopting a dark color strategy first; revisit
+only then.
 
 ## 5. Dialog widths: one way only
 
-Every `<Dialog>` gets its width from a **Tailwind container width class on the
-component itself**, taken from the `w-3xs … w-7xl` scale. `w-md` is the default across
-the app; step up (`w-lg`, `w-2xl`, …) only when the content genuinely needs it.
+Every `<UModal>` gets its width from a **Tailwind container width class on the
+modal's `content` slot**, taken from the `w-3xs … w-7xl` scale. `w-md` is the default
+across the app; step up (`w-lg`, `w-2xl`, …) only when the content genuinely needs it.
 
 ```html
 <!-- ✅ the only accepted form -->
-<Dialog v-model:visible="model" class="w-md" modal :header="t('…')" />
+<UModal v-model:open="model" :title="t('…')" :ui="{ content: 'w-md' }" />
 
 <!-- ❌ never -->
-<Dialog style="width: 450px" />
-<Dialog :style="{ width: '400px' }" />
-<Dialog class="w-96" />
-<Dialog class="w-[400px]" />
+<UModal style="width: 450px" />
+<UModal :style="{ width: '400px' }" />
+<UModal :ui="{ content: 'w-96' }" />
+<UModal :ui="{ content: 'w-[400px]' }" />
 ```
 
-Don't add responsive variants for the small-screen case — the global
-`.p-dialog { @apply max-w-[95%] }` rule in `main.css` already caps it.
+Don't add responsive variants for the small-screen case — `ui.modal.slots.content`
+in `vite.config.ts` already caps every modal at `max-w-[95%]`.
 
-## 6. Component styles vs. global styles vs. PrimeVue overrides
+## 6. Component styles vs. global styles vs. Nuxt UI overrides
 
 - **Component-local styling:** utility classes in the template. **Never use `<style>`
   blocks, CSS modules, or CSS-in-JS** (per `CLAUDE.md`).
 - **Element base styles / helpers** (e.g. `h1`–`h6`, `.container`, `body`) live in the
   CSS partials (`src/styles/base.css`, `typography.css`, `main.css`) and use **`@apply`**
   with the same theme tokens.
-- **PrimeVue component theming:** the Aura preset's primary palette is set in `main.ts`
-  via `definePreset`, reading the CSS vars through the `theme()` helper in
-  `@/utils/tailwind`. Visual tweaks to PrimeVue parts (`.p-card`, `.p-drawer`,
-  `.p-datatable`, `.p-dialog`, `.p-toast`) are global rules in `main.css` and require
-  `!important` to win over Aura's own styles. Teleported components (drawer, dialog,
-  toast) **must** be styled globally, not scoped.
+- **Nuxt UI component theming:** semantic colours are mapped in `vite.config.ts`
+  (`ui.colors`), which points `primary` at the `--color-primary-*` scale above.
+  Restyle a component through its own **`ui` prop** (per instance) or `ui.<component>`
+  in `vite.config.ts` (app-wide) — both take Tailwind classes per slot. Because these
+  compose with the component's own theme, **nothing needs `!important`**, and
+  teleported components (slideover, modal, toast) no longer need global CSS at all.
+  A slot override reused across several instances belongs in a shared constant next to
+  its component, like `TABLE_UI` in `src/utils/table.ts`.
 
 ## Workflow before writing/editing classes
 

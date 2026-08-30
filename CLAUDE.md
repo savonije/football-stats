@@ -30,16 +30,16 @@ Two safety nets keep writes off production. `login()` watches the Firestore traf
 
 **Never assert persistence with `page.reload()`.** Firestore applies writes to its local cache first and this app configures no offline persistence, so reloading straight after a click silently drops the mutation and the assertion passes or fails for the wrong reason. Waiting for the write to leave the browser is no good either: mutations go over `POST …Firestore/Write/channel`, but so does the channel handshake, so `waitForResponse` resolves too early. Instead open a second tab (`page.context().newPage()`) — it runs its own Firestore client, so whatever it renders came back from the server, which is also a truer test of the real-time sync the app relies on.
 
-Selectors lean on roles and labels, with `data-pc-section="…"` (PrimeVue's own DOM hook) where nothing else fits. Four PrimeVue traps, all hit while writing these specs:
+Selectors lean on roles and labels, with a `data-testid` where nothing else fits — prefer adding one over reaching into Reka/Nuxt UI internals, which is what made the old PrimeVue selectors brittle. Four Nuxt UI traps worth knowing:
 
-- A `ConfirmDialog` is `role="alertdialog"`, never `dialog`, so `acceptConfirm()` targets it without colliding with the dialog underneath.
-- `MultiSelect` puts `role="combobox"` on a *hidden* input that the visible label covers — click the `.p-multiselect` root instead.
-- The `DatePicker` panel is positioned over the whole dialog, title included, so there is nothing left to click to dismiss it. Pick the day inside the panel (`[data-pc-section="daycell"]`); selecting a single date closes it. Neighbouring months' cells share the same `aria-label` and are the only ones carrying `data-p-other-month`.
-- Vue renders `data-*="false"`, but PrimeVue leaves the attribute off entirely when the value is `undefined` — match with `:not([attr="true"])` rather than `[attr="false"]`.
+- `UTable` sets `role="button"` on a row whenever `@select` is bound, which replaces the implicit `role="row"`. Match `tbody tr` directly rather than `getByRole('row')` for data rows.
+- `UTabs` (used as a segmented control for the attendance period) is `role="tab"` with `aria-selected`, not a pressed button.
+- `UInputDate` is a segmented field, not a text input: each part is a `role="spinbutton"` carrying `data-reka-date-field-segment="day|month|year"`. Click the segment and type digits — they auto-advance.
+- `role="alertdialog"` cannot be set as a plain attribute on `UModal`; Reka hardcodes `role="dialog"` on the content element. Pass it through the `content` prop (`:content="{ role: 'alertdialog' }"`), which is how `acceptConfirm()` still finds the confirm dialog without colliding with the dialog underneath.
 
 The global test timeout is raised to 90s: an authenticated spec spends several seconds on Firebase round trips before it reaches the feature under test, which overruns Playwright's 30s default under parallel workers.
 
-Knip (`knip.json`) runs on its auto-detected defaults — it picks up the Vite, Playwright, ESLint and Prettier configs on its own, and follows `src/styles/main.css` for CSS-only dependencies like `tailwindcss` and `primeicons`. Only `public/**` is ignored, because those assets are referenced by absolute URL from `index.html` and can't be resolved statically. Don't narrow `project` to `.ts`/`.vue` — that drops the CSS graph and produces false "unused dependency" hits.
+Knip (`knip.json`) runs on its auto-detected defaults — it picks up the Vite, Playwright, ESLint and Prettier configs on its own, and follows `src/styles/main.css` for CSS-only dependencies like `tailwindcss`. Only `public/**` is ignored, because those assets are referenced by absolute URL from `index.html` and can't be resolved statically. `@iconify-json/lucide` is in `ignoreDependencies`: the icon set is read by the `@nuxt/ui` Vite plugin's scanner, never imported, so knip cannot see it. Don't narrow `project` to `.ts`/`.vue` — that drops the CSS graph and produces false "unused dependency" hits.
 
 Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials plus `VITE_CLUBNAME`. There is no hardcoded config in source. `.env` points at the **staging** project and `.env.production` at production, which is why `build:e2e` builds in staging mode. The Playwright CI job needs `VITE_CLUBNAME` in its secrets as well — without it the club name renders empty and `navigation.spec.ts` fails.
 
@@ -94,7 +94,15 @@ Routes are defined manually in `src/router/index.ts` (not file-system auto-routi
 
 Each page keeps its own private sub-components in a co-located `_components/` folder (e.g. `pages/matches/_components/MatchTimer.vue`). Truly shared components live under `src/components/` (`ui/`, `layout/`, `dialogs/`). Domains: home, matches, players, topscorers, training, washing (wasschema), login.
 
-PrimeVue (Aura preset) handles UI components. The primary color palette is sourced from Tailwind CSS custom properties and unified in `main.ts` via `definePreset`. Global PrimeVue services (`Toast`, `ConfirmDialog`, `ConfirmationService`) are registered in `main.ts` and rendered in `App.vue`.
+[Nuxt UI v4](https://ui.nuxt.com) handles UI components — it works in plain Vue via `@nuxt/ui/vue-plugin`, with the `ui()` Vite plugin registered in `vite.config.ts`. Components are auto-imported under the `U` prefix (`UButton`, `UModal`, …) and need no import statement; composable auto-import is deliberately **off** (`autoImport: false`) so `useToast`/`useOverlay` are imported explicitly like everything else in this repo.
+
+`<UApp>` in `App.vue` provides the toast, tooltip and overlay outlets and carries the `nl` locale (which is what makes calendars start on Monday). Semantic colours are mapped in `vite.config.ts`: `primary` points at the project's own `--color-primary-*` scale from `@theme`, so `bg-primary` and friends keep working unchanged.
+
+Icons are Lucide via `@iconify-json/lucide`, referenced as `i-lucide-*`. `icon.clientBundle.scan` bundles only the icons actually used in source, so nothing is fetched from the Iconify API at runtime — an icon added by string interpolation would not be found by the scanner.
+
+Two composables replace PrimeVue services: `useAppToast()` (`success`/`warn`/`error`, supplying the heading and `TOAST_LIFE`) and `useConfirmDialog()`, which wraps `useOverlay()` and resolves to a boolean so call sites read `if (await confirm({ … }))`. An overlay component must declare `open` and forward it to its `UModal` — `OverlayProvider` binds `v-model:open` on the component, and without it the modal keeps its own state and stays on screen after a choice.
+
+Tables are `UTable` (TanStack Table). Shared bits live in `src/utils/table.ts`: `TABLE_UI` carries the gradient header and striped/hover rows, and `sortableHeader()` renders the sort toggle that `<Column sortable>` used to give for free. Dates go through `src/utils/date.ts`, which bridges plain `Date` and `@internationalized/date`'s `CalendarDate` — hold a `CalendarDate` in `shallowRef`, never `ref`, or Vue's deep unwrapping strips its private field and the type stops matching.
 
 ### i18n
 
@@ -106,10 +114,10 @@ Tailwind v4 via `@tailwindcss/vite` — **there is no `tailwind.config.js`**; th
 
 - **Always use Tailwind CSS.** Never use `<style>` blocks, CSS modules, or CSS-in-JS.
 - Use the existing `@theme` tokens (`primary-*` scale, `shadow-card`, `text-xxs`, `tracking-label`, …) and scale utilities instead of arbitrary `[Npx]` or hex values. Add a new token to `@theme` if nothing fits.
-- **Dialog width is set exactly one way:** a Tailwind container width class on the `<Dialog>` itself — `class="w-md"` (the `w-3xs … w-7xl` scale). Never `style="width: 450px"`, `:style="{ width: … }"`, `w-96`, or `w-[400px]`. `.p-dialog { max-w-[95%] }` in `main.css` handles small screens, so no responsive variant is needed.
-- Dark mode is not enabled (PrimeVue `darkModeSelector: false`), so don't add `dark:` variants — they have no effect. Revisit only if dark mode is turned on.
+- **Dialog width is set exactly one way:** a Tailwind container width class through `UModal`'s `ui` prop — `:ui="{ content: 'w-md' }"` (the `w-3xs … w-7xl` scale). Never `style="width: 450px"`, `:style="{ width: … }"`, `w-96`, or `w-[400px]`. The `max-w-[95%]` cap for small screens is set once in `vite.config.ts` under `ui.modal`, so no responsive variant is needed.
+- Dark mode is not enabled, so don't add `dark:` variants — they have no effect. Revisit only if dark mode is turned on.
 - Use Tailwind breakpoints (`sm`, `md`, `lg`, `xl`) for responsive layout.
-- PrimeVue part overrides (`.p-drawer`, `.p-datatable`, `.p-dialog`, `.p-toast`) are global rules in `src/styles/main.css` and need `!important` to beat Aura. Teleported components can't be styled locally at all.
+- Nuxt UI components are restyled through their own `ui` prop (per component) or `ui.<component>` in `vite.config.ts` (app-wide) — not global CSS. This is why `main.css` no longer carries component overrides and nothing needs `!important` any more. Reusable slot overrides belong next to the component that uses them, like `TABLE_UI` in `src/utils/table.ts`.
 
 ## Formatting
 
