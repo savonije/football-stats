@@ -1,26 +1,50 @@
 <script setup lang="ts">
     import { ref, computed, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import { useToast } from 'primevue/usetoast';
-    import { Dialog, DatePicker, Button, Message } from 'primevue';
     import dayjs from 'dayjs';
 
     import { addTrainings } from '@/services/trainingService';
+    import { useAppToast } from '@/composables/useAppToast';
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { trainingDatesInMonth } from '@/utils/training';
-    import { TOAST_LIFE } from '@/constants';
 
     const model = defineModel<boolean>('visible');
     const { initialMonth } = defineProps<{ initialMonth?: Date }>();
 
     const { t } = useI18n();
-    const toast = useToast();
+    const toast = useAppToast();
     const trainingStore = useTrainingStore();
     const seasonStore = useSeasonStore();
     const loading = ref(false);
 
     const month = ref<Date>(new Date());
+
+    // Nuxt UI has no month picker, so the month is chosen with two selects.
+    const monthOptions = Array.from({ length: 12 }, (_, index) => ({
+        label: dayjs().month(index).format('MMMM'),
+        value: index,
+    }));
+
+    const yearOptions = computed(() => {
+        const current = new Date().getFullYear();
+        return Array.from({ length: 5 }, (_, index) => {
+            const year = current - 1 + index;
+            return { label: String(year), value: year };
+        });
+    });
+
+    const selectedMonth = computed({
+        get: () => month.value.getMonth(),
+        set: (value) =>
+            (month.value = new Date(month.value.getFullYear(), value, 1)),
+    });
+
+    const selectedYear = computed({
+        get: () => month.value.getFullYear(),
+        set: (value) =>
+            (month.value = new Date(value, month.value.getMonth(), 1)),
+    });
 
     const trainingDays = computed(
         () =>
@@ -57,21 +81,11 @@
                 seasonStore.currentSeason,
                 newDates.value,
             );
-            toast.add({
-                severity: 'success',
-                summary: t('common.messages.success'),
-                detail: t('training.messages.trainingsGenerated', { count }),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('training.messages.trainingsGenerated', { count }));
             closeDialog();
         } catch (err) {
             console.error(err);
-            toast.add({
-                severity: 'error',
-                summary: t('common.messages.error'),
-                detail: t('training.messages.trainingAddError'),
-                life: TOAST_LIFE,
-            });
+            toast.error(t('training.messages.trainingAddError'));
         } finally {
             loading.value = false;
         }
@@ -84,65 +98,69 @@
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="model"
-        class="w-md"
-        :header="t('training.generateForMonth')"
-        modal
-        closable
-        dismissableMask
+    <UModal
+        v-model:open="model"
+        :title="t('training.generateForMonth')"
+        :ui="{ content: 'w-md' }"
     >
-        <div class="flex flex-col gap-4">
-            <Message
-                v-if="!trainingDays.length"
-                severity="warn"
-                :closable="false"
-            >
-                {{ t('training.noTrainingDaysConfigured') }}
-            </Message>
+        <template #body>
+            <div class="flex flex-col gap-4">
+                <UAlert
+                    v-if="!trainingDays.length"
+                    color="warning"
+                    :description="t('training.noTrainingDaysConfigured')"
+                    variant="subtle"
+                />
 
-            <template v-else>
-                <div>
-                    <label>{{ t('training.selectMonth') }}</label>
-                    <DatePicker
-                        v-model="month"
-                        view="month"
-                        dateFormat="MM yy"
-                        showIcon
-                        fluid
-                    />
-                </div>
+                <template v-else>
+                    <div>
+                        <label>{{ t('training.selectMonth') }}</label>
+                        <div class="flex gap-2">
+                            <USelect
+                                v-model="selectedMonth"
+                                class="flex-1 capitalize"
+                                :items="monthOptions"
+                            />
+                            <USelect
+                                v-model="selectedYear"
+                                class="w-28"
+                                :items="yearOptions"
+                            />
+                        </div>
+                    </div>
 
-                <p class="text-primary-500 text-sm font-medium">
-                    <template v-if="newDates.length">
-                        {{
-                            t('training.newTrainingsCount', {
-                                count: newDates.length,
-                            })
-                        }}
-                    </template>
-                    <template v-else>
-                        {{ t('training.allExist') }}
-                    </template>
-                </p>
-            </template>
-        </div>
+                    <p class="text-primary-500 text-sm font-medium">
+                        <template v-if="newDates.length">
+                            {{
+                                t('training.newTrainingsCount', {
+                                    count: newDates.length,
+                                })
+                            }}
+                        </template>
+                        <template v-else>
+                            {{ t('training.allExist') }}
+                        </template>
+                    </p>
+                </template>
+            </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="$t('common.cancel')"
-                    severity="secondary"
+                    variant="subtle"
                     @click="closeDialog"
                 />
-                <Button
-                    :label="$t('training.generate')"
-                    icon="pi pi-check"
-                    :loading="loading"
+                <UButton
                     :disabled="!newDates.length"
+                    icon="i-lucide-check"
+                    :label="$t('training.generate')"
+                    :loading="loading"
                     @click="generate"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>
