@@ -67,7 +67,7 @@ const addTrainingForDay = async (page: Page, day: number) => {
     const value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
     await page
-        .locator(`[data-reka-calendar-cell-trigger][data-value="${value}"]`)
+        .locator(`[data-value="${value}"]`)
         .click();
     await expect(dialog.locator('[data-testid="date-input"]')).toContainText(
         String(day).padStart(2, '0'),
