@@ -35,20 +35,27 @@
 </script>
 
 <template>
-    <div class="md:w-1/3">
-        <LiveMatchWidget />
+    <div class="grid gap-16">
+        <template class="md:w-1/3">
+            <LiveMatchWidget />
+        </template>
+
+        <section
+            v-if="recentMatchData.length > 0"
+            class="shadow-card rounded-xl bg-white p-5"
+        >
+            <h2 class="mb-6">{{ $t('match.recentResults') }}</h2>
+            <MatchResultsChart
+                v-if="matchStore.matchesLoaded"
+                :data="recentMatchData"
+            />
+        </section>
+
+        <section>
+            <h1 class="mb-3">{{ $t('match.game', 2) }}</h1>
+            <MatchList />
+        </section>
+
+        <TeamStats class="mt-16" />
     </div>
-
-    <TeamStats class="mt-8" />
-
-    <section v-if="recentMatchData.length > 0" class="mt-20">
-        <h2 class="mb-6">{{ $t('match.recentResults') }}</h2>
-        <MatchResultsChart
-            v-if="matchStore.matchesLoaded"
-            :data="recentMatchData"
-        />
-    </section>
-
-    <h1 class="mt-8 mb-3">{{ $t('match.game', 2) }}</h1>
-    <MatchList />
 </template>

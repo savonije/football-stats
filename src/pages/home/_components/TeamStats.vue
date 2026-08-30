@@ -65,7 +65,6 @@
 
 <template>
     <section v-if="matchStore.matchesLoaded && stats.matchesPlayed > 0">
-        <h2 class="mb-3">{{ $t('match.teamStats') }}</h2>
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             <div
                 v-for="tile in tiles"
