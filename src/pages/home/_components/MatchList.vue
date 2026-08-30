@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
     import { getPaginationRowModel } from '@tanstack/vue-table';
+    import { watchDebounced } from '@vueuse/core';
     import { computed, onMounted, ref, watch } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -12,6 +13,7 @@
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
 
     import type { Match } from '@/types';
+    import { SEARCH_DEBOUNCE_MS } from '@/constants';
     import { hasStarted } from '@/utils/match';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
     import { isPlayed } from '@/utils/match';
@@ -26,6 +28,7 @@
     const { t } = useI18n();
 
     const table = ref();
+    const searchQuery = ref('');
     const globalFilter = ref('');
     const sorting = ref([{ id: 'date', desc: true }]);
     const pagination = ref({ pageIndex: 0, pageSize: 10 });
@@ -113,6 +116,10 @@
         },
     );
 
+    watchDebounced(searchQuery, (query) => (globalFilter.value = query), {
+        debounce: SEARCH_DEBOUNCE_MS,
+    });
+
     watch(globalFilter, () => (pagination.value.pageIndex = 0));
 
     const onSelect = (_event: Event, row: TableRow<Match>) => {
@@ -123,7 +130,7 @@
 <template>
     <div class="mb-4 flex justify-end">
         <UInput
-            v-model="globalFilter"
+            v-model="searchQuery"
             class="w-full"
             icon="i-lucide-search"
             :placeholder="t('common.searchOpponent')"
