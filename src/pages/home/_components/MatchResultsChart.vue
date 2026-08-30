@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import { computed, ref, onMounted, onUnmounted } from 'vue';
+    import { useElementSize } from '@vueuse/core';
+    import { computed, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     interface MatchBar {
@@ -30,21 +31,7 @@
     const H = 210;
 
     const containerRef = ref<HTMLDivElement | null>(null);
-    const containerWidth = ref(0);
-    let resizeObserver: ResizeObserver | null = null;
-
-    onMounted(() => {
-        if (!containerRef.value) return;
-        containerWidth.value = containerRef.value.clientWidth;
-        resizeObserver = new ResizeObserver(([entry]) => {
-            containerWidth.value = entry.contentRect.width;
-        });
-        resizeObserver.observe(containerRef.value);
-    });
-
-    onUnmounted(() => {
-        resizeObserver?.disconnect();
-    });
+    const { width: containerWidth } = useElementSize(containerRef);
 
     const colWidth = computed(() =>
         props.data.length > 0

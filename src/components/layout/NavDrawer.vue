@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { useTimeoutFn } from '@vueuse/core';
     import { ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -21,12 +22,19 @@
     const showAddPlayerDialog = ref(false);
     const showManageSeasonsDialog = ref(false);
 
+    const { start: startNavAnimation, stop: stopNavAnimation } = useTimeoutFn(
+        () => {
+            navAnimated.value = true;
+        },
+        120,
+        { immediate: false },
+    );
+
     watch(drawerVisible, (val) => {
         if (val) {
-            setTimeout(() => {
-                navAnimated.value = true;
-            }, 120);
+            startNavAnimation();
         } else {
+            stopNavAnimation();
             navAnimated.value = false;
         }
     });

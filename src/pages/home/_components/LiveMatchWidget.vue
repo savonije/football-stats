@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+    import { useTimestamp } from '@vueuse/core';
+    import { computed, ref, watch } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { getDisplaySeconds } from '@/utils/match';
@@ -10,16 +11,7 @@
     const seasonStore = useSeasonStore();
     const { t } = useI18n();
 
-    const now = ref(Date.now());
-    let timer: ReturnType<typeof setInterval>;
-
-    onMounted(() => {
-        timer = setInterval(() => {
-            now.value = Date.now();
-        }, 30_000);
-    });
-
-    onUnmounted(() => clearInterval(timer));
+    const now = useTimestamp({ interval: 30_000 });
 
     const liveMatch = computed(
         () =>

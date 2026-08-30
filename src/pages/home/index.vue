@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import { ref, computed, onMounted, onUnmounted } from 'vue';
+    import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
+    import { computed } from 'vue';
     import MatchList from '@/pages/home/_components/MatchList.vue';
     import MatchResultsChart from '@/pages/home/_components/MatchResultsChart.vue';
     import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
@@ -9,12 +10,7 @@
 
     const matchStore = useMatchStore();
 
-    const isMobile = ref(window.innerWidth < 640);
-    const onResize = () => {
-        isMobile.value = window.innerWidth < 640;
-    };
-    onMounted(() => window.addEventListener('resize', onResize));
-    onUnmounted(() => window.removeEventListener('resize', onResize));
+    const isMobile = useBreakpoints(breakpointsTailwind).smaller('sm');
 
     const recentMatchData = computed(() => {
         const count = isMobile.value ? 5 : 10;

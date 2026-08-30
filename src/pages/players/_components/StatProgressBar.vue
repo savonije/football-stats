@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { useTimeoutFn } from '@vueuse/core';
     import { ref, watch } from 'vue';
 
     const { percentage, color } = defineProps<{
@@ -13,13 +14,17 @@
 
     const width = ref(0);
 
+    const { start: animateTo } = useTimeoutFn(
+        (pct: number) => {
+            width.value = pct;
+        },
+        80,
+        { immediate: false },
+    );
+
     watch(
         () => percentage,
-        (pct) => {
-            setTimeout(() => {
-                width.value = pct;
-            }, 80);
-        },
+        (pct) => animateTo(pct),
         { immediate: true },
     );
 </script>

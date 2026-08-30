@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import { computed, onMounted, onUnmounted, ref } from 'vue';
+    import { useTimestamp } from '@vueuse/core';
+    import { computed } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useI18n } from 'vue-i18n';
@@ -23,19 +24,7 @@
     const confirm = useConfirmDialog();
     const { t } = useI18n();
 
-    const now = ref(Date.now());
-
-    let timer: ReturnType<typeof setInterval>;
-
-    onMounted(() => {
-        timer = setInterval(() => {
-            now.value = Date.now();
-        }, 1000);
-    });
-
-    onUnmounted(() => {
-        clearInterval(timer);
-    });
+    const now = useTimestamp({ interval: 1000 });
 
     const duration = computed(() =>
         formatMatchTime(

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { useStorage } from '@vueuse/core';
+    import { computed, onMounted, watch } from 'vue';
     import dayjs from 'dayjs';
 
     import { useStoreAuth } from '@/stores/authStore';
@@ -22,8 +23,11 @@
 
     // The month currently shown in the calendar; the generator targets it.
     // Persisted so navigating into a training and back restores the month.
-    const stored = localStorage.getItem(VIEW_MONTH_KEY);
-    const viewMonth = ref<Date>(stored ? dayjs(stored).toDate() : new Date());
+    const storedMonth = useStorage(VIEW_MONTH_KEY, dayjs().format('YYYY-MM'));
+    const viewMonth = computed<Date>({
+        get: () => dayjs(storedMonth.value).toDate(),
+        set: (month) => (storedMonth.value = dayjs(month).format('YYYY-MM')),
+    });
 
     const attendeeIds = computed(() =>
         playerStore
@@ -52,10 +56,6 @@
         fetchForSeason(seasonStore.currentSeason);
         playerStore.fetchPlayers();
     });
-
-    watch(viewMonth, (month) =>
-        localStorage.setItem(VIEW_MONTH_KEY, dayjs(month).format('YYYY-MM')),
-    );
 
     watch(
         () => seasonStore.currentSeason,
