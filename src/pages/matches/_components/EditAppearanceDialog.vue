@@ -1,16 +1,9 @@
 <script setup lang="ts">
     import { ref, watch } from 'vue';
-    import {
-        Button,
-        Dialog,
-        InputNumber,
-        ToggleSwitch,
-        useConfirm,
-    } from 'primevue';
-    import { useToast } from 'primevue/usetoast';
     import { useI18n } from 'vue-i18n';
 
-    import { TOAST_LIFE } from '@/constants';
+    import { useAppToast } from '@/composables/useAppToast';
+    import { useConfirmDialog } from '@/composables/useConfirmDialog';
     import { useMatchStore } from '@/stores/matchStore';
     import type { AppearanceWithName } from '@/types';
 
@@ -23,8 +16,8 @@
     const visible = defineModel<boolean>('visible');
 
     const { t } = useI18n();
-    const toast = useToast();
-    const confirm = useConfirm();
+    const toast = useAppToast();
+    const confirm = useConfirmDialog();
     const matchStore = useMatchStore();
 
     const goals = ref(0);
@@ -49,37 +42,27 @@
                 },
             );
 
-            toast.add({
-                severity: 'success',
-                summary: t('common.messages.success'),
-                detail: t('common.changesSaved'),
-                life: TOAST_LIFE,
-            });
+            toast.success(t('common.changesSaved'));
             closeDialog();
         } finally {
             loading.value = false;
         }
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (!appearance) return;
 
-        confirm.require({
+        const confirmed = await confirm({
+            title: t('player.deletePlayer'),
             message: t('match.deletePlayerConfirm', [appearance.playerName]),
-            header: t('player.deletePlayer'),
-            icon: 'pi pi-exclamation-triangle',
-            rejectLabel: t('common.cancel'),
-            acceptLabel: t('common.delete'),
-            acceptClass: 'p-button-danger',
-            accept: async () => {
-                await matchStore.deleteAppearance(
-                    seasonId,
-                    matchId,
-                    appearance.id,
-                );
-                closeDialog();
-            },
+            confirmLabel: t('common.delete'),
+            confirmColor: 'error',
         });
+
+        if (!confirmed) return;
+
+        await matchStore.deleteAppearance(seasonId, matchId, appearance.id);
+        closeDialog();
     };
 
     // Only sync on open, so a live goal landing elsewhere doesn't overwrite
@@ -92,63 +75,63 @@
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        class="w-md"
-        :header="appearance?.playerName"
-        :draggable="false"
-        modal
-        dismissable-mask
+    <UModal
+        v-model:open="visible"
+        :title="appearance?.playerName"
+        :ui="{ content: 'w-md' }"
     >
-        <div class="flex flex-col gap-4">
-            <div class="flex items-center justify-between gap-4">
-                <label for="goals">{{ $t('common.goal', 2) }}</label>
-                <InputNumber
-                    v-model.number="goals"
-                    input-id="goals"
-                    :min="0"
-                    show-buttons
-                    size="small"
-                />
-            </div>
+        <template #body>
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between gap-4">
+                    <label for="goals">{{ $t('common.goal', 2) }}</label>
+                    <UInputNumber
+                        id="goals"
+                        v-model="goals"
+                        :min="0"
+                        size="sm"
+                    />
+                </div>
 
-            <div class="flex items-center justify-between gap-4">
-                <label for="isGoalkeeper">{{ $t('player.wasKeeper') }}</label>
-                <ToggleSwitch
-                    v-model="isGoalkeeper"
-                    name="isGoalkeeper"
-                    input-id="isGoalkeeper"
-                />
-            </div>
+                <div class="flex items-center justify-between gap-4">
+                    <label for="isGoalkeeper">
+                        {{ $t('player.wasKeeper') }}
+                    </label>
+                    <USwitch
+                        id="isGoalkeeper"
+                        v-model="isGoalkeeper"
+                        name="isGoalkeeper"
+                    />
+                </div>
 
-            <div class="flex items-center justify-between gap-4">
-                <label for="delete">{{ $t('match.deletePlayer') }}</label>
-                <Button
-                    class="self-start"
-                    icon="pi pi-trash"
-                    severity="danger"
-                    variant="outlined"
-                    size="small"
-                    :aria-label="$t('match.deletePlayer')"
-                    @click="confirmDelete"
-                />
+                <div class="flex items-center justify-between gap-4">
+                    <label for="delete">{{ $t('match.deletePlayer') }}</label>
+                    <UButton
+                        class="self-start"
+                        color="error"
+                        icon="i-lucide-trash"
+                        size="sm"
+                        variant="outline"
+                        :aria-label="$t('match.deletePlayer')"
+                        @click="confirmDelete"
+                    />
+                </div>
             </div>
-        </div>
+        </template>
 
         <template #footer>
             <div class="flex w-full justify-between">
-                <Button
+                <UButton
+                    color="neutral"
                     :label="$t('common.cancel')"
-                    severity="secondary"
-                    text
+                    variant="ghost"
                     @click="closeDialog"
                 />
-                <Button
+                <UButton
                     :label="$t('common.save')"
                     :loading="loading"
                     @click="save"
                 />
             </div>
         </template>
-    </Dialog>
+    </UModal>
 </template>
