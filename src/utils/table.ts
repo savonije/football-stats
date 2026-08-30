@@ -3,7 +3,7 @@ import type { Column } from '@tanstack/vue-table';
 import { h } from 'vue';
 
 export const TABLE_UI = {
-    th: 'bg-[image:var(--gradient-table-header)] text-primary-800 font-bold tracking-[0.02em]',
+    th: 'bg-[image:var(--gradient-table-header)] text-primary-800 font-bold tracking-wide',
     tr: 'cursor-pointer transition-colors duration-150 even:bg-primary-50/40 hover:bg-primary-50',
     td: 'text-primary-900',
 };
