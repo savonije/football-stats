@@ -1,20 +1,14 @@
 <script setup lang="ts">
     import { watch } from 'vue';
 
-    withDefaults(
+    const { confirmColor = 'primary', icon = 'i-lucide-triangle-alert' } =
         defineProps<{
             title: string;
             message: string;
             confirmLabel?: string;
             confirmColor?: 'primary' | 'error';
             icon?: string;
-        }>(),
-        {
-            confirmLabel: undefined,
-            confirmColor: 'primary',
-            icon: 'i-lucide-triangle-alert',
-        },
-    );
+        }>();
 
     const open = defineModel<boolean>('open', { default: false });
 

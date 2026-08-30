@@ -1,12 +1,9 @@
 <script setup lang="ts">
-    withDefaults(
-        defineProps<{
-            label: string;
-            loading: boolean;
-            skeletonWidth?: string;
-        }>(),
-        { skeletonWidth: 'w-14' },
-    );
+    const { skeletonWidth = 'w-14' } = defineProps<{
+        label: string;
+        loading: boolean;
+        skeletonWidth?: string;
+    }>();
 </script>
 
 <template>
