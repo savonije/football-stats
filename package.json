@@ -61,5 +61,10 @@
         "vite-plugin-vue-devtools": "^8.2.1",
         "vue-router": "^5.2.0",
         "vue-tsc": "^3.3.11"
+    },
+    "overrides": {
+        "@ianvs/prettier-plugin-sort-imports": {
+            "@prettier/plugin-oxc": "$@prettier/plugin-oxc"
+        }
     }
 }
