@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { nl } from '@nuxt/ui/locale';
     import { Toast, ConfirmDialog } from 'primevue';
     import { RouterView } from 'vue-router';
 
@@ -16,13 +17,17 @@
 </script>
 
 <template>
-    <RouterView v-slot="{ Component, route }">
-        <component
-            :is="route.meta.layout === 'blank' ? BlankLayout : DefaultLayout"
-        >
-            <component :is="Component" />
-        </component>
-    </RouterView>
-    <ConfirmDialog />
-    <Toast />
+    <UApp :locale="nl">
+        <RouterView v-slot="{ Component, route }">
+            <component
+                :is="
+                    route.meta.layout === 'blank' ? BlankLayout : DefaultLayout
+                "
+            >
+                <component :is="Component" />
+            </component>
+        </RouterView>
+        <ConfirmDialog />
+        <Toast />
+    </UApp>
 </template>

@@ -1,15 +1,33 @@
 import { fileURLToPath, URL } from 'node:url'
 
+import ui from '@nuxt/ui/vite'
 import eslint from '@nabla/vite-plugin-eslint'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
-import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueJsx(), vueDevTools(), tailwindcss(), eslint()],
+  plugins: [
+    vue(),
+    vueJsx(),
+    vueDevTools(),
+    // `ui()` bundles @tailwindcss/vite, so that plugin is not registered separately.
+    ui({
+      autoImport: false,
+      // Bundle the icons actually used in source, so nothing is fetched from
+      // the Iconify API at runtime.
+      icon: { clientBundle: { scan: true } },
+      ui: {
+        colors: {
+          primary: 'primary',
+          neutral: 'slate',
+        },
+      },
+    }),
+    eslint(),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -1,6 +1,7 @@
 import '@/styles/main.css';
 import '@/config/dayjs';
 
+import ui from '@nuxt/ui/vue-plugin';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import { createPinia } from 'pinia';
@@ -79,6 +80,7 @@ app.use(Config, {
     },
 });
 
+app.use(ui);
 app.use(ToastService);
 app.use(i18n);
 app.use(router);

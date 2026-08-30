@@ -23,6 +23,8 @@
         "test": "playwright test"
     },
     "dependencies": {
+        "@iconify-json/lucide": "^1.2.126",
+        "@nuxt/ui": "^4.11.0",
         "@primeuix/themes": "^2.0.2",
         "@tailwindcss/vite": "^4.3.3",
         "dayjs": "^1.11.23",
