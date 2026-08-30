@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { computed } from 'vue';
-    import { Card, Skeleton } from 'primevue';
 
     import GoalsChart from '@/pages/players/_components/GoalsChart.vue';
     import { usePlayerAppearances } from '@/composables/usePlayerAppearances';
@@ -44,13 +43,12 @@
 </script>
 
 <template>
-    <Card>
-        <template #title>
+    <UCard>
+        <template #header>
             <h2>{{ $t('player.goalsTimeline') }}</h2>
         </template>
-        <template #content>
-            <Skeleton v-if="loading" height="160px" />
-            <GoalsChart v-else :data="goalsChartData" />
-        </template>
-    </Card>
+
+        <USkeleton v-if="loading" class="h-40 w-full" />
+        <GoalsChart v-else :data="goalsChartData" />
+    </UCard>
 </template>

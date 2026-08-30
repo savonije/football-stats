@@ -1,7 +1,5 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
-    import Button from 'primevue/button';
-    import Select from 'primevue/select';
     import { useI18n } from 'vue-i18n';
 
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -53,14 +51,14 @@
                             }}</span>
                         </h1>
                     </Router-Link>
-                    <Select
+                    <USelect
                         v-if="seasonStore.seasonsLoaded"
                         class="mt-1 text-xs!"
+                        label-key="id"
+                        :items="seasonStore.seasons"
                         :model-value="seasonStore.currentSeason"
-                        :options="seasonStore.seasons"
-                        option-label="id"
-                        option-value="id"
-                        size="small"
+                        size="sm"
+                        value-key="id"
                         @update:model-value="seasonStore.setSeason"
                     />
                     <span v-else class="text-xs text-white/70">{{
@@ -69,11 +67,11 @@
                 </div>
             </div>
 
-            <Button
-                class="hover:text-primary-300! text-white! hover:bg-white/10!"
-                icon="pi pi-bars"
-                text
-                rounded
+            <UButton
+                class="hover:text-primary-300! rounded-full text-white! hover:bg-white/10!"
+                color="neutral"
+                icon="i-lucide-menu"
+                variant="ghost"
                 :aria-label="t('common.menu')"
                 @click="navDrawer?.open()"
             />

@@ -1,14 +1,9 @@
-<script lang="ts" setup>
-    import { ProgressSpinner } from 'primevue';
-</script>
-
 <template>
-    <ProgressSpinner
-        style="width: 50px; height: 50px"
-        strokeWidth="4"
-        fill="transparent"
-        animationDuration=".5s"
+    <UIcon
+        class="text-primary-500 size-12 animate-spin"
+        name="i-lucide-loader-circle"
+        role="status"
         :aria-label="$t('common.loadingData')"
+        data-testid="progress-spinner"
     />
 </template>
->

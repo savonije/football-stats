@@ -18,7 +18,7 @@
             aria-hidden="true"
             :style="{ background: gradient }"
         >
-            <i :class="icon" />
+            <UIcon :name="icon" />
         </span>
         <span class="text-primary-500 flex-1 text-sm font-medium">
             {{ label }}
