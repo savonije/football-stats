@@ -127,7 +127,7 @@
     <div class="mb-4 flex justify-end">
         <UInput
             v-model="globalFilter"
-            class="w-full sm:w-64"
+            class="w-full"
             icon="i-lucide-search"
             :placeholder="t('common.searchOpponent')"
         />
