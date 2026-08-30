@@ -19,7 +19,7 @@
 
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
 
-    import { hasStarted } from '@/utils/match';
+    import { isPlayed } from '@/utils/match';
 
     import { useI18n } from 'vue-i18n';
 
@@ -138,7 +138,7 @@
                 <span
                     class="font-bold"
                     :class="
-                        hasStarted(data) && data.result
+                        isPlayed(data) && data.result
                             ? data.result.goalsFor > data.result.goalsAgainst
                                 ? 'text-green-700'
                                 : data.result.goalsFor <
@@ -149,7 +149,7 @@
                     "
                 >
                     {{
-                        hasStarted(data) && data.result
+                        isPlayed(data) && data.result
                             ? `${data.result.goalsFor}-${data.result.goalsAgainst}`
                             : '-'
                     }}
