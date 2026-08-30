@@ -14,6 +14,7 @@
     import type { Match } from '@/types';
     import { hasStarted } from '@/utils/match';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
+    import { isPlayed } from '@/utils/match';
 
     import { useI18n } from 'vue-i18n';
 
@@ -175,7 +176,7 @@
             <template #result-cell="{ row }">
                 <span class="font-bold" :class="resultClass(row.original)">
                     {{
-                        hasStarted(row.original) && row.original.result
+                        isPlayed(row.original) && row.original.result
                             ? `${row.original.result.goalsFor}-${row.original.result.goalsAgainst}`
                             : '-'
                     }}

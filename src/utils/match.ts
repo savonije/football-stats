@@ -9,6 +9,14 @@ export const hasStarted = (
     match: Pick<Match, 'startTime'> | null | undefined,
 ): boolean => !!match?.startTime;
 
+/**
+ * A match has a score to show once it has been played. Matches scored without
+ * ever starting the timer never get a `startTime`, so `ended` counts too.
+ */
+export const isPlayed = (
+    match: Pick<Match, 'startTime' | 'ended'> | null | undefined,
+): boolean => hasStarted(match) || !!match?.ended;
+
 type TimedMatch = Pick<
     Match,
     'startTime' | 'paused' | 'pausedAt' | 'pausedDuration' | 'half'
