@@ -6,6 +6,7 @@
     import { useAppToast } from '@/composables/useAppToast';
     import { useMatchStore } from '@/stores/matchStore';
     import type { Match } from '@/types';
+    import DatePicker from '@/components/ui/DatePicker.vue';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
 
     const { seasonId, match } = defineProps<{
@@ -92,13 +93,7 @@
 
                 <div>
                     <label for="date">{{ t('common.date') }}</label>
-                    <UInputDate
-                        id="date"
-                        v-model="date"
-                        class="w-full"
-                        icon="i-lucide-calendar"
-                        data-testid="date-input"
-                    />
+                    <DatePicker id="date" v-model="date" />
                 </div>
 
                 <div>

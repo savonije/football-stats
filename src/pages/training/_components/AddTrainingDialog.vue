@@ -8,6 +8,7 @@
     import { useAppToast } from '@/composables/useAppToast';
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import DatePicker from '@/components/ui/DatePicker.vue';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
 
     const model = defineModel<boolean>('visible');
@@ -77,13 +78,7 @@
                     <label for="trainingDate">
                         {{ t('training.selectDate') }}
                     </label>
-                    <UInputDate
-                        id="trainingDate"
-                        v-model="date"
-                        class="w-full"
-                        icon="i-lucide-calendar"
-                        data-testid="date-input"
-                    />
+                    <DatePicker id="trainingDate" v-model="date" />
                 </div>
 
                 <UAlert

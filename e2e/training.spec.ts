@@ -61,13 +61,17 @@ const addTrainingForDay = async (page: Page, day: number) => {
 
     const dialog = page.getByRole('dialog', { name: 'Training toevoegen' });
 
-    const daySegment = dialog
-        .locator('[data-testid="date-input"]')
-        .locator('[data-reka-date-field-segment="day"]');
+    await dialog.locator('[data-testid="date-input"]').click();
 
-    await daySegment.click();
-    await page.keyboard.type(String(day));
-    await expect(daySegment).toHaveText(String(day));
+    const now = new Date();
+    const value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+    await page
+        .locator(`[data-reka-calendar-cell-trigger][data-value="${value}"]`)
+        .click();
+    await expect(dialog.locator('[data-testid="date-input"]')).toContainText(
+        String(day).padStart(2, '0'),
+    );
 
     await dialog.getByRole('button', { name: 'Training toevoegen' }).click();
     await expect(dialog).toBeHidden();

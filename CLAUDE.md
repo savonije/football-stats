@@ -34,7 +34,7 @@ Selectors lean on roles and labels, with a `data-testid` where nothing else fits
 
 - `UTable` sets `role="button"` on a row whenever `@select` is bound, which replaces the implicit `role="row"`. Match `tbody tr` directly rather than `getByRole('row')` for data rows.
 - `UTabs` (used as a segmented control for the attendance period) is `role="tab"` with `aria-selected`, not a pressed button.
-- `UInputDate` is a segmented field, not a text input: each part is a `role="spinbutton"` carrying `data-reka-date-field-segment="day|month|year"`. Click the segment and type digits — they auto-advance.
+- Dates go through `src/components/ui/DatePicker.vue` (a `UPopover` + `UCalendar`), not `UInputDate` — the segmented spinbutton field reads nothing like the rest of the forms. Click its `[data-testid="date-input"]` trigger, then the day: every cell carries an exact `data-value="YYYY-MM-DD"`, so there is no month-boundary ambiguity to work around.
 - `role="alertdialog"` cannot be set as a plain attribute on `UModal`; Reka hardcodes `role="dialog"` on the content element. Pass it through the `content` prop (`:content="{ role: 'alertdialog' }"`), which is how `acceptConfirm()` still finds the confirm dialog without colliding with the dialog underneath.
 
 The global test timeout is raised to 90s: an authenticated spec spends several seconds on Firebase round trips before it reaches the feature under test, which overruns Playwright's 30s default under parallel workers.
