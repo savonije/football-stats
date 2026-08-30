@@ -79,7 +79,7 @@
 
     <section
         v-if="authStore.user"
-        class="mt-8"
+        class="mt-20"
         aria-labelledby="attendance-overview"
     >
         <h2
