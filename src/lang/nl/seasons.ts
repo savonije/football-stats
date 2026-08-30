@@ -16,7 +16,8 @@ export default {
     messages: {
         seasonAdded: 'Seizoen toegevoegd',
         saveError: 'Opslaan is mislukt',
-        invalidHalfDuration: 'Vul een geldige speelduur in (1-60 minuten)',
+        invalidHalfDuration:
+            'Vul een geldige speelduur in ({min}-{max} minuten)',
         seasonExists: 'Dit seizoen bestaat al',
         activeChanged: 'Actief seizoen gewijzigd',
         teamNameChanged: 'Teamnaam opgeslagen',

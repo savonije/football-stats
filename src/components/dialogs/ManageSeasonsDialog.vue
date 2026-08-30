@@ -4,7 +4,11 @@
 
     import { useAppToast } from '@/composables/useAppToast';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { DEFAULT_HALF_DURATION_MINUTES } from '@/constants';
+    import {
+        DEFAULT_HALF_DURATION_MINUTES,
+        MAX_HALF_DURATION_MINUTES,
+        MIN_HALF_DURATION_MINUTES,
+    } from '@/constants';
 
     const model = defineModel<boolean>('visible');
     const seasonStore = useSeasonStore();
@@ -39,8 +43,20 @@
     const saveSettings = async () => {
         if (!selectedId.value) return;
 
-        if (form.halfDurationMinutes == null || form.halfDurationMinutes <= 0) {
-            toast.warn(t('seasons.messages.invalidHalfDuration'));
+        const halfDuration = form.halfDurationMinutes;
+
+        if (
+            halfDuration == null ||
+            !Number.isInteger(halfDuration) ||
+            halfDuration < MIN_HALF_DURATION_MINUTES ||
+            halfDuration > MAX_HALF_DURATION_MINUTES
+        ) {
+            toast.warn(
+                t('seasons.messages.invalidHalfDuration', {
+                    min: MIN_HALF_DURATION_MINUTES,
+                    max: MAX_HALF_DURATION_MINUTES,
+                }),
+            );
             return;
         }
 
@@ -48,7 +64,7 @@
         try {
             await seasonStore.updateSeasonSettings(selectedId.value, {
                 teamname: form.teamname,
-                halfDurationMinutes: form.halfDurationMinutes,
+                halfDurationMinutes: halfDuration,
             });
             toast.success(t('seasons.messages.settingsSaved'));
             model.value = false;
@@ -76,7 +92,9 @@
     const addSeason = async () => {
         const id = newSeason.value.trim();
 
-        if (!/^\d{4}-\d{4}$/.test(id)) {
+        const years = /^(\d{4})-(\d{4})$/.exec(id);
+
+        if (!years || Number(years[2]) !== Number(years[1]) + 1) {
             toast.warn(t('seasons.messages.invalidFormat'));
             return;
         }
@@ -200,8 +218,8 @@
                             <UInputNumber
                                 v-model="form.halfDurationMinutes"
                                 class="w-full"
-                                :max="60"
-                                :min="1"
+                                :max="MAX_HALF_DURATION_MINUTES"
+                                :min="MIN_HALF_DURATION_MINUTES"
                                 :placeholder="
                                     t('seasons.halfDurationPlaceholder')
                                 "
