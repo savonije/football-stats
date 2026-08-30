@@ -16,7 +16,13 @@
 </script>
 
 <template>
-    <UApp :locale="nl" :toaster="{ ui: { viewport: 'max-w-[90%]' } }">
+    <UApp
+        :locale="nl"
+        :toaster="{
+            position: 'top-right',
+            ui: { viewport: 'max-w-[90%]' },
+        }"
+    >
         <RouterView v-slot="{ Component, route }">
             <component
                 :is="
