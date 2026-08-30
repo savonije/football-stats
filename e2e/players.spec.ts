@@ -14,7 +14,7 @@ test.describe('Players page', () => {
   test('shows loading state or player list', async ({ page }) => {
     await page.goto('/players')
     const playerList = page.locator('.player-list, [data-testid="player-list"]')
-    const spinner = page.locator('.p-progressspinner, [aria-label="Loading"]')
+    const spinner = page.locator('[data-testid="progress-spinner"]')
     const noPlayersMsg = page.getByText('Geen spelers gevonden...')
 
     await expect(playerList.or(spinner).or(noPlayersMsg).first()).toBeVisible({ timeout: 5000 })

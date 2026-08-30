@@ -122,6 +122,7 @@
                         v-model="date"
                         class="w-full"
                         icon="i-lucide-calendar"
+                        data-testid="date-input"
                     />
                 </div>
 

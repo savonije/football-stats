@@ -61,20 +61,16 @@ const addTrainingForDay = async (page: Page, day: number) => {
 
     const dialog = page.getByRole('dialog', { name: 'Training toevoegen' });
 
-    // The panel overlays the whole dialog, so pick the day inside it;
-    // selecting a date closes it again.
-    const picker = page.locator('[data-pc-section="panel"]');
-    await dialog.getByLabel('Datum').click();
-    await expect(picker).toBeVisible();
+    // UInputDate is a segmented field, not a text input: focus the day
+    // segment and type it. The field already defaults to today, so only the
+    // day needs changing, and each digit auto-advances the focus.
+    const daySegment = dialog
+        .locator('[data-testid="date-input"]')
+        .locator('[data-reka-date-field-segment="day"]');
 
-    // Neighbouring months share the aria-label, and only they carry
-    // data-p-other-month.
-    await picker
-        .locator(
-            `[data-pc-section="daycell"][aria-label="${day}"]:not([data-p-other-month="true"])`,
-        )
-        .click();
-    await expect(picker).toBeHidden();
+    await daySegment.click();
+    await page.keyboard.type(String(day));
+    await expect(daySegment).toHaveText(String(day));
 
     await dialog.getByRole('button', { name: 'Training toevoegen' }).click();
     await expect(dialog).toBeHidden();
@@ -212,12 +208,12 @@ test.describe('Trainings', () => {
 
         const region = attendanceRegion(viewer);
         await expect(region).toBeVisible({ timeout: 15_000 });
-        await region
-            .getByRole('button', { name: 'Maand', exact: true })
-            .click();
+        await region.getByRole('tab', { name: 'Maand', exact: true }).click();
 
+        // UTable gives a selectable row role="button" rather than "row", so
+        // match the <tr> itself instead of going through the row role.
         const playerRow = region
-            .getByRole('row')
+            .locator('tbody tr')
             .filter({ has: viewer.getByRole('cell', { name: playerName }) });
         const attended = playerRow.getByRole('cell').nth(1);
 
@@ -273,27 +269,23 @@ test.describe('Training attendance table', () => {
         const previous = region.getByRole('button', { name: 'Vorige maand' });
 
         await expect(
-            region.getByRole('button', { name: 'Totaal', exact: true }),
-        ).toHaveAttribute('aria-pressed', 'true');
+            region.getByRole('tab', { name: 'Totaal', exact: true }),
+        ).toHaveAttribute('aria-selected', 'true');
         await expect(previous).toBeHidden();
 
-        await region
-            .getByRole('button', { name: 'Maand', exact: true })
-            .click();
+        await region.getByRole('tab', { name: 'Maand', exact: true }).click();
         await expect(previous).toBeVisible();
         await expect(
             region.getByRole('button', { name: 'Vandaag' }),
         ).toBeVisible();
 
-        await region.getByRole('button', { name: 'Week', exact: true }).click();
+        await region.getByRole('tab', { name: 'Week', exact: true }).click();
         await expect(previous).toBeHidden();
         await expect(
             region.getByRole('button', { name: 'Vorige week' }),
         ).toBeVisible();
 
-        await region
-            .getByRole('button', { name: 'Totaal', exact: true })
-            .click();
+        await region.getByRole('tab', { name: 'Totaal', exact: true }).click();
         await expect(
             region.getByRole('button', { name: 'Vorige week' }),
         ).toBeHidden();
@@ -308,7 +300,7 @@ test.describe('Training attendance table', () => {
         });
 
         // Anything ahead of today has no attendance to report on yet.
-        await region.getByRole('button', { name: 'Week', exact: true }).click();
+        await region.getByRole('tab', { name: 'Week', exact: true }).click();
         await expect(nextWeek).toBeDisabled();
 
         await region.getByRole('button', { name: 'Vorige week' }).click();
@@ -317,9 +309,7 @@ test.describe('Training attendance table', () => {
         await nextWeek.click();
         await expect(nextWeek).toBeDisabled();
 
-        await region
-            .getByRole('button', { name: 'Maand', exact: true })
-            .click();
+        await region.getByRole('tab', { name: 'Maand', exact: true }).click();
         // A week can straddle two months, so return to today before asserting.
         await region.getByRole('button', { name: 'Vandaag' }).click();
         await expect(
