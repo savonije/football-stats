@@ -120,7 +120,11 @@
         debounce: SEARCH_DEBOUNCE_MS,
     });
 
-    watch(globalFilter, () => (pagination.value.pageIndex = 0));
+    const goToPage = (page: number) => {
+        pagination.value = { ...pagination.value, pageIndex: page - 1 };
+    };
+
+    watch(globalFilter, () => goToPage(1));
 
     const onSelect = (_event: Event, row: TableRow<Match>) => {
         router.push({ name: 'matchDetail', params: { id: row.original.id } });
@@ -217,7 +221,7 @@
                 :items-per-page="pagination.pageSize"
                 :page="pagination.pageIndex + 1"
                 :total="filteredCount"
-                @update:page="pagination.pageIndex = $event - 1"
+                @update:page="goToPage"
             />
         </div>
     </template>

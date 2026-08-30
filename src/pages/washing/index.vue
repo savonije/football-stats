@@ -100,6 +100,13 @@
     const countSorting = ref([{ id: 'count', desc: true }]);
     const schedulePagination = ref({ pageIndex: 0, pageSize: 10 });
 
+    const goToSchedulePage = (page: number) => {
+        schedulePagination.value = {
+            ...schedulePagination.value,
+            pageIndex: page - 1,
+        };
+    };
+
     const onCountSelect = (_event: Event, row: TableRow<CountRow>) => {
         router.push({ name: 'playerDetail', params: { id: row.original.id } });
     };
@@ -190,7 +197,7 @@
                 :items-per-page="schedulePagination.pageSize"
                 :page="schedulePagination.pageIndex + 1"
                 :total="scheduleRows.length"
-                @update:page="schedulePagination.pageIndex = $event - 1"
+                @update:page="goToSchedulePage"
             />
         </div>
     </div>
