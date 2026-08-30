@@ -4,6 +4,7 @@
     import Tile from '@/pages/players/_components/Tile.vue';
     import StatProgressBar from '@/pages/players/_components/StatProgressBar.vue';
     import { useTrainingStore } from '@/stores/trainingStore';
+    import { attendancePercentage } from '@/utils/training';
 
     const { playerId, loading } = defineProps<{
         playerId: string;
@@ -12,25 +13,9 @@
 
     const trainingStore = useTrainingStore();
 
-    // Only trainings that were actually held count: cancelled ones and any
-    // still in the future are left out of the total.
-    const activeTrainings = computed(() => {
-        const now = Date.now() / 1000;
-        return trainingStore.trainings.filter(
-            (training) =>
-                !training.cancelled && (training.date?.seconds ?? 0) <= now,
-        );
-    });
-
-    const trainingAttendancePercentage = computed(() => {
-        const totalTrainings = activeTrainings.value.length;
-        if (totalTrainings === 0) return 0;
-
-        const attended = activeTrainings.value.filter((training) =>
-            (training.presentPlayerIds ?? []).includes(playerId),
-        ).length;
-        return Math.round((attended / totalTrainings) * 100);
-    });
+    const trainingAttendancePercentage = computed(() =>
+        attendancePercentage(playerId, trainingStore.trainings),
+    );
 </script>
 
 <template>
