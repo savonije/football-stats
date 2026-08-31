@@ -141,8 +141,11 @@ across the app; step up (`w-lg`, `w-2xl`, …) only when the content genuinely n
 <UModal :ui="{ content: 'w-[400px]' }" />
 ```
 
-Don't add responsive variants for the small-screen case — `ui.modal.slots.content`
-in `vite.config.ts` already caps every modal at `max-w-[95%]`.
+Don't add responsive variants for the small-screen case — `vite.config.ts` already
+caps every modal at `max-w-[calc(100vw-2rem)]`. That cap lives in
+`ui.modal.variants.fullscreen.false.content`, not in `slots.content`: the Nuxt UI
+theme puts its own `max-w-lg` on that same variant, and tailwind-merge keeps the
+later class, so a cap set on the base slot is silently dropped.
 
 ## 6. Component styles vs. global styles vs. Nuxt UI overrides
 
