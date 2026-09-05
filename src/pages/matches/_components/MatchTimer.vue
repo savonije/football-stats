@@ -79,9 +79,39 @@
 </script>
 
 <template>
-    <div class="relative flex items-center gap-4 p-5 sm:justify-center">
-        <div class="size-16 shrink-0 sm:size-34">
-            <svg class="size-full -rotate-90" viewBox="0 0 136 136">
+    <div class="flex flex-col gap-3 p-5 sm:items-center sm:justify-center">
+        <UBadge
+            v-if="isRunning"
+            class="tracking-badge text-xxs gap-1.5 self-start font-bold uppercase"
+            color="error"
+            variant="subtle"
+        >
+            <span class="relative flex size-1.5">
+                <span
+                    class="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75"
+                    aria-hidden="true"
+                />
+                <span
+                    class="relative inline-flex size-1.5 rounded-full bg-red-500"
+                />
+            </span>
+            {{ t('match.live') }}
+        </UBadge>
+
+        <UBadge
+            v-else-if="isPaused"
+            class="tracking-badge text-xxs self-start font-bold uppercase"
+            color="warning"
+            icon="i-lucide-pause"
+            :label="t('match.paused')"
+            variant="subtle"
+        />
+
+        <div class="flex items-center gap-4 sm:relative sm:block sm:size-34">
+            <svg
+                class="size-16 shrink-0 -rotate-90 sm:size-full"
+                viewBox="0 0 136 136"
+            >
                 <circle
                     class="stroke-primary-100"
                     cx="68"
@@ -103,52 +133,25 @@
                     stroke-width="10"
                 />
             </svg>
-        </div>
 
-        <div
-            class="flex flex-col sm:absolute sm:inset-0 sm:items-center sm:justify-center"
-        >
-            <span
-                class="text-2xl leading-none font-black tabular-nums sm:text-3xl"
-                :class="overtime ? 'text-red-600' : 'text-primary-900'"
-                :data-testid="isEnded ? 'match-final-time' : 'match-clock'"
+            <div
+                class="flex flex-col sm:absolute sm:inset-0 sm:items-center sm:justify-center"
             >
-                {{ duration }}
-            </span>
-
-            <span
-                class="text-xxs tracking-badge text-primary-400 mt-1.5 font-bold uppercase"
-                data-testid="match-status"
-            >
-                {{ statusLabel }}
-            </span>
-
-            <UBadge
-                v-if="isRunning"
-                class="tracking-badge text-xxs mt-2 gap-1.5 font-bold uppercase sm:absolute sm:top-4 sm:left-4"
-                color="error"
-                variant="subtle"
-            >
-                <span class="relative flex size-1.5">
-                    <span
-                        class="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75"
-                        aria-hidden="true"
-                    />
-                    <span
-                        class="relative inline-flex size-1.5 rounded-full bg-red-500"
-                    />
+                <span
+                    class="text-2xl leading-none font-black tabular-nums sm:text-3xl"
+                    :class="overtime ? 'text-red-600' : 'text-primary-900'"
+                    :data-testid="isEnded ? 'match-final-time' : 'match-clock'"
+                >
+                    {{ duration }}
                 </span>
-                {{ t('match.live') }}
-            </UBadge>
 
-            <UBadge
-                v-else-if="isPaused"
-                class="tracking-badge text-xxs mt-2 font-bold uppercase sm:absolute sm:top-4 sm:left-4"
-                color="warning"
-                icon="i-lucide-pause"
-                :label="t('match.isPaused')"
-                variant="subtle"
-            />
+                <span
+                    class="text-xxs tracking-badge text-primary-400 mt-1.5 font-bold uppercase"
+                    data-testid="match-status"
+                >
+                    {{ statusLabel }}
+                </span>
+            </div>
         </div>
     </div>
 </template>

@@ -47,6 +47,7 @@ export default {
     noScoreYet: 'Nog niet begonnen',
     notStarted: 'Nog niet gestart',
     played: 'Gespeeld',
+    paused: 'Gepauzeerd',
     playersPresent: '{count} aanwezig',
     readyToKickOff: 'Klaar voor de aftrap',
     recentResults: 'Recente resultaten',
