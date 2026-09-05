@@ -1,57 +1,36 @@
 <script setup lang="ts">
-    import { computed } from 'vue';
     import dayjs from 'dayjs';
+    import { computed } from 'vue';
 
-    import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
-    import ScoreBox from '@/pages/matches/_components/ScoreBox.vue';
     import { CLUBNAME } from '@/constants';
+    import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
     import type { Match } from '@/types';
-    import { isPlayed } from '@/utils/match';
 
-    const props = defineProps<{ match: Match | null }>();
+    const { match } = defineProps<{ match: Match }>();
 
-    const homeClass = computed(() =>
-        props.match?.home ? 'flex-row' : 'flex-row-reverse',
+    /** The home side is named first, which is what says home or away. */
+    const title = computed(() =>
+        match.home
+            ? `${CLUBNAME} - ${match.opponent}`
+            : `${match.opponent} - ${CLUBNAME}`,
     );
 </script>
 
 <template>
-    <div v-if="props.match">
-        <div class="flex items-center justify-between gap-2">
-            <h1
-                class="text-primary mb-0 flex inline-flex items-center gap-2 text-xl sm:text-3xl"
-                :class="homeClass"
-            >
-                <span>{{ CLUBNAME }}</span>
-                <span> - </span>
-                <span>{{ props.match?.opponent }}</span>
+    <div class="mb-4 flex items-start justify-between gap-3">
+        <div class="min-w-0">
+            <h1 class="text-primary mb-0 text-2xl sm:text-3xl">
+                {{ title }}
             </h1>
 
-            <MatchActionsMenu :match="props.match" />
+            <div
+                v-if="match.date"
+                class="text-primary-400 mt-1.5 text-sm font-medium"
+            >
+                {{ dayjs(match.date.toDate()).format('D MMMM YYYY') }}
+            </div>
         </div>
 
-        <div v-if="props.match?.date" class="text-sm text-gray-600">
-            {{ dayjs(props.match.date.toDate()).format('D MMMM YYYY') }}
-        </div>
-
-        <div
-            v-if="isPlayed(props.match)"
-            class="my-12 flex items-center justify-center gap-3"
-            :class="homeClass"
-        >
-            <ScoreBox
-                :match="props.match"
-                type="for"
-                :reversed="props.match?.home"
-            />
-
-            <div class="text-2xl font-bold">-</div>
-
-            <ScoreBox
-                :match="props.match"
-                type="against"
-                :reversed="!props.match?.home"
-            />
-        </div>
+        <MatchActionsMenu :match="match" />
     </div>
 </template>

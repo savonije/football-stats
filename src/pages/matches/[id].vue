@@ -1,18 +1,20 @@
 <script setup lang="ts">
-    import { ref, computed, onMounted } from 'vue';
-    import { useMatchStore } from '@/stores/matchStore';
-    import { useSeasonStore } from '@/stores/seasonStore';
-    import { useCanEdit } from '@/composables/useCanEdit';
+    import { computed, onMounted, ref } from 'vue';
+    import { useI18n } from 'vue-i18n';
     import { useRoute } from 'vue-router';
 
-    import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
-    import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
-    import PlayerAppearanceItem from '@/pages/matches/_components/PlayerAppearanceItem.vue';
-    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
-    import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
+    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
+    import { useCanEdit } from '@/composables/useCanEdit';
+    import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
+    import MatchControls from '@/pages/matches/_components/MatchControls.vue';
+    import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
+    import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
+    import PlayerAppearanceItem from '@/pages/matches/_components/PlayerAppearanceItem.vue';
+    import ScoreBoard from '@/pages/matches/_components/ScoreBoard.vue';
+    import { useMatchStore } from '@/stores/matchStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
     import type { AppearanceWithName } from '@/types';
-    import { useI18n } from 'vue-i18n';
 
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
@@ -50,21 +52,41 @@
 <template>
     <AppBreadcrumb :label="matchStore.selectedMatch?.opponent" />
 
-    <div
-        v-if="matchStore.selectedMatch"
-        class="mx-auto w-200 max-w-full sm:p-4"
-    >
+    <div v-if="matchStore.selectedMatch" class="mx-auto w-200 max-w-full">
         <MatchHeader :match="matchStore.selectedMatch" />
 
-        <MatchTimer :season-id="seasonStore.currentSeason" />
+        <div
+            class="shadow-card rounded-xl bg-white sm:grid sm:grid-cols-3 sm:gap-4 sm:rounded-none sm:bg-transparent sm:shadow-none"
+        >
+            <ScoreBoard
+                class="sm:shadow-card sm:col-span-2 sm:rounded-xl sm:bg-white"
+                :match="matchStore.selectedMatch"
+            />
 
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="mb-2 text-xl font-semibold">
-                {{ t('player.player', 2) }}
-            </h2>
+            <MatchTimer
+                class="border-primary-100 sm:shadow-card border-t sm:rounded-xl sm:border-t-0 sm:bg-white"
+            />
         </div>
 
-        <div class="space-y-4">
+        <MatchControls :season-id="seasonStore.currentSeason" />
+
+        <div class="mt-8 mb-4 flex items-baseline justify-between gap-3">
+            <h2 class="mb-0 text-xl">
+                {{ t('player.player', 2) }}
+            </h2>
+
+            <span
+                class="tracking-label text-primary-400 text-xs font-bold uppercase"
+            >
+                {{
+                    t('match.playersPresent', {
+                        count: appearancesWithName.length,
+                    })
+                }}
+            </span>
+        </div>
+
+        <div class="space-y-3">
             <PlayerAppearanceItem
                 v-for="appearance in appearancesWithName"
                 :key="appearance.id"
@@ -83,10 +105,7 @@
         />
     </div>
 
-    <div
-        v-else-if="!matchStore.appearancesLoaded"
-        class="justify-content-center flex"
-    >
+    <div v-else-if="!matchStore.appearancesLoaded" class="flex justify-center">
         <ProgressSpinner />
     </div>
 </template>

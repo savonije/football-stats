@@ -8,6 +8,7 @@ export default {
     editPlayer: 'Speler bewerken',
     guestPlayer: 'Gastspeler',
     goalsTimeline: 'Doelpunten tijdlijn',
+    keeper: 'Keeper',
     noMatchData: 'Geen wedstrijddata beschikbaar',
     noPlayers: 'Geen spelers gevonden...',
     messages: {

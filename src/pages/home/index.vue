@@ -32,9 +32,9 @@
 
 <template>
     <div class="grid gap-16">
-        <template class="md:w-1/3">
+        <div class="md:w-1/3">
             <LiveMatchWidget />
-        </template>
+        </div>
 
         <section
             v-if="recentMatchData.length > 0"

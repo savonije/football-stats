@@ -181,10 +181,14 @@ export const useMatchStore = defineStore('matchStore', {
 
         endMatch(seasonId: string, matchId: string) {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+
+            // Pausing on the final whistle freezes the clock, so the match
+            // detail can show what it finished on instead of counting forever.
             return updateDoc(matchRef, {
                 ended: true,
                 running: false,
-                paused: false,
+                paused: true,
+                pausedAt: Date.now(),
                 halfTime: false,
             });
         },
