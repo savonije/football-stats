@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { useToast } from '@nuxt/ui/composables/useToast';
     import type { Match } from '@/types';
-    import { useStoreAuth } from '@/stores/authStore';
+    import { useCanEdit } from '@/composables/useCanEdit';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useI18n } from 'vue-i18n';
@@ -16,7 +16,7 @@
 
     const modal = defineModel<boolean>('visible');
 
-    const authStore = useStoreAuth();
+    const canEdit = useCanEdit();
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
     const playerStore = usePlayerStore();
@@ -93,11 +93,7 @@
 <template>
     <div class="flex" :class="reversed ? 'flex-row' : 'flex-row-reverse'">
         <div
-            v-if="
-                authStore.user?.id &&
-                seasonStore.isCurrentSeasonActive &&
-                !match.ended
-            "
+            v-if="canEdit && !match.ended"
             class="mx-6 flex flex-col justify-between gap-3"
         >
             <UButton

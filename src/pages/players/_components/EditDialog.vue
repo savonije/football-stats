@@ -3,7 +3,7 @@
     import { useI18n } from 'vue-i18n';
 
     import { useAppToast } from '@/composables/useAppToast';
-    import { useStoreAuth } from '@/stores/authStore';
+    import { useIsAdmin } from '@/composables/useIsAdmin';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
@@ -14,7 +14,7 @@
 
     const { t } = useI18n();
     const toast = useAppToast();
-    const authStore = useStoreAuth();
+    const isAdmin = useIsAdmin();
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
 
@@ -66,7 +66,7 @@
 
 <template>
     <UModal
-        v-if="authStore.user?.id"
+        v-if="isAdmin"
         v-model:open="visible"
         :title="t('player.editPlayer')"
         :ui="{ content: 'w-md' }"

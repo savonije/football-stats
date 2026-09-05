@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { computed } from 'vue';
 
-    import { useStoreAuth } from '@/stores/authStore';
+    import { useIsAdmin } from '@/composables/useIsAdmin';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
     import { isGuestInSeason } from '@/utils/playerSeason';
@@ -13,7 +13,7 @@
 
     defineEmits<{ edit: [] }>();
 
-    const authStore = useStoreAuth();
+    const isAdmin = useIsAdmin();
     const seasonStore = useSeasonStore();
 
     const isGuest = computed(() =>
@@ -57,7 +57,7 @@
             </div>
 
             <UButton
-                v-if="player && authStore.user?.id"
+                v-if="player && isAdmin"
                 class="shrink-0 border-white/30! bg-white/12! px-2! text-white! hover:border-white/50! hover:bg-white/22! sm:px-4!"
                 color="neutral"
                 icon="i-lucide-pencil"

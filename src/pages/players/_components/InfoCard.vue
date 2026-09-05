@@ -2,7 +2,7 @@
     import { computed } from 'vue';
 
     import InfoRow from '@/pages/players/_components/InfoRow.vue';
-    import { useStoreAuth } from '@/stores/authStore';
+    import { useIsAdmin } from '@/composables/useIsAdmin';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
     import { isGuestInSeason } from '@/utils/playerSeason';
@@ -12,7 +12,7 @@
         loading: boolean;
     }>();
 
-    const authStore = useStoreAuth();
+    const isAdmin = useIsAdmin();
     const seasonStore = useSeasonStore();
 
     const isGuest = computed(() =>
@@ -21,7 +21,7 @@
 </script>
 
 <template>
-    <UCard v-if="authStore.user?.id">
+    <UCard v-if="isAdmin">
         <template #header>
             <h2>{{ $t('player.playerInfo') }}</h2>
         </template>
