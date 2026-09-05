@@ -6,6 +6,27 @@ const STAGING_PROJECT_ID =
 const email = process.env.E2E_EMAIL ?? '';
 const password = process.env.E2E_PASSWORD ?? '';
 
+const requiredFirebaseEnv = [
+    'VITE_FIREBASE_APIKEY',
+    'VITE_FIREBASE_APP_ID',
+    'VITE_FIREBASE_AUTH_DOMAIN',
+    'VITE_FIREBASE_MESSAGE_SENDER_ID',
+    'VITE_FIREBASE_PROJECT_ID',
+    'VITE_FIREBASE_STORAGE_BUCKET',
+    'VITE_CLUBNAME',
+];
+
+const missingFirebaseEnv = requiredFirebaseEnv.filter((name) => {
+    const value = process.env[name];
+    return value === undefined || value === '';
+});
+
+export const skipWithoutFirebaseConfig = () =>
+    test.skip(
+        missingFirebaseEnv.length > 0,
+        `Set ${missingFirebaseEnv.join(', ')} to run specs that boot the app.`,
+    );
+
 export const skipWithoutCredentials = () =>
     test.skip(
         !email || !password,

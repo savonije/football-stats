@@ -6,6 +6,7 @@ import {
     createMatch,
     deleteMatch,
     login,
+    skipWithoutFirebaseConfig,
     skipWithoutCredentials,
     skipWithoutEditableSeason,
     uniqueLabel,
@@ -15,6 +16,7 @@ test.describe('Match players', () => {
     let matchUrl = '';
 
     test.beforeEach(async ({ page }) => {
+        skipWithoutFirebaseConfig();
         skipWithoutCredentials();
         await login(page);
         await skipWithoutEditableSeason(page);
