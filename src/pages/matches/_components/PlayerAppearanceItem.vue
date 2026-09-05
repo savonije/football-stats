@@ -32,7 +32,7 @@
                 :title="$t('common.goal', 2)"
                 data-testid="appearance-goals"
             >
-                <UIcon class="size-4" name="i-lucide-goal" />
+                <UIcon class="size-4" name="i-lucide-volleyball" />
                 {{ appearance.goals }}
             </span>
 
