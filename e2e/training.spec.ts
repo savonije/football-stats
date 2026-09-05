@@ -2,6 +2,7 @@ import {
     becomesVisible,
     deleteTraining,
     login,
+    skipWithoutFirebaseConfig,
     skipWithoutCredentials,
     skipWithoutEditableSeason,
 } from './helpers/app';
@@ -85,6 +86,7 @@ test.describe('Trainings', () => {
     let trainingUrl = '';
 
     test.beforeEach(async ({ page }) => {
+        skipWithoutFirebaseConfig();
         skipWithoutCredentials();
         await login(page);
         await skipWithoutEditableSeason(page);
@@ -255,6 +257,7 @@ test.describe('Trainings', () => {
 
 test.describe('Training attendance table', () => {
     test.beforeEach(async ({ page }) => {
+        skipWithoutFirebaseConfig();
         skipWithoutCredentials();
         await login(page);
         await page.goto('/training');
@@ -319,6 +322,10 @@ test.describe('Training attendance table', () => {
 
 // The only spec here that does not sign in: the table is for coaches alone.
 test.describe('Training attendance table, signed out', () => {
+    test.beforeEach(() => {
+        skipWithoutFirebaseConfig();
+    });
+
     test('stays hidden', async ({ page }) => {
         await page.goto('/training');
 

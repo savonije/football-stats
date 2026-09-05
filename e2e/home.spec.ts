@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+import { skipWithoutFirebaseConfig } from './helpers/app';
+
 test.describe('Home page', () => {
+    test.beforeEach(() => {
+        skipWithoutFirebaseConfig();
+    });
+
     test('has correct page title', async ({ page }) => {
         await page.goto('/');
         await expect(page).toHaveTitle(/Home - Apollo '69/);

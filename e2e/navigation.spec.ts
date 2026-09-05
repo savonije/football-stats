@@ -1,11 +1,17 @@
 import { test, expect, type Page } from '@playwright/test'
 
+import { skipWithoutFirebaseConfig } from './helpers/app'
+
 // Nav links now live inside the right-hand drawer, opened via the "Menu" button.
 async function openMenu(page: Page) {
   await page.getByRole('button', { name: 'Menu' }).click()
 }
 
 test.describe('Navigation', () => {
+  test.beforeEach(() => {
+    skipWithoutFirebaseConfig()
+  })
+
   test('header shows club name and team', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: "SV Apollo '69" })).toBeVisible()
