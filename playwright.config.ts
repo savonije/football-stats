@@ -1,9 +1,14 @@
 import { defineConfig, devices } from '@playwright/test'
+import { loadEnv } from 'vite'
 
 try {
   process.loadEnvFile('.env.e2e')
 } catch {
   // Absent locally is fine: the write specs skip, and CI passes secrets.
+}
+
+for (const [name, value] of Object.entries(loadEnv('staging', process.cwd(), ''))) {
+  process.env[name] ??= value
 }
 
 // Not 4173: a hand-started `npm run preview` there is built from
