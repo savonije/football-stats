@@ -84,3 +84,39 @@ export const formatMatchTime = (totalSeconds: number): string => {
     const seconds = clamped % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
+
+/**
+ * How far the current half has run, as a fraction between 0 and 1. Overtime
+ * clamps to 1 so the timer ring reads full instead of wrapping around.
+ */
+export const getHalfProgress = (
+    match: TimedMatch | null | undefined,
+    halfDurationMinutes: number,
+    now: number,
+): number => {
+    if (!match?.startTime) return 0;
+
+    const half = match.half ?? 1;
+    const halfSeconds = halfDurationMinutes * 60;
+    const withinHalf =
+        getDisplaySeconds(match, halfDurationMinutes, now) -
+        (half - 1) * halfSeconds;
+
+    return Math.min(1, Math.max(0, withinHalf / halfSeconds));
+};
+
+/**
+ * The time an ended match finished on. `endMatch` pauses the clock, so
+ * `pausedAt` freezes it; matches ended before that fall back to the scheduled
+ * full time, which is the best guess their document still allows.
+ */
+export const getFinalSeconds = (
+    match: TimedMatch | null | undefined,
+    halfDurationMinutes: number,
+): number => {
+    const half = match?.half ?? 2;
+
+    return match?.pausedAt
+        ? getDisplaySeconds(match, halfDurationMinutes, match.pausedAt)
+        : half * halfDurationMinutes * 60;
+};

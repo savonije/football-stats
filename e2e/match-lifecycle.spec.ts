@@ -28,6 +28,7 @@ test.describe('Match timer lifecycle', () => {
         matchUrl = await createMatch(page, uniqueLabel('E2E timer'));
 
         const clock = page.getByTestId('match-clock');
+        const status = page.getByTestId('match-status');
         await expect(clock).toHaveText('0:00');
 
         await test.step('kick off the first half', async () => {
@@ -35,7 +36,7 @@ test.describe('Match timer lifecycle', () => {
                 .getByRole('button', { name: 'Start', exact: true })
                 .click();
 
-            await expect(page.getByText('1e helft')).toBeVisible();
+            await expect(status).toHaveText('1e helft');
             await expect(clock).not.toHaveText('0:00', { timeout: 5000 });
         });
 
@@ -45,7 +46,7 @@ test.describe('Match timer lifecycle', () => {
                 .click();
             await acceptConfirm(page, 'Eerste helft beëindigen');
 
-            await expect(page.getByText('Rust')).toBeVisible();
+            await expect(status).toHaveText('Rust');
             await expect(
                 page.getByRole('button', { name: 'Tweede helft starten' }),
             ).toBeVisible();
@@ -56,7 +57,7 @@ test.describe('Match timer lifecycle', () => {
                 .getByRole('button', { name: 'Tweede helft starten' })
                 .click();
 
-            await expect(page.getByText('2e helft')).toBeVisible();
+            await expect(status).toHaveText('2e helft');
             // The clock resumes at the half-duration offset, not at zero.
             await expect(clock).not.toHaveText('0:00');
         });
@@ -68,7 +69,11 @@ test.describe('Match timer lifecycle', () => {
             await acceptConfirm(page, 'Wedstrijd beëindigen');
 
             await expect(page.getByText('Wedstrijd beëindigd')).toBeVisible();
+
+            // The running clock is replaced by the time it finished on, so the
+            // live clock is gone rather than frozen in place.
             await expect(clock).toBeHidden();
+            await expect(page.getByTestId('match-final-time')).toBeVisible();
         });
 
         await test.step('a second viewer sees the ended match', async () => {

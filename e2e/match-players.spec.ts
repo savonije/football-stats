@@ -63,8 +63,8 @@ test.describe('Match players', () => {
             await dialog.getByRole('button', { name: 'Opslaan' }).click();
             await expect(dialog).toBeHidden();
 
-            await expect(card).toContainText('⚽⚽');
-            await expect(card).toContainText('🧤');
+            await expect(card.getByTestId('appearance-goals')).toHaveText('2');
+            await expect(card).toContainText('Keeper');
         });
 
         await test.step('remove the player from the match', async () => {
@@ -105,7 +105,7 @@ test.describe('Match players', () => {
             await expect(dialog).toBeHidden();
 
             await expect(squad).toHaveCount(squadSize);
-            await expect(card).not.toContainText('⚽');
+            await expect(card.getByTestId('appearance-goals')).toHaveCount(0);
         });
     });
 });
