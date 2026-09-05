@@ -8,4 +8,10 @@ export default {
     overview: 'Wasoverzicht',
     schedule: 'Schema per wedstrijd',
     noWashing: 'Nog niemand heeft gewassen dit seizoen...',
+    period: {
+        upcoming: 'Aankomend',
+        past: 'Afgelopen',
+        all: 'Alles',
+    },
+    noMatchesInPeriod: 'Geen wedstrijden in deze periode',
 };

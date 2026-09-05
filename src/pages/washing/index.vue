@@ -13,6 +13,7 @@
     import { ref } from 'vue';
     import { useAppToast } from '@/composables/useAppToast';
     import { useI18n } from 'vue-i18n';
+    import type { Match } from '@/types';
 
     const playerStore = usePlayerStore();
     const matchStore = useMatchStore();
@@ -41,9 +42,32 @@
             })),
     ]);
 
+    type SchedulePeriod = 'upcoming' | 'past' | 'all';
+
+    const schedulePeriod = ref<SchedulePeriod>('upcoming');
+
+    const periodOptions = computed(() =>
+        (['upcoming', 'past', 'all'] as const).map((value) => ({
+            label: t(`washing.period.${value}`),
+            value,
+        })),
+    );
+
+    const isUpcoming = (match: Match) =>
+        !match.date || !dayjs(match.date.toDate()).isBefore(dayjs(), 'day');
+
     const scheduleRows = computed(() =>
-        [...matchStore.matches]
-            .sort((a, b) => (b.date?.seconds ?? 0) - (a.date?.seconds ?? 0))
+        matchStore.matches
+            .filter((match) =>
+                schedulePeriod.value === 'all'
+                    ? true
+                    : isUpcoming(match) ===
+                      (schedulePeriod.value === 'upcoming'),
+            )
+            .sort((a, b) => {
+                const diff = (a.date?.seconds ?? 0) - (b.date?.seconds ?? 0);
+                return schedulePeriod.value === 'upcoming' ? diff : -diff;
+            })
             .map((match) => ({
                 id: match.id,
                 opponent: match.opponent,
@@ -107,6 +131,8 @@
         };
     };
 
+    watch(schedulePeriod, () => goToSchedulePage(1));
+
     const onCountSelect = (_event: Event, row: TableRow<CountRow>) => {
         router.push({ name: 'playerDetail', params: { id: row.original.id } });
     };
@@ -136,6 +162,20 @@
 <template>
     <div class="mb-8">
         <h2 class="mb-3 text-xl font-semibold">{{ t('washing.schedule') }}</h2>
+
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <UTabs
+                v-model="schedulePeriod"
+                :content="false"
+                :items="periodOptions"
+                size="sm"
+                variant="pill"
+            />
+
+            <UBadge v-if="!loading">
+                {{ scheduleRows.length }} {{ t('match.game', 2) }}
+            </UBadge>
+        </div>
 
         <UTable
             v-model:pagination="schedulePagination"
@@ -184,7 +224,11 @@
 
             <template #empty>
                 <p class="py-4 text-center text-gray-500">
-                    {{ t('match.noMatches') }}
+                    {{
+                        schedulePeriod === 'all'
+                            ? t('match.noMatches')
+                            : t('washing.noMatchesInPeriod')
+                    }}
                 </p>
             </template>
         </UTable>
