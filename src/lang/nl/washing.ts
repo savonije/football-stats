@@ -9,9 +9,17 @@ export default {
     schedule: 'Schema per wedstrijd',
     noWashing: 'Nog niemand heeft gewassen dit seizoen...',
     period: {
+        label: 'Periode',
         upcoming: 'Aankomend',
         past: 'Afgelopen',
         all: 'Alles',
     },
     noMatchesInPeriod: 'Geen wedstrijden in deze periode',
+    assignment: {
+        label: 'Toewijzing',
+        all: 'Alle wasbeurten',
+        unassigned: 'Niet toegewezen',
+        assigned: 'Toegewezen',
+    },
+    allAssigned: 'Alle wedstrijden zijn toegewezen',
 };

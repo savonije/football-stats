@@ -44,11 +44,21 @@
 
     type SchedulePeriod = 'upcoming' | 'past' | 'all';
 
+    type AssignmentFilter = 'all' | 'unassigned' | 'assigned';
+
     const schedulePeriod = ref<SchedulePeriod>('upcoming');
+    const assignment = ref<AssignmentFilter>('all');
 
     const periodOptions = computed(() =>
         (['upcoming', 'past', 'all'] as const).map((value) => ({
             label: t(`washing.period.${value}`),
+            value,
+        })),
+    );
+
+    const assignmentOptions = computed(() =>
+        (['all', 'unassigned', 'assigned'] as const).map((value) => ({
+            label: t(`washing.assignment.${value}`),
             value,
         })),
     );
@@ -58,6 +68,11 @@
 
     const scheduleRows = computed(() =>
         matchStore.matches
+            .filter((match) =>
+                assignment.value === 'all'
+                    ? true
+                    : !!match.washing === (assignment.value === 'assigned'),
+            )
             .filter((match) =>
                 schedulePeriod.value === 'all'
                     ? true
@@ -124,6 +139,13 @@
     const countSorting = ref([{ id: 'count', desc: true }]);
     const schedulePagination = ref({ pageIndex: 0, pageSize: 10 });
 
+    const emptyMessage = computed(() => {
+        if (assignment.value === 'unassigned') return t('washing.allAssigned');
+        if (schedulePeriod.value === 'all' && assignment.value === 'all')
+            return t('match.noMatches');
+        return t('washing.noMatchesInPeriod');
+    });
+
     const goToSchedulePage = (page: number) => {
         schedulePagination.value = {
             ...schedulePagination.value,
@@ -131,7 +153,7 @@
         };
     };
 
-    watch(schedulePeriod, () => goToSchedulePage(1));
+    watch([schedulePeriod, assignment], () => goToSchedulePage(1));
 
     const onCountSelect = (_event: Event, row: TableRow<CountRow>) => {
         router.push({ name: 'playerDetail', params: { id: row.original.id } });
@@ -163,14 +185,34 @@
     <div class="mb-8">
         <h2 class="mb-3 text-xl font-semibold">{{ t('washing.schedule') }}</h2>
 
-        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <UTabs
-                v-model="schedulePeriod"
-                :content="false"
-                :items="periodOptions"
-                size="sm"
-                variant="pill"
-            />
+        <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div class="flex w-full flex-wrap items-end gap-3 sm:w-auto">
+                <UFormField
+                    class="w-full sm:w-auto"
+                    :label="t('washing.period.label')"
+                >
+                    <USelect
+                        v-model="schedulePeriod"
+                        class="w-full sm:w-48"
+                        :items="periodOptions"
+                        size="sm"
+                        value-key="value"
+                    />
+                </UFormField>
+
+                <UFormField
+                    class="w-full sm:w-auto"
+                    :label="t('washing.assignment.label')"
+                >
+                    <USelect
+                        v-model="assignment"
+                        class="w-full sm:w-48"
+                        :items="assignmentOptions"
+                        size="sm"
+                        value-key="value"
+                    />
+                </UFormField>
+            </div>
 
             <UBadge v-if="!loading">
                 {{ scheduleRows.length }} {{ t('match.game', 2) }}
@@ -224,11 +266,7 @@
 
             <template #empty>
                 <p class="py-4 text-center text-gray-500">
-                    {{
-                        schedulePeriod === 'all'
-                            ? t('match.noMatches')
-                            : t('washing.noMatchesInPeriod')
-                    }}
+                    {{ emptyMessage }}
                 </p>
             </template>
         </UTable>
