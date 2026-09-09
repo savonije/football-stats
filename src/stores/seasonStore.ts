@@ -108,20 +108,6 @@ export const useSeasonStore = defineStore('seasonStore', {
             await this.fetchSeasons();
         },
 
-        async setTeamName(id: string, teamname: string) {
-            await updateDoc(doc(db, 'seasons', id), {
-                teamname: teamname.trim(),
-            });
-            await this.fetchSeasons();
-        },
-
-        async setHalfDuration(id: string, minutes: number) {
-            await updateDoc(doc(db, 'seasons', id), {
-                halfDurationMinutes: minutes,
-            });
-            await this.fetchSeasons();
-        },
-
         async updateSeasonSettings(
             id: string,
             settings: { teamname: string; halfDurationMinutes: number },

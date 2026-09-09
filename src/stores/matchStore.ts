@@ -15,9 +15,7 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
-import { useSeasonStore } from '@/stores/seasonStore';
 import type { Appearance, Match } from '@/types';
-import { getDisplaySeconds } from '@/utils/match';
 
 let _unsubscribeMatches: (() => void) | null = null;
 let _unsubscribeMatchDetails: (() => void) | null = null;
@@ -64,13 +62,6 @@ export const useMatchStore = defineStore('matchStore', {
                 this.selectedMatch = match;
             });
             this.fetchAppearances(seasonId, matchId);
-        },
-
-        addMatch(seasonId: string, match: Match) {
-            return setDoc(
-                doc(db, `seasons/${seasonId}/matches`, match.id),
-                match,
-            );
         },
 
         updateMatch(
@@ -302,13 +293,6 @@ export const useMatchStore = defineStore('matchStore', {
     },
 
     getters: {
-        totalGoalsPerPlayer: (state) => (playerId: string) =>
-            state.appearances
-                .filter((a) => a.playerId === playerId && a.present)
-                .reduce((sum, a) => sum + (a.goals || 0), 0),
-
-        presentPlayers: (state) => state.appearances.filter((a) => a.present),
-
         presentPlayersWithNames: (state) => {
             const playerStore = usePlayerStore();
             return state.appearances
@@ -318,17 +302,6 @@ export const useMatchStore = defineStore('matchStore', {
                     playerName:
                         playerStore.getPlayerById(a.playerId)?.name ?? '',
                 }));
-        },
-
-        getMatchDuration: () => (match: Match) => {
-            if (!match.startTime) return 0;
-            const seasonStore = useSeasonStore();
-            const seconds = getDisplaySeconds(
-                match,
-                seasonStore.currentHalfDuration,
-                Date.now(),
-            );
-            return Math.floor(seconds / 60); // minutes
         },
     },
 });

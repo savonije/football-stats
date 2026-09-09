@@ -17,11 +17,9 @@ export const usePlayerStore = defineStore('playerStore', {
     state: (): {
         players: Player[];
         playersLoaded: boolean;
-        selectedPlayer: Player | null;
     } => ({
         players: [],
         playersLoaded: false,
-        selectedPlayer: null,
     }),
 
     actions: {
@@ -39,9 +37,7 @@ export const usePlayerStore = defineStore('playerStore', {
         async fetchPlayer(playerId: string): Promise<Player | null> {
             const snap = await getDoc(doc(db, 'players', playerId));
             if (!snap.exists()) return null;
-            const player = { id: snap.id, ...snap.data() } as Player;
-            this.selectedPlayer = player;
-            return player;
+            return { id: snap.id, ...snap.data() } as Player;
         },
 
         addPlayer(player: Player) {
@@ -65,20 +61,11 @@ export const usePlayerStore = defineStore('playerStore', {
         deletePlayer(playerId: string) {
             return deleteDoc(doc(db, 'players', playerId));
         },
-
-        async fetchPlayerName(playerId: string): Promise<string> {
-            const snap = await getDoc(doc(db, 'players', playerId));
-            if (!snap.exists()) return playerId;
-            const docData = snap.data() as Player;
-            return docData.name ?? playerId;
-        },
     },
 
     getters: {
         getPlayerById: (state) => (playerId: string) =>
             state.players.find((p) => p.id === playerId),
-        playersSorted: (state) =>
-            [...state.players].sort((a, b) => a.name.localeCompare(b.name)),
         playersInSeason: (state) => (seasonId: string) =>
             [...state.players]
                 .filter((player) => isActiveInSeason(player, seasonId))
