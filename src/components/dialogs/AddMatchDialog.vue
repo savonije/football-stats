@@ -11,6 +11,7 @@
     import DatePicker from '@/components/ui/DatePicker.vue';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
     import { isGuestInSeason } from '@/utils/playerSeason';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const { t } = useI18n();
@@ -158,20 +159,13 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="subtle"
-                    @click="closeDialog"
-                />
-                <UButton
-                    icon="i-lucide-check"
-                    :label="$t('common.add')"
-                    :loading="loading"
-                    @click="submitMatch"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.add')"
+                confirm-icon="i-lucide-check"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="submitMatch"
+            />
         </template>
     </UModal>
 </template>

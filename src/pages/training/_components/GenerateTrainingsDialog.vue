@@ -8,6 +8,7 @@
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { trainingDatesInMonth } from '@/utils/training';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const { initialMonth } = defineProps<{ initialMonth?: Date }>();
@@ -145,21 +146,14 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="subtle"
-                    @click="closeDialog"
-                />
-                <UButton
-                    :disabled="!newDates.length"
-                    icon="i-lucide-check"
-                    :label="$t('training.generate')"
-                    :loading="loading"
-                    @click="generate"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('training.generate')"
+                confirm-icon="i-lucide-check"
+                :disabled="!newDates.length"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="generate"
+            />
         </template>
     </UModal>
 </template>

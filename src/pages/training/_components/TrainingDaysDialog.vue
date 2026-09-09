@@ -4,6 +4,7 @@
     import { useAppToast } from '@/composables/useAppToast';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { weekdayOptions } from '@/utils/training';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
 
@@ -68,20 +69,13 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="subtle"
-                    @click="model = false"
-                />
-                <UButton
-                    icon="i-lucide-check"
-                    :label="$t('common.save')"
-                    :loading="saving"
-                    @click="save"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.save')"
+                confirm-icon="i-lucide-check"
+                :loading="saving"
+                @cancel="model = false"
+                @confirm="save"
+            />
         </template>
     </UModal>
 </template>

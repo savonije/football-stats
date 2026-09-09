@@ -6,6 +6,7 @@
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
     import { useMatchStore } from '@/stores/matchStore';
     import type { AppearanceWithName } from '@/types';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { seasonId, matchId, appearance } = defineProps<{
         seasonId: string;
@@ -119,19 +120,12 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="ghost"
-                    @click="closeDialog"
-                />
-                <UButton
-                    :label="$t('common.save')"
-                    :loading="loading"
-                    @click="save"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.save')"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="save"
+            />
         </template>
     </UModal>
 </template>

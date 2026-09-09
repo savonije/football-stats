@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { watch } from 'vue';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { confirmColor = 'primary', icon = 'i-lucide-triangle-alert' } =
         defineProps<{
@@ -49,19 +50,12 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="subtle"
-                    @click="respond(false)"
-                />
-                <UButton
-                    :color="confirmColor"
-                    :label="confirmLabel ?? $t('common.confirm')"
-                    @click="respond(true)"
-                />
-            </div>
+            <DialogFooter
+                :confirm-color="confirmColor"
+                :confirm-label="confirmLabel ?? $t('common.confirm')"
+                @cancel="respond(false)"
+                @confirm="respond(true)"
+            />
         </template>
     </UModal>
 </template>

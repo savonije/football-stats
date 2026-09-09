@@ -5,6 +5,7 @@
     import { useAppToast } from '@/composables/useAppToast';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { seasonId, matchId } = defineProps<{
         seasonId: string;
@@ -119,21 +120,14 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="ghost"
-                    @click="closeDialog"
-                />
-                <UButton
-                    :disabled="!availablePlayers.length"
-                    icon="i-lucide-check"
-                    :label="$t('common.add')"
-                    :loading="loading"
-                    @click="submit"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.add')"
+                confirm-icon="i-lucide-check"
+                :disabled="!availablePlayers.length"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="submit"
+            />
         </template>
     </UModal>
 </template>
