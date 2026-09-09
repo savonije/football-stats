@@ -6,7 +6,6 @@
     import { onMounted } from 'vue';
 
     import DefaultLayout from '@/layouts/DefaultLayout.vue';
-    import BlankLayout from '@/layouts/BlankLayout.vue';
 
     const storeAuth = useStoreAuth();
 
@@ -24,13 +23,10 @@
         }"
     >
         <RouterView v-slot="{ Component, route }">
-            <component
-                :is="
-                    route.meta.layout === 'blank' ? BlankLayout : DefaultLayout
-                "
-            >
+            <DefaultLayout v-if="route.meta.layout !== 'blank'">
                 <component :is="Component" />
-            </component>
+            </DefaultLayout>
+            <component :is="Component" v-else />
         </RouterView>
     </UApp>
 </template>
