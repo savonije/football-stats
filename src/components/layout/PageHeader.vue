@@ -114,21 +114,4 @@
     .logo-link:hover img {
         filter: drop-shadow(0 0 10px rgba(96, 133, 209, 0.85));
     }
-
-    @keyframes header-shimmer {
-        0% {
-            transform: translateX(-120%) skewX(-20deg);
-            opacity: 0;
-        }
-        10% {
-            opacity: 1;
-        }
-        90% {
-            opacity: 1;
-        }
-        100% {
-            transform: translateX(280%) skewX(-20deg);
-            opacity: 0;
-        }
-    }
 </style>
