@@ -19,7 +19,6 @@
         "prettier:check": "prettier --check src/",
         "preview": "vite preview",
         "type-check": "vue-tsc --build",
-        "typecheck": "vue-tsc --noEmit --skipLibCheck --project tsconfig.app.json",
         "test": "playwright test"
     },
     "dependencies": {
