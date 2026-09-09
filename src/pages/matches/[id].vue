@@ -26,15 +26,9 @@
     const editingAppearanceId = ref<string | null>(null);
     const editingAppearance = ref(false);
 
-    const appearancesWithName = computed(
-        () => matchStore.presentPlayersWithNames,
-    );
-
-    const canEditAppearances = computed(() => canEdit.value);
-
     const selectedAppearance = computed(
         () =>
-            appearancesWithName.value.find(
+            matchStore.presentPlayersWithNames.find(
                 (appearance) => appearance.id === editingAppearanceId.value,
             ) ?? null,
     );
@@ -80,7 +74,7 @@
             >
                 {{
                     t('match.playersPresent', {
-                        count: appearancesWithName.length,
+                        count: matchStore.presentPlayersWithNames.length,
                     })
                 }}
             </span>
@@ -88,16 +82,16 @@
 
         <div class="space-y-3">
             <PlayerAppearanceItem
-                v-for="appearance in appearancesWithName"
+                v-for="appearance in matchStore.presentPlayersWithNames"
                 :key="appearance.id"
                 :appearance="appearance"
-                :editable="canEditAppearances"
+                :editable="canEdit"
                 @edit="openEditDialog"
             />
         </div>
 
         <EditAppearanceDialog
-            v-if="canEditAppearances"
+            v-if="canEdit"
             v-model:visible="editingAppearance"
             :appearance="selectedAppearance"
             :season-id="seasonStore.currentSeason"
