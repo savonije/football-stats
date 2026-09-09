@@ -3,7 +3,7 @@
     import { computed, ref, watch } from 'vue';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import { getDisplaySeconds } from '@/utils/match';
+    import { getDisplaySeconds, hasStarted } from '@/utils/match';
     import { useI18n } from 'vue-i18n';
     import { RouterLink } from 'vue-router';
 
@@ -14,10 +14,7 @@
     const now = useTimestamp({ interval: 30_000 });
 
     const liveMatch = computed(
-        () =>
-            matchStore.matches.find(
-                (m) => (m.running || m.paused) && !m.ended,
-            ) ?? null,
+        () => matchStore.matches.find((m) => hasStarted(m) && !m.ended) ?? null,
     );
 
     const currentMinute = computed(() =>

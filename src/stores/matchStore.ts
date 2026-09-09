@@ -97,7 +97,6 @@ export const useMatchStore = defineStore('matchStore', {
             const now = Date.now();
 
             updateDoc(matchRef, {
-                running: true,
                 ended: false,
                 paused: false,
                 startTime: now,
@@ -113,7 +112,6 @@ export const useMatchStore = defineStore('matchStore', {
             const now = Date.now();
 
             return updateDoc(matchRef, {
-                running: false,
                 paused: true,
                 pausedAt: now,
                 halfTime: true,
@@ -126,7 +124,6 @@ export const useMatchStore = defineStore('matchStore', {
 
             return updateDoc(matchRef, {
                 half: 2,
-                running: true,
                 paused: false,
                 halfTime: false,
                 startTime: now,
@@ -141,7 +138,6 @@ export const useMatchStore = defineStore('matchStore', {
 
             updateDoc(matchRef, {
                 paused: true,
-                running: false,
                 pausedAt: now,
             });
         },
@@ -155,7 +151,6 @@ export const useMatchStore = defineStore('matchStore', {
 
             updateDoc(matchRef, {
                 paused: false,
-                running: true,
                 pausedDuration: pausedDuration + (now - pausedAt),
                 pausedAt: null,
             });
@@ -177,7 +172,6 @@ export const useMatchStore = defineStore('matchStore', {
             // detail can show what it finished on instead of counting forever.
             return updateDoc(matchRef, {
                 ended: true,
-                running: false,
                 paused: true,
                 pausedAt: Date.now(),
                 halfTime: false,

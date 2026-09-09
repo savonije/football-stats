@@ -23,7 +23,6 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
             washing: match.washing || null,
             createdAt: serverTimestamp(),
             durationMinutes: 0,
-            running: false,
             ended: false,
             paused: false,
         },

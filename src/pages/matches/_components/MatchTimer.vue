@@ -29,7 +29,7 @@
 
     const started = computed(() => hasStarted(match.value));
     const isEnded = computed(() => !!match.value?.ended);
-    const isRunning = computed(() => !!match.value?.running);
+    const isRunning = computed(() => started.value && !match.value?.paused);
     const isHalfTime = computed(() => !!match.value?.halfTime);
 
     const isPaused = computed(

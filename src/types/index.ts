@@ -14,7 +14,6 @@ export interface Match {
     result?: MatchResult;
     washing?: string;
     durationMinutes: number;
-    running: boolean;
     paused: boolean;
     startTime?: number;
     pausedAt?: number;
