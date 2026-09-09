@@ -107,7 +107,7 @@
             await storeAuth.logoutUser();
             toast.success(t('auth.logoutMessage'), t('auth.logoutSuccess'));
         } catch (error) {
-            toast.error((error as Error).message, t('error.generic'));
+            toast.error((error as Error).message, t('errors.error'));
         }
     };
 
