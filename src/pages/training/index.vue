@@ -48,18 +48,14 @@
         })),
     );
 
-    const fetchForSeason = (seasonId: string) => {
-        trainingStore.fetchTrainings(seasonId);
-    };
-
     onMounted(() => {
-        fetchForSeason(seasonStore.currentSeason);
+        trainingStore.fetchTrainings(seasonStore.currentSeason);
         playerStore.fetchPlayers();
     });
 
     watch(
         () => seasonStore.currentSeason,
-        (seasonId) => fetchForSeason(seasonId),
+        (seasonId) => trainingStore.fetchTrainings(seasonId),
     );
 </script>
 
