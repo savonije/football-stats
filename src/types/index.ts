@@ -13,7 +13,6 @@ export interface Match {
     home: boolean;
     result?: MatchResult;
     washing?: string;
-    durationMinutes: number;
     paused: boolean;
     startTime?: number;
     pausedAt?: number;
