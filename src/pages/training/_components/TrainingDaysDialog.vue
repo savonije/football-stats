@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, computed, watch } from 'vue';
+    import { ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useAppToast } from '@/composables/useAppToast';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -15,12 +15,6 @@
     const dayOptions = weekdayOptions();
     const saving = ref(false);
     const selectedTrainingDays = ref<number[]>([]);
-
-    const currentSeasonTrainingDays = computed(
-        () =>
-            seasonStore.seasons.find((s) => s.id === seasonStore.currentSeason)
-                ?.trainingDays ?? [],
-    );
 
     const save = async () => {
         saving.value = true;
@@ -39,7 +33,7 @@
     };
 
     watch(
-        [model, currentSeasonTrainingDays],
+        [model, () => seasonStore.currentTrainingDays],
         ([visible, days]) => {
             if (visible) selectedTrainingDays.value = [...days];
         },

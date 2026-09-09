@@ -24,19 +24,12 @@
         toCalendarDate(new Date()),
     );
 
-    const existingDates = computed(
-        () =>
-            new Set(
-                trainingStore.trainings
-                    .filter((tr) => tr.date)
-                    .map((tr) => dayjs(tr.date.toDate()).format('YYYY-MM-DD')),
-            ),
-    );
-
     const dateExists = computed(() => {
         const selected = fromCalendarDate(date.value);
         return selected
-            ? existingDates.value.has(dayjs(selected).format('YYYY-MM-DD'))
+            ? trainingStore.existingDates.has(
+                  dayjs(selected).format('YYYY-MM-DD'),
+              )
             : false;
     });
 

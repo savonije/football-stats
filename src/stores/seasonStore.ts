@@ -48,6 +48,12 @@ export const useSeasonStore = defineStore('seasonStore', {
             );
             return season?.halfDurationMinutes ?? DEFAULT_HALF_DURATION_MINUTES;
         },
+        currentTrainingDays(state): number[] {
+            const season = state.seasons.find(
+                (s) => s.id === state.currentSeason,
+            );
+            return season?.trainingDays ?? [];
+        },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
                 (season) => season.active && season.id === state.currentSeason,
