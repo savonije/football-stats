@@ -18,7 +18,6 @@ export default {
     unmarked: 'Niet ingevuld',
     unmarkedCount:
         'Alles ingevuld | 1 speler nog niet ingevuld | {count} spelers nog niet ingevuld',
-    clearAttendance: 'Aanwezigheid wissen',
     attendancePercentage: 'Trainingsopkomst (%)',
     attendanceOverview: 'Trainingsopkomst per speler',
     attended: 'Aanwezig',

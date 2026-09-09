@@ -57,7 +57,6 @@ export default {
     secondHalf: '2e helft',
     standing: 'Stand',
     startSecondHalf: 'Tweede helft starten',
-    teamStats: 'Teamstatistieken',
     viewMatchDetails: 'Bekijk wedstrijd details',
     winPercentage: 'Winstpercentage',
 };

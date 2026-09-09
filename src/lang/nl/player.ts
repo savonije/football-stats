@@ -19,7 +19,6 @@ export default {
     },
     player: 'Speler | Spelers',
     playerInfo: 'Spelerinformatie',
-    playerStats: 'Spelerstatistieken',
     selectPlayer: 'Selecteer speler',
     selectPlayers: 'Selecteer spelers',
     totalAppearances: 'Totaal wedstrijden',
