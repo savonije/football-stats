@@ -21,7 +21,5 @@ updates:
                 - 'version-update:semver-major'
       schedule:
           interval: 'weekly'
-      labels:
-          - front-end
       cooldown:
           default-days: 3
