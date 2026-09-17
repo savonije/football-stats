@@ -40,7 +40,7 @@
         "@prettier/plugin-oxc": "^0.2.2",
         "@tsconfig/node22": "^22.0.6",
         "@types/node": "^25.9.6",
-        "@vitejs/plugin-vue": "^6.0.8",
+        "@vitejs/plugin-vue": "^6.0.9",
         "@vitejs/plugin-vue-jsx": "^5.0.1",
         "@vue/eslint-config-prettier": "^10.2.0",
         "@vue/eslint-config-typescript": "^14.6.0",
