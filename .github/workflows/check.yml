@@ -1,4 +1,4 @@
-name: Prettier Check
+name: Check
 
 on:
     push:
@@ -7,13 +7,13 @@ on:
         branches: [main]
 
 jobs:
-    prettier-check:
+    check:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
               with:
-                  node-version-file: .nvmrc
+                  node-version-file: .node-version
                   cache: 'npm'
             - run: npm ci
-            - run: npm run prettier:check
+            - run: npm run check

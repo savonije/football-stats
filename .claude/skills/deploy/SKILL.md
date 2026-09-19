@@ -20,7 +20,7 @@ on top of a failed step.
   convention (e.g. `v3.2.0`) — `npm version` produces exactly this.
 - Production is **Firebase Hosting**, serving the `dist/` folder (see `firebase.json`).
   `firebase` CLI is installed at `/usr/local/bin/firebase`.
-- The repo builds with `npm run build` (runs `type-check` + `vite build` into `dist/`).
+- The repo builds with `npm run build` (runs `type-check` + `vp build` into `dist/`).
 - Remote is `origin` → `github.com/savonije/football-stats`.
 - Production releases go out from the **`main`** branch.
 
@@ -175,7 +175,7 @@ So before amending, append the link to the notes file yourself, or you'll silent
 ## Phase 4 — Build and deploy
 
 ```bash
-npm run build      # type-check + vite build → dist/. If this fails, STOP.
+npm run build      # type-check + vp build → dist/. If this fails, STOP.
 firebase deploy    # deploys dist/ to Firebase Hosting
 ```
 

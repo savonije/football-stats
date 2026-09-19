@@ -1,9 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": [
-    "public/**"
-  ],
-  "ignoreDependencies": [
-    "@iconify-json/lucide"
-  ]
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "ignore": ["public/**"],
+    "ignoreDependencies": ["@iconify-json/lucide"]
 }
