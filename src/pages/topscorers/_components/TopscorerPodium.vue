@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { computed } from 'vue';
     import { RouterLink } from 'vue-router';
 
     const { players } = defineProps<{
@@ -12,33 +13,30 @@
 
     const PODIUM = [
         {
-            rank: 1,
             order: 'sm:order-2',
             badge: 'bg-amber-100 text-amber-800',
             ring: 'border-amber',
-            avatar: 'size-11 text-base sm:size-14 sm:text-lg',
-            goals: 'text-2xl sm:text-4xl',
-            padding: 'p-3 sm:p-4',
         },
         {
-            rank: 2,
             order: 'sm:order-1',
             badge: 'bg-gray-100 text-gray-700',
             ring: 'border-gray-400',
-            avatar: 'size-11 text-base',
-            goals: 'text-2xl',
-            padding: 'p-3',
         },
         {
-            rank: 3,
             order: 'sm:order-3',
             badge: 'bg-orange-100 text-amber-800',
             ring: 'border-amber-700',
-            avatar: 'size-11 text-base',
-            goals: 'text-2xl',
-            padding: 'p-3',
         },
     ];
+
+    const steps = computed(() =>
+        players.map((player, index) => ({
+            ...player,
+            ...PODIUM[index],
+            rank: index + 1,
+            winner: index === 0,
+        })),
+    );
 </script>
 
 <template>
@@ -47,14 +45,11 @@
         class="mb-6 flex flex-col gap-2.5 sm:grid sm:grid-cols-3 sm:items-end sm:gap-4"
     >
         <RouterLink
-            v-for="step in PODIUM"
-            :key="step.rank"
-            class="shadow-card flex items-center gap-3 rounded-2xl bg-white sm:flex-col sm:gap-2"
-            :class="[step.order, step.padding]"
-            :to="{
-                name: 'playerDetail',
-                params: { id: players[step.rank - 1].id },
-            }"
+            v-for="step in steps"
+            :key="step.id"
+            class="shadow-card flex items-center gap-3 rounded-2xl bg-white p-3 sm:flex-col sm:gap-2"
+            :class="[step.order, step.winner && 'sm:p-4']"
+            :to="{ name: 'playerDetail', params: { id: step.id } }"
         >
             <span
                 class="text-xxs flex h-5 w-6.5 shrink-0 items-center justify-center rounded-full font-bold sm:order-1"
@@ -64,41 +59,36 @@
             </span>
 
             <span
-                class="from-primary-500 to-primary-700 flex shrink-0 items-center justify-center rounded-full border-[3px] bg-linear-to-br font-bold text-white sm:order-2"
-                :class="[step.avatar, step.ring]"
+                class="from-primary-500 to-primary-700 flex size-11 shrink-0 items-center justify-center rounded-full border-[3px] bg-linear-to-br text-base font-bold text-white sm:order-2"
+                :class="[step.ring, step.winner && 'sm:size-14 sm:text-lg']"
             >
-                {{ players[step.rank - 1].name.charAt(0).toUpperCase() }}
+                {{ step.name.charAt(0).toUpperCase() }}
             </span>
 
             <span class="flex min-w-0 flex-1 flex-col sm:contents">
                 <span
                     class="text-primary-950 truncate text-sm leading-tight font-semibold sm:order-3 sm:text-center sm:whitespace-normal"
                 >
-                    {{ players[step.rank - 1].name }}
+                    {{ step.name }}
                 </span>
 
                 <span class="text-primary-400 text-xs sm:order-5">
-                    {{ players[step.rank - 1].matchCount }}
-                    {{
-                        $t(
-                            'match.game',
-                            players[step.rank - 1].matchCount,
-                        ).toLowerCase()
-                    }}
+                    {{ step.matchCount }}
+                    {{ $t('match.game', step.matchCount).toLowerCase() }}
                 </span>
             </span>
 
             <span class="flex shrink-0 items-baseline gap-1 sm:order-4">
                 <span
-                    class="text-primary-700 leading-none font-black"
-                    :class="step.goals"
+                    class="text-primary-700 text-2xl leading-none font-black"
+                    :class="step.winner && 'sm:text-4xl'"
                 >
-                    {{ players[step.rank - 1].totalGoals }}
+                    {{ step.totalGoals }}
                 </span>
                 <span
-                    class="text-xxs tracking-label text-primary-400 font-bold uppercase"
+                    class="text-xxs tracking-label text-primary-600 font-bold"
                 >
-                    {{ $t('common.goal', players[step.rank - 1].totalGoals) }}
+                    {{ $t('common.goal', step.totalGoals) }}
                 </span>
             </span>
         </RouterLink>
