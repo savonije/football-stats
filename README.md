@@ -1,18 +1,20 @@
 # ⚽ Football Stats Tracker
 
 A **Vue 3 single-page application (SPA)** for tracking and managing football statistics for a youth football team.\
-Built with **Vite**, styled with **Tailwind CSS** and **PrimeVue**, powered by **Pinia** for state management, and backed by **Firebase**.
+Built with **Vite+**, styled with **Tailwind CSS** and **Nuxt UI**, powered by **Pinia** for state management, and backed by **Firebase**.
 
 ---
 
 ## ✨ Features
 
-- 🏆 Track team performance over the season
-- 🔎 View individual and team statistics
-- 📱 Mobile-friendly interface (SPA, no reloads)
-- 🎨 Modern UI with **TailwindCSS** + **PrimeVue** components
-- ☁️ Cloud-based backend with **Firebase** (auth, database, hosting)
-- ⚡ Built with modern Vue 3 composition API and Vite
+- 🏆 Track matches per season, with a live match timer that stays in sync across viewers
+- 🔎 Player pages, top scorers and training attendance
+- 🧺 Wasschema (washing rota)
+- 📱 Mobile-first SPA, installable to the iOS home screen
+- 🇳🇱 Dutch UI throughout (vue-i18n)
+- 🎨 Modern UI with **Tailwind CSS v4** + **Nuxt UI v4** components
+- ☁️ Cloud-based backend with **Firebase** (auth, Firestore, hosting)
+- ⚡ Vue 3 Composition API (`<script setup>`) and TypeScript
 
 ---
 
@@ -22,8 +24,10 @@ Built with **Vite**, styled with **Tailwind CSS** and **PrimeVue**, powered by *
 - [Vite+](https://viteplus.dev/) – Unified toolchain (Vite, Vitest, Oxlint, Oxfmt) behind one `vp` CLI
 - [TypeScript](https://www.typescriptlang.org/) – Type safety
 - [Pinia](https://pinia.vuejs.org/) – State management
-- [PrimeVue](https://primevue.org/) – UI components
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework
+- [Vue Router](https://router.vuejs.org/) – Routing
+- [Nuxt UI v4](https://ui.nuxt.com/) – UI components (works in plain Vue via its Vite plugin)
+- [Tailwind CSS v4](https://tailwindcss.com/) – Utility-first CSS, themed in `src/styles/main.css` (no `tailwind.config.js`)
+- [vue-i18n](https://vue-i18n.intlify.dev/) – Dutch UI strings
 - [Firebase](https://firebase.google.com/) – Backend services (Auth, Firestore, Hosting)
 - [Oxlint / Oxfmt](https://oxc.rs/) – Linting and formatting (via `vp check`)
 - [Playwright](https://playwright.dev/) – End-to-end testing
@@ -34,7 +38,7 @@ Built with **Vite**, styled with **Tailwind CSS** and **PrimeVue**, powered by *
 
 ### Prerequisites
 
-Make sure you have [Node.js](https://nodejs.org/) (v22+) and npm installed.
+Make sure you have [Node.js](https://nodejs.org/) and npm installed. The version is pinned in `.node-version` (read by `vp` and CI) and `.nvmrc` (read by `nvm use`) — currently **Node 24**. Bump both together.
 
 ### Installation
 
@@ -69,6 +73,7 @@ vp check --fix
 vp fmt
 vp lint --fix
 npm run type-check     # vue-tsc, which understands .vue better than the built-in
+npm run knip           # unused files, exports and dependencies (CI fails on any finding)
 ```
 
 ### Testing
@@ -141,11 +146,9 @@ This writes two files. `firebase.json` holds the hosting config (it serves `dist
 }
 ```
 
-Replace each `""` with a Firebase project ID — see `.firebaserc.example`. This project keeps two: `default` is the staging project the e2e tests write to, and `prod` is production. `.firebaserc` is gitignored, so each clone sets its own.
+Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A bare `firebase deploy` targets `default`, so point that at the project you actually want to publish to and use a named alias (`firebase deploy -P prod`) for the others. `.firebaserc` is gitignored, so each clone sets its own. Note the e2e tests don't read it: they pick their project from `.env` (see above).
 
-### 4. Deploy (Optional)
-
-To deploy the app to Firebase Hosting:
+### 4. Deploy
 
 ```sh
 npm run build
@@ -167,7 +170,7 @@ src/
 ├── router/        # App routes
 ├── firebase/      # Firebase config & init
 ├── lang/          # i18n strings (Dutch)
-├── utils/         # Helpers (playerSeason, match, training, tailwind)
+├── utils/         # Helpers (date, match, playerSeason, table, training)
 ├── types/         # Shared TypeScript types
 ├── config/        # i18n & dayjs setup
 ├── constants/     # App-wide constants
