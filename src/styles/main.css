@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&display=swap');
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
@@ -18,7 +18,7 @@
 
     --color-amber: #f59e0b;
 
-    --font-display: 'Roboto', sans-serif;
+    --font-display: 'Archivo', sans-serif;
 
     --shadow-hero: 0 8px 32px rgba(17, 26, 54, 0.3);
     --shadow-card: 0 2px 12px rgba(39, 66, 138, 0.08);
