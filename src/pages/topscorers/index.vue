@@ -3,6 +3,7 @@
     import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import GoalDistributionBar from '@/pages/topscorers/_components/GoalDistributionBar.vue';
     import TopscorerPodium from '@/pages/topscorers/_components/TopscorerPodium.vue';
 
     import router from '@/router';
@@ -46,11 +47,10 @@
             });
     });
 
-    const podium = computed(() =>
-        [...playerTotalStats.value]
+    const scorers = computed(() =>
+        playerTotalStats.value
             .filter((player) => player.totalGoals > 0)
-            .sort((a, b) => b.totalGoals - a.totalGoals)
-            .slice(0, 3),
+            .sort((a, b) => b.totalGoals - a.totalGoals),
     );
 
     type TopscorerRow = (typeof playerTotalStats.value)[number];
@@ -107,7 +107,9 @@
 </script>
 
 <template>
-    <TopscorerPodium :players="podium" />
+    <TopscorerPodium :players="scorers.slice(0, 3)" />
+
+    <GoalDistributionBar :players="scorers" />
 
     <UTable
         v-model:sorting="sorting"

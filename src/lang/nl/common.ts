@@ -11,6 +11,7 @@ export default {
     edit: 'Bewerken',
     email: 'E-mail',
     goal: 'Doelpunt | Doelpunten',
+    goalDistribution: 'Verdeling doelpunten',
     goalsPerMatch: 'Goals per wedstrijd',
     hasJacket: 'Heeft jas',
     hasBag: 'Heeft tas',
