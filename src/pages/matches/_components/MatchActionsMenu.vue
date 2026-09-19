@@ -4,7 +4,6 @@
     import { useI18n } from 'vue-i18n';
     import { useRouter } from 'vue-router';
 
-    import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
     import EditMatchDialog from '@/pages/matches/_components/EditMatchDialog.vue';
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
@@ -14,6 +13,7 @@
     import type { Match } from '@/types';
 
     const { match } = defineProps<{ match: Match }>();
+    const emit = defineEmits<{ addPlayers: [] }>();
 
     const { t } = useI18n();
     const toast = useAppToast();
@@ -23,7 +23,6 @@
     const seasonStore = useSeasonStore();
     const canEdit = useCanEdit();
 
-    const addingPlayers = ref(false);
     const editingMatch = ref(false);
 
     const confirmDeleteMatch = async () => {
@@ -49,7 +48,7 @@
                       {
                           label: t('match.addPlayers'),
                           icon: 'i-lucide-user-plus',
-                          onSelect: () => (addingPlayers.value = true),
+                          onSelect: () => emit('addPlayers'),
                       },
                   ]),
             {
@@ -79,13 +78,6 @@
                 :aria-label="t('common.moreOptions')"
             />
         </UDropdownMenu>
-
-        <AddMatchPlayersDialog
-            v-if="!match.ended"
-            v-model:visible="addingPlayers"
-            :match-id="match.id"
-            :season-id="seasonStore.currentSeason"
-        />
 
         <EditMatchDialog
             v-model:visible="editingMatch"

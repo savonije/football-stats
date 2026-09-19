@@ -207,7 +207,16 @@
             :ui="{ content: 'w-md' }"
         >
             <template #body>
+                <UAlert
+                    v-if="!players.length"
+                    color="warning"
+                    :description="t('match.noPlayersAdded')"
+                    icon="i-lucide-triangle-alert"
+                    variant="subtle"
+                />
+
                 <USelect
+                    v-else
                     v-model="selectedPlayer"
                     class="w-full"
                     :items="players"
@@ -219,6 +228,7 @@
 
             <template #footer>
                 <UButton
+                    v-if="players.length"
                     icon="i-lucide-check"
                     :label="t('common.save')"
                     @click="saveGoal"

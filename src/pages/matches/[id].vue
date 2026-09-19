@@ -6,6 +6,7 @@
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import { useCanEdit } from '@/composables/useCanEdit';
+    import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
     import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
     import MatchControls from '@/pages/matches/_components/MatchControls.vue';
     import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
@@ -25,6 +26,24 @@
     const { t } = useI18n();
     const editingAppearanceId = ref<string | null>(null);
     const editingAppearance = ref(false);
+    const addingPlayers = ref(false);
+
+    const canAddPlayers = computed(
+        () => canEdit.value && !matchStore.selectedMatch?.ended,
+    );
+
+    const noPlayersActions = computed(() =>
+        canAddPlayers.value
+            ? [
+                  {
+                      label: t('match.addPlayers'),
+                      icon: 'i-lucide-user-plus',
+                      color: 'warning' as const,
+                      onClick: () => (addingPlayers.value = true),
+                  },
+              ]
+            : [],
+    );
 
     const selectedAppearance = computed(
         () =>
@@ -47,7 +66,10 @@
     <AppBreadcrumb :label="matchStore.selectedMatch?.opponent" />
 
     <div v-if="matchStore.selectedMatch" class="mx-auto w-200 max-w-full">
-        <MatchHeader :match="matchStore.selectedMatch" />
+        <MatchHeader
+            :match="matchStore.selectedMatch"
+            @add-players="addingPlayers = true"
+        />
 
         <div
             class="shadow-card rounded-xl bg-white sm:grid sm:grid-cols-3 sm:gap-4 sm:rounded-none sm:bg-transparent sm:shadow-none"
@@ -80,6 +102,19 @@
             </span>
         </div>
 
+        <UAlert
+            v-if="
+                matchStore.appearancesLoaded &&
+                !matchStore.presentPlayersWithNames.length
+            "
+            :actions="noPlayersActions"
+            color="warning"
+            :description="t('match.noPlayersAdded')"
+            icon="i-lucide-triangle-alert"
+            orientation="horizontal"
+            variant="subtle"
+        />
+
         <div class="space-y-3">
             <PlayerAppearanceItem
                 v-for="appearance in matchStore.presentPlayersWithNames"
@@ -89,6 +124,13 @@
                 @edit="openEditDialog"
             />
         </div>
+
+        <AddMatchPlayersDialog
+            v-if="canAddPlayers"
+            v-model:visible="addingPlayers"
+            :match-id="matchId"
+            :season-id="seasonStore.currentSeason"
+        />
 
         <EditAppearanceDialog
             v-if="canEdit"

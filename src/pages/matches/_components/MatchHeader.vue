@@ -7,6 +7,7 @@
     import type { Match } from '@/types';
 
     const { match } = defineProps<{ match: Match }>();
+    const emit = defineEmits<{ addPlayers: [] }>();
 
     /** The home side is named first, which is what says home or away. */
     const title = computed(() =>
@@ -31,6 +32,6 @@
             </div>
         </div>
 
-        <MatchActionsMenu :match="match" />
+        <MatchActionsMenu :match="match" @add-players="emit('addPlayers')" />
     </div>
 </template>
