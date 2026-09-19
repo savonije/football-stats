@@ -47,6 +47,12 @@ Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials p
 
 CI (`.github/workflows/`) runs `prettier:check`, `type-check`, `knip`, and the Playwright suite on every push/PR to `main` — run `npm run prettier` and `npm run type-check` before handing work off, or CI will fail on formatting alone. `knip` currently passes clean and exits non-zero on any finding, so don't leave unused files or exports behind — an internal e2e helper should stay unexported rather than become an unused export.
 
+### Home screen install
+
+`public/manifest.webmanifest` plus the `apple-*` tags in `index.html` make the app installable from iOS Share → "Zet op beginscherm": a club icon and a standalone launch, no service worker and no offline support. `theme-color` is `#f2f5fb`, the same `--color-primary-50` that `html, body` paints, so the standalone status bar blends into the page. The home screen label comes from `apple-mobile-web-app-title`, which reads `%VITE_CLUBNAME%` through Vite's HTML env replacement; the manifest's own `name`/`short_name` are static, since `public/` is copied verbatim and gets no substitution.
+
+`public/icons/*` are committed build artefacts, generated once from `public/images/logo.webp` with a throwaway `sharp` script. The crest is blue line art on solid white with no alpha, so the icons are made by using the logo's inverted (and normalised) luminance as an alpha mask over a `#27428a` field — that is what turns it into a white crest on club blue. Regenerate at 180 (`apple-touch-icon.png`), 192 and 512 px, with the artwork at 64% of the canvas so it stays inside the Android maskable safe zone.
+
 Releases go through the `deploy` skill (`.claude/skills/deploy/SKILL.md`): bump semver → tag → GitHub release → `npm run build` → `firebase deploy`. Don't run a bare `firebase deploy` for a production release.
 
 ## Architecture
