@@ -33,7 +33,7 @@
 </script>
 
 <template>
-    <div class="grid gap-5">
+    <div class="grid grid-cols-1 gap-5">
         <LiveMatchWidget />
 
         <div class="flex flex-col gap-5 lg:flex-row">

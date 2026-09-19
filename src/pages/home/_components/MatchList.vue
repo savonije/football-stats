@@ -59,6 +59,7 @@
             accessorKey: 'opponent',
             header: sortableHeader<Match>(t('common.opponent')),
             enableGlobalFilter: true,
+            meta: { class: { td: 'font-semibold whitespace-normal' } },
         },
         {
             id: 'homeOrAway',

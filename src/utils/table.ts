@@ -4,9 +4,9 @@ import { h } from 'vue';
 
 export const TABLE_UI = {
     root: 'bg-white',
-    th: 'bg-[image:var(--gradient-table-header)] text-primary-800 font-bold tracking-wide',
+    th: 'bg-[image:var(--gradient-table-header)] text-primary-800 px-2 font-bold tracking-wide sm:px-4',
     tr: 'cursor-pointer transition-colors duration-150 even:bg-primary-50/40 hover:bg-primary-50',
-    td: 'text-primary-900',
+    td: 'text-primary-900 px-2 sm:px-4',
 };
 
 export const sortableHeader =
