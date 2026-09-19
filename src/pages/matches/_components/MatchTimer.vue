@@ -68,9 +68,9 @@
     });
 
     const statusLabel = computed(() => {
-        if (isEnded.value) return t('match.played');
+        if (isEnded.value) return '';
+        if (!started.value) return '';
         if (isHalfTime.value) return t('match.halfTime');
-        if (!started.value) return t('match.notStarted');
 
         return match.value?.half === 2
             ? t('match.secondHalf')
@@ -146,6 +146,7 @@
                 </span>
 
                 <span
+                    v-if="statusLabel"
                     class="text-xxs tracking-badge text-primary-400 mt-1.5 font-bold uppercase"
                     data-testid="match-status"
                 >
