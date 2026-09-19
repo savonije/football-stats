@@ -48,7 +48,6 @@
         </section>
 
         <section>
-            <h1 class="mb-3">{{ $t('match.game', 2) }}</h1>
             <MatchList />
         </section>
 
