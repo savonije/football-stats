@@ -22,9 +22,12 @@ export default {
     firstHalf: '1e helft',
     game: 'Wedstrijd | Wedstrijden',
     goalScorer: 'Doelpuntenmaker',
+    goalTitleAgainst: 'Goal {team}...',
+    goalTitleFor: 'GOAL VOOR {team} !!',
     goalTypes: {
         for: 'Doelpunt voor Apollo! 🥳',
-        against: 'Doelpunt voor de tegenstander 😔',
+        forBy: 'Doelpunt voor Apollo door {player}! 🥳',
+        against: 'Doelpunt gemaakt door de tegenstander 😔',
     },
     goalsAgainst: 'Doelpunten tegen',
     goalsFor: 'Doelpunten voor',

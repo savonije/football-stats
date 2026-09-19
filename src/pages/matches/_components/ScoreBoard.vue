@@ -72,6 +72,14 @@
             : 'text-primary-900';
     };
 
+    const showGoalToast = (title: string, description: string) =>
+        toast.add({
+            title,
+            description,
+            color: 'info',
+            duration: 20000,
+        });
+
     const updateGoals = async (type: GoalType, delta: 1 | -1) => {
         const current = type === 'for' ? goalsFor.value : goalsAgainst.value;
         const goals = current + delta;
@@ -87,14 +95,15 @@
 
         if (delta < 0) return;
 
-        if (type === 'for') modal.value = true;
+        if (type === 'for') {
+            modal.value = true;
+            return;
+        }
 
-        toast.add({
-            title: t('common.goal'),
-            description: t(`match.goalTypes.${type}`),
-            color: 'info',
-            duration: 20000,
-        });
+        showGoalToast(
+            t('match.goalTitleAgainst', { team: opponent.value.name }),
+            t('match.goalTypes.against'),
+        );
     };
 
     const saveGoal = async () => {
@@ -112,6 +121,15 @@
             match.id,
             appearance.id,
             1,
+        );
+
+        showGoalToast(
+            t('match.goalTitleFor', { team: club.value.name }),
+            t('match.goalTypes.forBy', {
+                player: players.value.find(
+                    (player) => player.playerId === selectedPlayer.value,
+                )?.playerName,
+            }),
         );
 
         modal.value = false;
