@@ -27,6 +27,32 @@ test.describe('Match players', () => {
         matchUrl = '';
     });
 
+    test('warns and offers to add players when a match has none', async ({
+        page,
+    }) => {
+        matchUrl = await createMatch(page, uniqueLabel('E2E leeg'), {
+            withSquad: false,
+        });
+
+        const warning = page.getByText('Er zijn geen spelers toegevoegd');
+        await expect(warning).toBeVisible();
+
+        await page.getByRole('button', { name: 'Spelers toevoegen' }).click();
+
+        const dialog = page.getByRole('dialog', { name: 'Spelers toevoegen' });
+        const players = dialog.locator('[data-testid="match-players"]');
+
+        await players.click();
+        await page.getByRole('option').first().click();
+        await players.click(); // close the overlay off the dialog footer
+
+        await dialog.getByRole('button', { name: 'Toevoegen' }).click();
+        await expect(dialog).toBeHidden();
+
+        await expect(page.getByTestId('appearance')).toHaveCount(1);
+        await expect(warning).toBeHidden();
+    });
+
     test('edits, removes and re-adds a player in a match', async ({ page }) => {
         matchUrl = await createMatch(page, uniqueLabel('E2E squad'));
 

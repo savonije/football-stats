@@ -105,13 +105,31 @@ const openMatch = async (page: Page, opponent: string) => {
     return page.url();
 };
 
-export const createMatch = async (page: Page, opponent: string) => {
+export const createMatch = async (
+    page: Page,
+    opponent: string,
+    { withSquad = true } = {},
+) => {
     await page.goto('/');
     await openMenu(page);
     await page.getByRole('button', { name: 'Wedstrijd toevoegen' }).click();
 
     const dialog = page.getByRole('dialog', { name: 'Wedstrijd toevoegen' });
     await dialog.getByLabel('Tegenstander').fill(opponent);
+
+    // The dialog preselects the whole squad, so an empty match means
+    // unpicking every option again.
+    if (!withSquad) {
+        const players = dialog.locator('[data-testid="match-players"]');
+        await players.click();
+
+        const selected = page.getByRole('option', { selected: true });
+        for (let left = await selected.count(); left > 0; left--) {
+            await selected.first().click();
+        }
+
+        await players.click();
+    }
     await dialog.getByRole('button', { name: 'Toevoegen' }).click();
     await expect(dialog).toBeHidden();
 
