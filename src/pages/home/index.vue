@@ -1,9 +1,10 @@
 <script setup lang="ts">
     import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
     import { computed } from 'vue';
+
+    import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
     import MatchList from '@/pages/home/_components/MatchList.vue';
     import MatchResultsChart from '@/pages/home/_components/MatchResultsChart.vue';
-    import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
     import TeamStats from '@/pages/home/_components/TeamStats.vue';
 
     import { useMatchStore } from '@/stores/matchStore';

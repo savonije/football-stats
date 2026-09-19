@@ -1,18 +1,19 @@
 <script setup lang="ts">
     import { useStorage } from '@vueuse/core';
-    import { computed, onMounted, watch } from 'vue';
     import dayjs from 'dayjs';
+    import { computed, onMounted, watch } from 'vue';
 
-    import { useIsAdmin } from '@/composables/useIsAdmin';
-    import { useTrainingStore } from '@/stores/trainingStore';
-    import { useSeasonStore } from '@/stores/seasonStore';
-    import { usePlayerStore } from '@/stores/playerStore';
-    import { isGuestInSeason } from '@/utils/playerSeason';
-    import { attendanceStatus } from '@/utils/training';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
-    import TrainingMonthCalendar from '@/pages/training/_components/TrainingMonthCalendar.vue';
     import TrainingActionsMenu from '@/pages/training/_components/TrainingActionsMenu.vue';
     import TrainingAttendanceTable from '@/pages/training/_components/TrainingAttendanceTable.vue';
+    import TrainingMonthCalendar from '@/pages/training/_components/TrainingMonthCalendar.vue';
+
+    import { useIsAdmin } from '@/composables/useIsAdmin';
+    import { usePlayerStore } from '@/stores/playerStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
+    import { useTrainingStore } from '@/stores/trainingStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
+    import { attendanceStatus } from '@/utils/training';
 
     const trainingStore = useTrainingStore();
     const isAdmin = useIsAdmin();

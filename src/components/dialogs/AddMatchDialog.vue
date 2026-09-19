@@ -3,15 +3,16 @@
     import { reactive, computed, onMounted, ref, shallowRef, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
-    import type { NewMatch } from '@/types';
-    import { addMatch } from '@/services/matchService';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+    import DatePicker from '@/components/ui/DatePicker.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
+    import { addMatch } from '@/services/matchService';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import DatePicker from '@/components/ui/DatePicker.vue';
+    import type { NewMatch } from '@/types';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
     import { isGuestInSeason } from '@/utils/playerSeason';
-    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const { t } = useI18n();

@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
+    import dayjs from 'dayjs';
     import { computed, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import dayjs from 'dayjs';
 
     import router from '@/router';
     import { usePlayerStore } from '@/stores/playerStore';

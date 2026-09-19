@@ -3,12 +3,13 @@
     import { ref, shallowRef, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+    import DatePicker from '@/components/ui/DatePicker.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useMatchStore } from '@/stores/matchStore';
     import type { Match } from '@/types';
-    import DatePicker from '@/components/ui/DatePicker.vue';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
-    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { seasonId, match } = defineProps<{
         seasonId: string;

@@ -6,6 +6,7 @@
     import AddTrainingDialog from '@/pages/training/_components/AddTrainingDialog.vue';
     import GenerateTrainingsDialog from '@/pages/training/_components/GenerateTrainingsDialog.vue';
     import TrainingDaysDialog from '@/pages/training/_components/TrainingDaysDialog.vue';
+
     import { useCanEdit } from '@/composables/useCanEdit';
 
     const { month } = defineProps<{ month: Date }>();

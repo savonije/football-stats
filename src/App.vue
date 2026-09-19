@@ -1,11 +1,11 @@
 <script setup lang="ts">
     import { nl } from '@nuxt/ui/locale';
+    import { onMounted } from 'vue';
     import { RouterView } from 'vue-router';
 
-    import { useStoreAuth } from '@/stores/authStore';
-    import { onMounted } from 'vue';
-
     import DefaultLayout from '@/layouts/DefaultLayout.vue';
+
+    import { useStoreAuth } from '@/stores/authStore';
 
     const storeAuth = useStoreAuth();
 

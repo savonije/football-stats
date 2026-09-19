@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { useRoute } from 'vue-router';
     import { useI18n } from 'vue-i18n';
+    import { useRoute } from 'vue-router';
 
     import PageFooter from '@/components/layout/PageFooter.vue';
     import PageHeader from '@/components/layout/PageHeader.vue';

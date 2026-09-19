@@ -96,7 +96,7 @@ export const useMatchStore = defineStore('matchStore', {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
             const now = Date.now();
 
-            updateDoc(matchRef, {
+            return updateDoc(matchRef, {
                 ended: false,
                 paused: false,
                 startTime: now,
@@ -136,7 +136,7 @@ export const useMatchStore = defineStore('matchStore', {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
             const now = Date.now();
 
-            updateDoc(matchRef, {
+            return updateDoc(matchRef, {
                 paused: true,
                 pausedAt: now,
             });
@@ -149,7 +149,7 @@ export const useMatchStore = defineStore('matchStore', {
             const pausedDuration = match?.pausedDuration ?? 0;
             const pausedAt = match?.pausedAt ?? now;
 
-            updateDoc(matchRef, {
+            return updateDoc(matchRef, {
                 paused: false,
                 pausedDuration: pausedDuration + (now - pausedAt),
                 pausedAt: null,

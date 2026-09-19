@@ -1,6 +1,5 @@
 import '@/styles/main.css';
 import '@/config/dayjs';
-
 import ui from '@nuxt/ui/vue-plugin';
 import { createPinia } from 'pinia';
 import { createApp, markRaw } from 'vue';

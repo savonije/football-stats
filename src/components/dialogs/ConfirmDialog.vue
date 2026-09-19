@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { watch } from 'vue';
+
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { confirmColor = 'primary', icon = 'i-lucide-triangle-alert' } =

@@ -2,13 +2,14 @@
     import { ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useIsAdmin } from '@/composables/useIsAdmin';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
     import { playerSeasonInfo } from '@/utils/playerSeason';
-    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const visible = defineModel<boolean>('visible');
     const player = defineModel<Player | null>('player');

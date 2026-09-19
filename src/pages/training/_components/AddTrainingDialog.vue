@@ -1,16 +1,17 @@
 <script setup lang="ts">
     import type { CalendarDate } from '@internationalized/date';
+    import dayjs from 'dayjs';
     import { ref, computed, shallowRef, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import dayjs from 'dayjs';
 
-    import { addTrainings } from '@/services/trainingService';
-    import { useAppToast } from '@/composables/useAppToast';
-    import { useTrainingStore } from '@/stores/trainingStore';
-    import { useSeasonStore } from '@/stores/seasonStore';
-    import DatePicker from '@/components/ui/DatePicker.vue';
-    import { fromCalendarDate, toCalendarDate } from '@/utils/date';
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+    import DatePicker from '@/components/ui/DatePicker.vue';
+
+    import { useAppToast } from '@/composables/useAppToast';
+    import { addTrainings } from '@/services/trainingService';
+    import { useSeasonStore } from '@/stores/seasonStore';
+    import { useTrainingStore } from '@/stores/trainingStore';
+    import { fromCalendarDate, toCalendarDate } from '@/utils/date';
 
     const model = defineModel<boolean>('visible');
 

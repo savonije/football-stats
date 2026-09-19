@@ -5,7 +5,6 @@
 
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
-    import { useCanEdit } from '@/composables/useCanEdit';
     import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
     import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
     import MatchControls from '@/pages/matches/_components/MatchControls.vue';
@@ -13,6 +12,8 @@
     import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
     import PlayerAppearanceItem from '@/pages/matches/_components/PlayerAppearanceItem.vue';
     import ScoreBoard from '@/pages/matches/_components/ScoreBoard.vue';
+
+    import { useCanEdit } from '@/composables/useCanEdit';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { AppearanceWithName } from '@/types';

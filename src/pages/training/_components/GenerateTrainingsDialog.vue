@@ -1,14 +1,15 @@
 <script setup lang="ts">
+    import dayjs from 'dayjs';
     import { ref, computed, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import dayjs from 'dayjs';
 
-    import { addTrainings } from '@/services/trainingService';
-    import { useAppToast } from '@/composables/useAppToast';
-    import { useTrainingStore } from '@/stores/trainingStore';
-    import { useSeasonStore } from '@/stores/seasonStore';
-    import { trainingDatesInMonth } from '@/utils/training';
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+
+    import { useAppToast } from '@/composables/useAppToast';
+    import { addTrainings } from '@/services/trainingService';
+    import { useSeasonStore } from '@/stores/seasonStore';
+    import { useTrainingStore } from '@/stores/trainingStore';
+    import { trainingDatesInMonth } from '@/utils/training';
 
     const model = defineModel<boolean>('visible');
     const { initialMonth } = defineProps<{ initialMonth?: Date }>();

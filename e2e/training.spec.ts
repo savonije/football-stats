@@ -1,3 +1,5 @@
+import { expect, test, type Page } from '@playwright/test';
+
 import {
     becomesVisible,
     deleteTraining,
@@ -6,7 +8,6 @@ import {
     skipWithoutCredentials,
     skipWithoutEditableSeason,
 } from './helpers/app';
-import { expect, test, type Page } from '@playwright/test';
 
 const pad = (value: number) => value.toString().padStart(2, '0');
 
@@ -67,9 +68,7 @@ const addTrainingForDay = async (page: Page, day: number) => {
     const now = new Date();
     const value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-    await page
-        .locator(`[data-value="${value}"]`)
-        .click();
+    await page.locator(`[data-value="${value}"]`).click();
     await expect(dialog.locator('[data-testid="date-input"]')).toContainText(
         String(day).padStart(2, '0'),
     );

@@ -1,11 +1,12 @@
 <script setup lang="ts">
     import { useTimestamp } from '@vueuse/core';
     import { computed, ref, watch } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import { RouterLink } from 'vue-router';
+
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { getDisplaySeconds, hasStarted } from '@/utils/match';
-    import { useI18n } from 'vue-i18n';
-    import { RouterLink } from 'vue-router';
 
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();

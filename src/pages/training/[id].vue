@@ -1,20 +1,20 @@
 <script setup lang="ts">
-    import { computed, onMounted } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
-    import { useI18n } from 'vue-i18n';
     import dayjs from 'dayjs';
-
-    import { useTrainingStore } from '@/stores/trainingStore';
-    import { useSeasonStore } from '@/stores/seasonStore';
-    import { usePlayerStore } from '@/stores/playerStore';
-    import { isGuestInSeason } from '@/utils/playerSeason';
-    import { attendanceStatus, type AttendanceStatus } from '@/utils/training';
-    import { useAppToast } from '@/composables/useAppToast';
-    import { useCanEdit } from '@/composables/useCanEdit';
-    import { useConfirmDialog } from '@/composables/useConfirmDialog';
+    import { computed, onMounted } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import { useRoute, useRouter } from 'vue-router';
 
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
+
+    import { useAppToast } from '@/composables/useAppToast';
+    import { useCanEdit } from '@/composables/useCanEdit';
+    import { useConfirmDialog } from '@/composables/useConfirmDialog';
+    import { usePlayerStore } from '@/stores/playerStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
+    import { useTrainingStore } from '@/stores/trainingStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
+    import { attendanceStatus, type AttendanceStatus } from '@/utils/training';
 
     const route = useRoute();
     const router = useRouter();

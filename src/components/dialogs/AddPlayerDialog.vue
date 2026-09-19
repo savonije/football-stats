@@ -2,11 +2,12 @@
     import { ref, reactive, computed, onMounted } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { isActiveInSeason } from '@/utils/playerSeason';
-    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const playerStore = usePlayerStore();

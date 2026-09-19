@@ -2,11 +2,12 @@
     import { ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
     import { useMatchStore } from '@/stores/matchStore';
     import type { AppearanceWithName } from '@/types';
-    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { seasonId, matchId, appearance } = defineProps<{
         seasonId: string;
