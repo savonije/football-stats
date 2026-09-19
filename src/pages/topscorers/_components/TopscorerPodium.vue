@@ -85,11 +85,6 @@
                 >
                     {{ step.totalGoals }}
                 </span>
-                <span
-                    class="text-xxs tracking-label text-primary-600 font-bold"
-                >
-                    {{ $t('common.goal', step.totalGoals) }}
-                </span>
             </span>
         </RouterLink>
     </div>
