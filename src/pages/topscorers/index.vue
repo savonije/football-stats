@@ -37,6 +37,7 @@
 
                 return {
                     ...player,
+                    matchCount: appearances.length,
                     totalGoals,
                     goalkeeperCount,
                 };
@@ -49,6 +50,7 @@
         {
             accessorKey: 'name',
             header: sortableHeader<TopscorerRow>(t('common.name')),
+            meta: { class: { td: 'font-semibold' } },
         },
         {
             accessorKey: 'totalGoals',
@@ -57,6 +59,10 @@
         {
             accessorKey: 'goalkeeperCount',
             header: sortableHeader<TopscorerRow>(t('player.totalKeeper')),
+        },
+        {
+            accessorKey: 'matchCount',
+            header: sortableHeader<TopscorerRow>(t('match.game', 2)),
         },
     ]);
 
