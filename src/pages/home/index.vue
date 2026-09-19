@@ -5,6 +5,7 @@
     import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
     import MatchList from '@/pages/home/_components/MatchList.vue';
     import MatchResultsChart from '@/pages/home/_components/MatchResultsChart.vue';
+    import NextMatchCard from '@/pages/home/_components/NextMatchCard.vue';
     import TeamStats from '@/pages/home/_components/TeamStats.vue';
 
     import { useMatchStore } from '@/stores/matchStore';
@@ -35,16 +36,20 @@
     <div class="grid gap-5">
         <LiveMatchWidget />
 
-        <section
-            v-if="recentMatchData.length > 0"
-            class="shadow-card rounded-xl bg-white p-5"
-        >
-            <h2>{{ $t('match.recentResults') }}</h2>
-            <MatchResultsChart
-                v-if="matchStore.matchesLoaded"
-                :data="recentMatchData"
-            />
-        </section>
+        <div class="flex flex-col gap-5 lg:flex-row">
+            <section
+                v-if="recentMatchData.length > 0"
+                class="shadow-card flex-1 rounded-xl bg-white p-5"
+            >
+                <h2>{{ $t('match.recentResults') }}</h2>
+                <MatchResultsChart
+                    v-if="matchStore.matchesLoaded"
+                    :data="recentMatchData"
+                />
+            </section>
+
+            <NextMatchCard class="lg:w-80 lg:shrink-0" />
+        </div>
 
         <section>
             <MatchList />

@@ -47,6 +47,7 @@ export default {
         playersAddError: 'Kon de spelers niet toevoegen',
     },
     minutesLeft: 'nog {count} min',
+    nextMatch: 'Volgende wedstrijd',
     noMatches: 'Geen wedstrijden gevonden...',
     noPlayersAdded: 'Er zijn geen spelers toegevoegd',
     noScoreYet: 'Nog niet begonnen',
