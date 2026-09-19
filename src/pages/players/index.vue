@@ -3,15 +3,14 @@
     import { computed, onMounted, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
+
+    import router from '@/router';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
     import { isGuestInSeason } from '@/utils/playerSeason';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
-
-    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
-
-    import router from '@/router';
 
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();

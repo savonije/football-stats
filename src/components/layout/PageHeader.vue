@@ -2,11 +2,10 @@
     import { ref, onMounted } from 'vue';
     import { useI18n } from 'vue-i18n';
 
-    import { useSeasonStore } from '@/stores/seasonStore';
-
     import NavDrawer from '@/components/layout/NavDrawer.vue';
 
     import { CLUBNAME } from '@/constants';
+    import { useSeasonStore } from '@/stores/seasonStore';
 
     const seasonStore = useSeasonStore();
     const { t } = useI18n();

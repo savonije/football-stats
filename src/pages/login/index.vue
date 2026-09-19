@@ -2,8 +2,8 @@
     import { reactive, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
-    import { useStoreAuth } from '@/stores/authStore';
     import { CLUBNAME } from '@/constants';
+    import { useStoreAuth } from '@/stores/authStore';
 
     const { t } = useI18n();
     const storeAuth = useStoreAuth();

@@ -3,13 +3,12 @@
     import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
-    import { usePlayerStore } from '@/stores/playerStore';
+    import router from '@/router';
     import { useMatchStore } from '@/stores/matchStore';
+    import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { isGuestInSeason } from '@/utils/playerSeason';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
-
-    import router from '@/router';
 
     const playerStore = usePlayerStore();
     const matchStore = useMatchStore();

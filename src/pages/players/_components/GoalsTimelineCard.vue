@@ -2,6 +2,7 @@
     import { computed } from 'vue';
 
     import GoalsChart from '@/pages/players/_components/GoalsChart.vue';
+
     import { usePlayerAppearances } from '@/composables/usePlayerAppearances';
     import { useMatchStore } from '@/stores/matchStore';
 

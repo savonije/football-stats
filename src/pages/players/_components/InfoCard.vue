@@ -2,6 +2,7 @@
     import { computed } from 'vue';
 
     import InfoRow from '@/pages/players/_components/InfoRow.vue';
+
     import { useIsAdmin } from '@/composables/useIsAdmin';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';

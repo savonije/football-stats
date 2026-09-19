@@ -3,8 +3,9 @@
     import { useI18n } from 'vue-i18n';
 
     import StatTile from '@/components/ui/StatTile.vue';
-    import { usePlayerAppearances } from '@/composables/usePlayerAppearances';
     import StatProgressBar from '@/pages/players/_components/StatProgressBar.vue';
+
+    import { usePlayerAppearances } from '@/composables/usePlayerAppearances';
     import { useTrainingStore } from '@/stores/trainingStore';
     import { attendancePercentage } from '@/utils/training';
 

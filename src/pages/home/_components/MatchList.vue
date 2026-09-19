@@ -1,22 +1,20 @@
 <script setup lang="ts">
     import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
     import { getPaginationRowModel } from '@tanstack/vue-table';
-    import { computed, onMounted, ref, watch } from 'vue';
-    import { useMatchStore } from '@/stores/matchStore';
-    import { useSeasonStore } from '@/stores/seasonStore';
-    import { usePlayerStore } from '@/stores/playerStore';
-    import { useRouter } from 'vue-router';
-
     import dayjs from 'dayjs';
+    import { computed, onMounted, ref, watch } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import { useRouter } from 'vue-router';
 
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
 
+    import { useMatchStore } from '@/stores/matchStore';
+    import { usePlayerStore } from '@/stores/playerStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
     import type { Match } from '@/types';
     import { hasStarted } from '@/utils/match';
-    import { TABLE_UI, sortableHeader } from '@/utils/table';
     import { isPlayed } from '@/utils/match';
-
-    import { useI18n } from 'vue-i18n';
+    import { TABLE_UI, sortableHeader } from '@/utils/table';
 
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();

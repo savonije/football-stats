@@ -2,8 +2,9 @@
     import dayjs from 'dayjs';
     import { computed } from 'vue';
 
-    import { CLUBNAME } from '@/constants';
     import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
+
+    import { CLUBNAME } from '@/constants';
     import type { Match } from '@/types';
 
     const { match } = defineProps<{ match: Match }>();

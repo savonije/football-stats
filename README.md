@@ -19,13 +19,13 @@ Built with **Vite**, styled with **Tailwind CSS** and **PrimeVue**, powered by *
 ## 🛠 Tech Stack
 
 - [Vue 3](https://vuejs.org/) – Frontend framework
-- [Vite](https://vite.dev/) – Fast build & dev environment
+- [Vite+](https://viteplus.dev/) – Unified toolchain (Vite, Vitest, Oxlint, Oxfmt) behind one `vp` CLI
 - [TypeScript](https://www.typescriptlang.org/) – Type safety
 - [Pinia](https://pinia.vuejs.org/) – State management
 - [PrimeVue](https://primevue.org/) – UI components
 - [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework
 - [Firebase](https://firebase.google.com/) – Backend services (Auth, Firestore, Hosting)
-- [ESLint](https://eslint.org/) – Code quality
+- [Oxlint / Oxfmt](https://oxc.rs/) – Linting and formatting (via `vp check`)
 - [Playwright](https://playwright.dev/) – End-to-end testing
 
 ---
@@ -40,14 +40,14 @@ Make sure you have [Node.js](https://nodejs.org/) (v22+) and npm installed.
 
 ```sh
 # Install dependencies
-npm install
+vp install
 ```
 
 ### Development
 
 ```sh
 # Run the app locally with hot-reload
-npm run dev
+vp dev
 ```
 
 ### Production
@@ -57,17 +57,18 @@ npm run dev
 npm run build
 ```
 
+`npm run build` runs `vue-tsc` and `vp build` in parallel; `vp build` alone skips the type check.
+
 ### Linting & Formatting
 
 ```sh
-# Lint with ESLint + oxlint (both auto-fix)
-npm run lint
+# Format, lint and type-check in one go (--fix to apply)
+vp check --fix
 
-# Type-check with vue-tsc
-npm run type-check
-
-# Format source with Prettier
-npm run prettier
+# Or individually
+vp fmt
+vp lint --fix
+npm run type-check     # vue-tsc, which understands .vue better than the built-in
 ```
 
 ### Testing

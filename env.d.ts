@@ -14,4 +14,12 @@ interface ImportMeta {
     readonly env: ImportMetaEnv;
 }
 
-declare const __APP_VERSION__: string
+declare const __APP_VERSION__: string;
+
+// Oxlint's type-aware check can't parse SFCs; vue-tsc still resolves the real
+// per-component types, which take precedence over this fallback.
+declare module '*.vue' {
+    import type { DefineComponent } from 'vue';
+    const component: DefineComponent;
+    export default component;
+}

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-    import { computed } from 'vue';
-    import { useRouter } from 'vue-router';
-    import { useI18n } from 'vue-i18n';
     import dayjs from 'dayjs';
     import type { Timestamp } from 'firebase/firestore';
+    import { computed } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import { useRouter } from 'vue-router';
 
     import { monthCalendarDays, weekdayOptions } from '@/utils/training';
 

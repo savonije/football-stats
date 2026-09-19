@@ -1,10 +1,12 @@
 <script setup lang="ts">
     import { ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
+
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { weekdayOptions } from '@/utils/training';
-    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
 

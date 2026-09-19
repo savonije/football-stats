@@ -8,6 +8,7 @@
     import Hero from '@/pages/players/_components/Hero.vue';
     import InfoCard from '@/pages/players/_components/InfoCard.vue';
     import StatisticsPanel from '@/pages/players/_components/StatisticsPanel.vue';
+
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';

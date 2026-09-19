@@ -4,15 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+The toolchain is [Vite+](https://viteplus.dev) — one `vp` CLI in place of the old
+split of Vite, ESLint, oxlint and Prettier. See `AGENTS.md` for the generated
+Vite+ notes; `vp help` and `vp <command> --help` list everything.
+
 ```bash
-npm run dev          # dev server with hot-reload
-npm run build        # type-check + build for production
-npm run lint         # eslint then oxlint (run-s lint:*, both with --fix)
+vp dev               # dev server with hot-reload
+vp build             # production build (npm run build adds type-check in parallel)
+vp check             # fmt + lint + type check — the validation loop, --fix to apply
+vp fmt               # format (oxfmt); vp lint --fix lints (oxlint)
 npm run type-check   # vue-tsc --build type checking
-npm run prettier     # prettier --write src/ (prettier:check to verify only)
-npm run test         # Playwright end-to-end tests
+npm run test         # Playwright end-to-end tests (vp run test)
 npm run knip         # find unused files, exports and dependencies
 ```
+
+`vp <name>` runs a Vite+ built-in, `vp run <name>` runs a `package.json` script —
+`vp test` is the Vitest built-in (no unit tests here), `vp run test` is Playwright.
+
+The Node version is pinned **twice, on purpose**: `.node-version` is what `vp` and
+the CI `setup-node` read, `.nvmrc` is what `nvm use` reads (nvm does not look at
+`.node-version`). Bump both together. Deleting `.node-version` is not an option —
+vp would then fall through to the wide `engines.node` range instead of the pin.
 
 Playwright tests live in `e2e/` and run against a preview build that `playwright.config.ts` builds and serves itself on port **4174** (`npm run build:e2e && npm run preview`). Port 4173 is deliberately avoided: a hand-started `npm run preview` there is built from `.env.production`, and reusing it would point the writing specs at the production project. Run a single spec/test:
 
@@ -43,9 +55,9 @@ Knip (`knip.json`) runs on its auto-detected defaults — it picks up the Vite, 
 
 Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials plus `VITE_CLUBNAME`. There is no hardcoded config in source. `.env` points at the **staging** project and `.env.production` at production, which is why `build:e2e` builds in staging mode. The Playwright CI job needs `VITE_CLUBNAME` in its secrets as well — without it the club name renders empty and `navigation.spec.ts` fails.
 
-`npm run type-check` covers `e2e/**` too (it is in `tsconfig.node.json`), so spec type errors surface before the suite runs. Note `npm run prettier` only formats `src/`; e2e files are not checked by CI, but match the same style.
+`npm run type-check` covers `e2e/**` too (it is in `tsconfig.node.json`), so spec type errors surface before the suite runs. `vp fmt` formats the whole repo — `src/`, `e2e/` and the root configs alike — so e2e specs are held to the same style as source.
 
-CI (`.github/workflows/`) runs `prettier:check`, `type-check`, `knip`, and the Playwright suite on every push/PR to `main` — run `npm run prettier` and `npm run type-check` before handing work off, or CI will fail on formatting alone. `knip` currently passes clean and exits non-zero on any finding, so don't leave unused files or exports behind — an internal e2e helper should stay unexported rather than become an unused export.
+CI (`.github/workflows/`) runs `check` (`vp check`: format, lint and type check in one job), `knip`, and the Playwright suite on every push/PR to `main` — run `vp check --fix` before handing work off, or CI will fail on formatting alone. A `vp staged` pre-commit hook (`.vite-hooks/pre-commit`, installed by the `prepare` script) runs `vp check --fix` on staged files, so most of this is caught before the push. `knip` currently passes clean and exits non-zero on any finding, so don't leave unused files or exports behind — an internal e2e helper should stay unexported rather than become an unused export.
 
 ### Home screen install
 
@@ -127,4 +139,6 @@ Tailwind v4 via `@tailwindcss/vite` — **there is no `tailwind.config.js`**; th
 
 ## Formatting
 
-Prettier is not optional here — CI fails on it, and the config carries real conventions: 4-space indent, single quotes, 80 print width, and `vueIndentScriptAndStyle: true` (so `<script setup>` bodies are indented one level). Three plugins rewrite code on save: import sorting (third-party → `@/*.vue` → `@/*` → relative), Vue attribute ordering, and Tailwind class sorting. Don't hand-order imports, attributes, or classes — write them and run `npm run prettier`.
+Formatting is oxfmt via `vp fmt`, configured in the `fmt` block of `vite.config.ts` (there is no `.prettierrc.json` any more). CI fails on it, and the config carries real conventions: 4-space indent, single quotes, 80 print width, and `vueIndentScriptAndStyle: true` (so `<script setup>` bodies are indented one level). `sortImports` keeps the old grouping (third-party → `@/**/*.vue` → the rest of `@/` → relative, blank line between groups) and `sortTailwindcss` sorts class lists — don't hand-order imports or classes, write them and run `vp fmt`.
+
+Vue **attribute ordering is no longer automated**: oxfmt has no equivalent of `prettier-plugin-organize-attributes`, which the Vite+ migration dropped. Match the ordering of the surrounding templates by hand (structural directives → `id`/`key`/`ref` → slots → `v-model` → other directives → `class` → plain attributes → `data-*` → `v-bind` → listeners → `v-html`/`v-text`).

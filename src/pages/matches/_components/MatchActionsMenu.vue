@@ -5,6 +5,7 @@
     import { useRouter } from 'vue-router';
 
     import EditMatchDialog from '@/pages/matches/_components/EditMatchDialog.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
