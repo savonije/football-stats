@@ -43,8 +43,31 @@
 </script>
 
 <template>
+    <div
+        v-if="!matchStore.matchesLoaded"
+        class="shadow-card rounded-xl bg-white p-5"
+    >
+        <h2>{{ t('match.nextMatch') }}</h2>
+
+        <div class="flex items-center gap-4">
+            <USkeleton class="size-14 shrink-0 rounded-xl" />
+
+            <div class="flex min-w-0 flex-1 flex-col gap-2">
+                <USkeleton class="h-5 w-40" />
+                <USkeleton class="h-4 w-24" />
+            </div>
+        </div>
+
+        <div
+            class="border-primary-100 mt-4 flex items-center justify-between border-t pt-3"
+        >
+            <USkeleton class="h-4 w-20" />
+            <USkeleton class="h-4 w-24" />
+        </div>
+    </div>
+
     <RouterLink
-        v-if="nextMatch"
+        v-else-if="nextMatch"
         class="shadow-card block rounded-xl bg-white p-5 text-inherit no-underline"
         :to="{ name: 'matchDetail', params: { id: nextMatch.id } }"
     >

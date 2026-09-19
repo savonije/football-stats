@@ -40,14 +40,15 @@
 
         <div class="flex flex-col gap-5 lg:flex-row">
             <section
-                v-if="recentMatchData.length > 0"
+                v-if="!matchStore.matchesLoaded || recentMatchData.length > 0"
                 class="shadow-card flex-1 rounded-xl bg-white p-5"
             >
                 <h2>{{ $t('match.recentResults') }}</h2>
-                <MatchResultsChart
-                    v-if="matchStore.matchesLoaded"
-                    :data="recentMatchData"
+                <USkeleton
+                    v-if="!matchStore.matchesLoaded"
+                    class="mt-2 h-52 w-full"
                 />
+                <MatchResultsChart v-else :data="recentMatchData" />
             </section>
 
             <NextMatchCard class="lg:w-80 lg:shrink-0" />

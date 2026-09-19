@@ -67,12 +67,13 @@
 </script>
 
 <template>
-    <section v-if="matchStore.matchesLoaded && stats.matchesPlayed > 0">
+    <section v-if="!matchStore.matchesLoaded || stats.matchesPlayed > 0">
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             <StatTile
                 v-for="tile in tiles"
                 :key="tile.label"
                 :label="$t(tile.label)"
+                :loading="!matchStore.matchesLoaded"
                 :value="tile.value"
             />
         </div>

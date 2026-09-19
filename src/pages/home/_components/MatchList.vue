@@ -6,8 +6,6 @@
     import { useI18n } from 'vue-i18n';
     import { useRouter } from 'vue-router';
 
-    import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
-
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -142,8 +140,11 @@
         </div>
     </div>
 
-    <div v-if="!matchStore.matchesLoaded" class="justify-content-center flex">
-        <ProgressSpinner />
+    <div
+        v-if="!matchStore.matchesLoaded"
+        class="flex flex-col gap-2 rounded-2xl bg-white p-4 shadow-lg"
+    >
+        <USkeleton v-for="i in 10" :key="i" class="h-10 w-full" />
     </div>
 
     <template v-else>
