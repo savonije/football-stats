@@ -3,6 +3,8 @@
     import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import TopscorerPodium from '@/pages/topscorers/_components/TopscorerPodium.vue';
+
     import router from '@/router';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
@@ -43,6 +45,13 @@
                 };
             });
     });
+
+    const podium = computed(() =>
+        [...playerTotalStats.value]
+            .filter((player) => player.totalGoals > 0)
+            .sort((a, b) => b.totalGoals - a.totalGoals)
+            .slice(0, 3),
+    );
 
     type TopscorerRow = (typeof playerTotalStats.value)[number];
 
@@ -98,6 +107,8 @@
 </script>
 
 <template>
+    <TopscorerPodium :players="podium" />
+
     <UTable
         v-model:sorting="sorting"
         class="rounded-2xl shadow-lg"
