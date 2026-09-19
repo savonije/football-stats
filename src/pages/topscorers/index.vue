@@ -6,6 +6,7 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { isGuestInSeason } from '@/utils/playerSeason';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
 
     import router from '@/router';
@@ -62,6 +63,15 @@
 
     const sorting = ref([{ id: 'totalGoals', desc: true }]);
 
+    const meta = {
+        class: {
+            tr: (row: TableRow<TopscorerRow>) =>
+                isGuestInSeason(row.original, seasonStore.currentSeason)
+                    ? '[&>td]:text-gray-300'
+                    : '',
+        },
+    };
+
     const onSelect = (_event: Event, row: TableRow<TopscorerRow>) => {
         router.push({
             name: 'playerDetail',
@@ -89,6 +99,7 @@
         :columns="columns"
         :data="playerTotalStats"
         :loading="!playerStore.playersLoaded || !matchStore.appearancesLoaded"
+        :meta="meta"
         :ui="TABLE_UI"
         @select="onSelect"
     />
