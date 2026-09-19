@@ -21,6 +21,11 @@ npm run knip         # find unused files, exports and dependencies
 `vp <name>` runs a Vite+ built-in, `vp run <name>` runs a `package.json` script —
 `vp test` is the Vitest built-in (no unit tests here), `vp run test` is Playwright.
 
+The Node version is pinned **twice, on purpose**: `.node-version` is what `vp` and
+the CI `setup-node` read, `.nvmrc` is what `nvm use` reads (nvm does not look at
+`.node-version`). Bump both together. Deleting `.node-version` is not an option —
+vp would then fall through to the wide `engines.node` range instead of the pin.
+
 Playwright tests live in `e2e/` and run against a preview build that `playwright.config.ts` builds and serves itself on port **4174** (`npm run build:e2e && npm run preview`). Port 4173 is deliberately avoided: a hand-started `npm run preview` there is built from `.env.production`, and reusing it would point the writing specs at the production project. Run a single spec/test:
 
 ```bash
