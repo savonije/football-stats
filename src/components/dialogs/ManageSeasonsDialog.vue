@@ -9,6 +9,7 @@
         MAX_HALF_DURATION_MINUTES,
         MIN_HALF_DURATION_MINUTES,
     } from '@/constants';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const seasonStore = useSeasonStore();
@@ -257,21 +258,14 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="t('common.cancel')"
-                    variant="ghost"
-                    @click="model = false"
-                />
-                <UButton
-                    :disabled="!selectedSeason"
-                    icon="i-lucide-check"
-                    :label="t('common.save')"
-                    :loading="saving"
-                    @click="saveSettings"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="t('common.save')"
+                confirm-icon="i-lucide-check"
+                :disabled="!selectedSeason"
+                :loading="saving"
+                @cancel="model = false"
+                @confirm="saveSettings"
+            />
         </template>
     </UModal>
 </template>

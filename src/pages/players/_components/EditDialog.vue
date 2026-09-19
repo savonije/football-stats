@@ -8,6 +8,7 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
     import { playerSeasonInfo } from '@/utils/playerSeason';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const visible = defineModel<boolean>('visible');
     const player = defineModel<Player | null>('player');
@@ -119,19 +120,12 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="ghost"
-                    @click="closeDialog"
-                />
-                <UButton
-                    icon="i-lucide-check"
-                    :label="$t('common.save')"
-                    @click="savePlayer"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.save')"
+                confirm-icon="i-lucide-check"
+                @cancel="closeDialog"
+                @confirm="savePlayer"
+            />
         </template>
     </UModal>
 </template>

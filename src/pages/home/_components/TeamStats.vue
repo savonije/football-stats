@@ -1,5 +1,7 @@
 <script setup lang="ts">
     import { computed } from 'vue';
+
+    import StatTile from '@/components/ui/StatTile.vue';
     import { useMatchStore } from '@/stores/matchStore';
 
     const matchStore = useMatchStore();
@@ -66,20 +68,12 @@
 <template>
     <section v-if="matchStore.matchesLoaded && stats.matchesPlayed > 0">
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            <div
+            <StatTile
                 v-for="tile in tiles"
                 :key="tile.label"
-                class="shadow-card flex flex-col gap-1 rounded-xl bg-white p-5"
-            >
-                <div class="text-primary-900 text-4xl leading-none font-black">
-                    {{ tile.value }}
-                </div>
-                <div
-                    class="tracking-label text-primary-400 mt-1.5 text-xs font-bold uppercase"
-                >
-                    {{ $t(tile.label) }}
-                </div>
-            </div>
+                :label="$t(tile.label)"
+                :value="tile.value"
+            />
         </div>
     </section>
 </template>

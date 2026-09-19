@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
     arrayRemove,
     arrayUnion,
@@ -28,6 +29,18 @@ export const useTrainingStore = defineStore('trainingStore', {
         selectedTraining: null,
         selectedTrainingLoaded: false,
     }),
+
+    getters: {
+        /** The days that already have a training, as `YYYY-MM-DD` keys. */
+        existingDates: (state) =>
+            new Set(
+                state.trainings
+                    .filter((training) => training.date)
+                    .map((training) =>
+                        dayjs(training.date.toDate()).format('YYYY-MM-DD'),
+                    ),
+            ),
+    },
 
     actions: {
         fetchTrainings(seasonId: string) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { useTimeoutFn } from '@vueuse/core';
-    import { ref, watch } from 'vue';
+    import { computed, ref, watch, type Ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import { useAppToast } from '@/composables/useAppToast';
@@ -39,19 +39,66 @@
         }
     });
 
-    const openAddMatch = () => {
-        drawerVisible.value = false;
-        showAddMatchDialog.value = true;
-    };
+    const navLinks = computed(() => [
+        {
+            to: { name: 'home' },
+            icon: 'i-lucide-house',
+            iconClass: 'bg-[image:var(--gradient-accent-blue)]',
+            label: t('match.game', 2),
+        },
+        {
+            to: { name: 'topscorers' },
+            icon: 'i-lucide-chart-column',
+            iconClass: 'bg-[image:var(--gradient-accent-amber)]',
+            label: t('common.toplist'),
+        },
+        {
+            to: { name: 'players' },
+            icon: 'i-lucide-users',
+            iconClass: 'bg-[image:var(--gradient-accent-teal)]',
+            label: t('player.player', 2),
+        },
+        {
+            to: { name: 'washing' },
+            icon: 'i-lucide-sparkles',
+            iconClass: 'bg-[image:var(--gradient-accent-purple)]',
+            label: t('washing.title'),
+        },
+        {
+            to: { name: 'training' },
+            icon: 'i-lucide-calendar',
+            iconClass: 'bg-[image:var(--gradient-accent-green)]',
+            label: t('training.title'),
+        },
+    ]);
 
-    const openAddPlayer = () => {
-        drawerVisible.value = false;
-        showAddPlayerDialog.value = true;
-    };
+    const manageActions = computed(() => [
+        {
+            show: seasonStore.isCurrentSeasonActive,
+            icon: 'i-lucide-plus',
+            iconClass: 'bg-[image:var(--gradient-accent-green)]',
+            label: t('match.addMatch'),
+            dialog: showAddMatchDialog,
+        },
+        {
+            show: true,
+            icon: 'i-lucide-user-plus',
+            iconClass: 'bg-[image:var(--gradient-accent-purple)]',
+            label: t('player.addPlayer'),
+            dialog: showAddPlayerDialog,
+        },
+        {
+            show: true,
+            icon: 'i-lucide-calendar',
+            iconClass: 'bg-[image:var(--gradient-accent-teal)]',
+            label: t('seasons.manageSeasons'),
+            dialog: showManageSeasonsDialog,
+        },
+    ]);
 
-    const openManageSeasons = () => {
+    const openDialog = (dialog: Ref<boolean>) => {
         drawerVisible.value = false;
-        showManageSeasonsDialog.value = true;
+        dialog.value = true;
     };
 
     const logout = async () => {
@@ -60,7 +107,7 @@
             await storeAuth.logoutUser();
             toast.success(t('auth.logoutMessage'), t('auth.logoutSuccess'));
         } catch (error) {
-            toast.error((error as Error).message, t('error.generic'));
+            toast.error((error as Error).message, t('errors.error'));
         }
     };
 
@@ -100,103 +147,18 @@
                 <p :class="sectionLabel">{{ t('common.navigation') }}</p>
                 <nav class="flex flex-col gap-0.5">
                     <Router-Link
+                        v-for="(link, index) in navLinks"
+                        :key="link.label"
                         class="nav-item group"
                         :class="navItem"
-                        style="--i: 0"
-                        :to="{ name: 'home' }"
+                        :style="{ '--i': index }"
+                        :to="link.to"
                         @click="drawerVisible = false"
                     >
-                        <span
-                            class="bg-[image:var(--gradient-accent-blue)]"
-                            :class="navIcon"
-                        >
-                            <UIcon name="i-lucide-house" />
+                        <span :class="[navIcon, link.iconClass]">
+                            <UIcon :name="link.icon" />
                         </span>
-                        <span>{{ t('match.game', 2) }}</span>
-                        <UIcon
-                            class="group-hover:translate-x-[3px]"
-                            :class="navChevron"
-                            name="i-lucide-chevron-right"
-                        />
-                    </Router-Link>
-
-                    <Router-Link
-                        class="nav-item group"
-                        :class="navItem"
-                        style="--i: 1"
-                        :to="{ name: 'topscorers' }"
-                        @click="drawerVisible = false"
-                    >
-                        <span
-                            class="bg-[image:var(--gradient-accent-amber)]"
-                            :class="navIcon"
-                        >
-                            <UIcon name="i-lucide-chart-column" />
-                        </span>
-                        <span>{{ t('common.toplist') }}</span>
-                        <UIcon
-                            class="group-hover:translate-x-[3px]"
-                            :class="navChevron"
-                            name="i-lucide-chevron-right"
-                        />
-                    </Router-Link>
-
-                    <Router-Link
-                        class="nav-item group"
-                        :class="navItem"
-                        style="--i: 2"
-                        :to="{ name: 'players' }"
-                        @click="drawerVisible = false"
-                    >
-                        <span
-                            class="bg-[image:var(--gradient-accent-teal)]"
-                            :class="navIcon"
-                        >
-                            <UIcon name="i-lucide-users" />
-                        </span>
-                        <span>{{ t('player.player', 2) }}</span>
-                        <UIcon
-                            class="group-hover:translate-x-[3px]"
-                            :class="navChevron"
-                            name="i-lucide-chevron-right"
-                        />
-                    </Router-Link>
-
-                    <Router-Link
-                        class="nav-item group"
-                        :class="navItem"
-                        style="--i: 3"
-                        :to="{ name: 'washing' }"
-                        @click="drawerVisible = false"
-                    >
-                        <span
-                            class="bg-[image:var(--gradient-accent-purple)]"
-                            :class="navIcon"
-                        >
-                            <UIcon name="i-lucide-sparkles" />
-                        </span>
-                        <span>{{ t('washing.title') }}</span>
-                        <UIcon
-                            class="group-hover:translate-x-[3px]"
-                            :class="navChevron"
-                            name="i-lucide-chevron-right"
-                        />
-                    </Router-Link>
-
-                    <Router-Link
-                        class="nav-item group"
-                        :class="navItem"
-                        style="--i: 4"
-                        :to="{ name: 'training' }"
-                        @click="drawerVisible = false"
-                    >
-                        <span
-                            class="bg-[image:var(--gradient-accent-green)]"
-                            :class="navIcon"
-                        >
-                            <UIcon name="i-lucide-calendar" />
-                        </span>
-                        <span>{{ t('training.title') }}</span>
+                        <span>{{ link.label }}</span>
                         <UIcon
                             class="group-hover:translate-x-[3px]"
                             :class="navChevron"
@@ -210,71 +172,37 @@
                         {{ t('common.manage') }}
                     </p>
                     <nav class="flex flex-col gap-0.5">
-                        <button
-                            v-if="seasonStore.isCurrentSeasonActive"
-                            class="nav-item group"
-                            :class="navItem"
-                            style="--i: 4"
-                            @click="openAddMatch"
+                        <template
+                            v-for="(action, index) in manageActions"
+                            :key="action.label"
                         >
-                            <span
-                                class="bg-[image:var(--gradient-accent-green)]"
-                                :class="navIcon"
+                            <button
+                                v-if="action.show"
+                                class="nav-item group"
+                                :class="navItem"
+                                :style="{ '--i': navLinks.length + index }"
+                                @click="openDialog(action.dialog)"
                             >
-                                <UIcon name="i-lucide-plus" />
-                            </span>
-                            <span>{{ t('match.addMatch') }}</span>
-                            <UIcon
-                                class="group-hover:translate-x-[3px]"
-                                :class="navChevron"
-                                name="i-lucide-chevron-right"
-                            />
-                        </button>
-                        <button
-                            class="nav-item group"
-                            :class="navItem"
-                            style="--i: 5"
-                            @click="openAddPlayer"
-                        >
-                            <span
-                                class="bg-[image:var(--gradient-accent-purple)]"
-                                :class="navIcon"
-                            >
-                                <UIcon name="i-lucide-user-plus" />
-                            </span>
-                            <span>{{ t('player.addPlayer') }}</span>
-                            <UIcon
-                                class="group-hover:translate-x-[3px]"
-                                :class="navChevron"
-                                name="i-lucide-chevron-right"
-                            />
-                        </button>
-                        <button
-                            class="nav-item group"
-                            :class="navItem"
-                            style="--i: 6"
-                            @click="openManageSeasons"
-                        >
-                            <span
-                                class="bg-[image:var(--gradient-accent-teal)]"
-                                :class="navIcon"
-                            >
-                                <UIcon name="i-lucide-calendar" />
-                            </span>
-                            <span>{{ t('seasons.manageSeasons') }}</span>
-                            <UIcon
-                                class="group-hover:translate-x-[3px]"
-                                :class="navChevron"
-                                name="i-lucide-chevron-right"
-                            />
-                        </button>
+                                <span :class="[navIcon, action.iconClass]">
+                                    <UIcon :name="action.icon" />
+                                </span>
+                                <span>{{ action.label }}</span>
+                                <UIcon
+                                    class="group-hover:translate-x-[3px]"
+                                    :class="navChevron"
+                                    name="i-lucide-chevron-right"
+                                />
+                            </button>
+                        </template>
                     </nav>
 
                     <div class="mt-10">
                         <button
                             class="nav-item group text-red-300/85 hover:bg-red-500/15 hover:text-red-300"
                             :class="navItem"
-                            style="--i: 8"
+                            :style="{
+                                '--i': navLinks.length + manageActions.length,
+                            }"
                             @click="logout"
                         >
                             <span
@@ -288,30 +216,28 @@
                     </div>
                 </template>
 
-                <template v-else>
-                    <div class="mt-10">
-                        <Router-Link
-                            class="nav-item group"
-                            :class="navItem"
-                            style="--i: 4"
-                            :to="{ name: 'auth' }"
-                            @click="drawerVisible = false"
+                <div v-else class="mt-10">
+                    <Router-Link
+                        class="nav-item group"
+                        :class="navItem"
+                        style="--i: 4"
+                        :to="{ name: 'auth' }"
+                        @click="drawerVisible = false"
+                    >
+                        <span
+                            class="bg-[image:var(--gradient-accent-green)]"
+                            :class="navIcon"
                         >
-                            <span
-                                class="bg-[image:var(--gradient-accent-green)]"
-                                :class="navIcon"
-                            >
-                                <UIcon name="i-lucide-log-in" />
-                            </span>
-                            <span>{{ t('auth.login') }}</span>
-                            <UIcon
-                                class="group-hover:translate-x-[3px]"
-                                :class="navChevron"
-                                name="i-lucide-chevron-right"
-                            />
-                        </Router-Link>
-                    </div>
-                </template>
+                            <UIcon name="i-lucide-log-in" />
+                        </span>
+                        <span>{{ t('auth.login') }}</span>
+                        <UIcon
+                            class="group-hover:translate-x-[3px]"
+                            :class="navChevron"
+                            name="i-lucide-chevron-right"
+                        />
+                    </Router-Link>
+                </div>
             </div>
         </template>
     </USlideover>

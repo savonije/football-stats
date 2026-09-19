@@ -6,6 +6,7 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { isActiveInSeason } from '@/utils/playerSeason';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const playerStore = usePlayerStore();
@@ -207,21 +208,14 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="ghost"
-                    @click="closeDialog"
-                />
-                <UButton
-                    :disabled="mode === 'existing' && !availablePlayers.length"
-                    icon="i-lucide-check"
-                    :label="$t('common.save')"
-                    :loading="loading"
-                    @click="submit"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.save')"
+                confirm-icon="i-lucide-check"
+                :disabled="mode === 'existing' && !availablePlayers.length"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="submit"
+            />
         </template>
     </UModal>
 </template>

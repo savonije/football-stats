@@ -8,6 +8,7 @@
     import type { Match } from '@/types';
     import DatePicker from '@/components/ui/DatePicker.vue';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const { seasonId, match } = defineProps<{
         seasonId: string;
@@ -109,20 +110,12 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="ghost"
-                    @click="closeDialog"
-                />
-
-                <UButton
-                    :label="$t('common.save')"
-                    :loading="loading"
-                    @click="save"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('common.save')"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="save"
+            />
         </template>
     </UModal>
 </template>

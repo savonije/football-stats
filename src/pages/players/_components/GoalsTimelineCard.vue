@@ -17,28 +17,20 @@
     const goalsChartData = computed(() =>
         playerAppearances.value
             .filter((a) => a.present)
-            .map((a) => {
+            .flatMap((a) => {
                 const match = matchStore.matches.find(
                     (m) => m.id === a.matchId,
                 );
-                if (!match) return null;
-                return {
-                    goals: a.goals || 0,
-                    opponent: match.opponent,
-                    dateSeconds: match.date?.seconds ?? 0,
-                };
+                if (!match) return [];
+                return [
+                    {
+                        goals: a.goals || 0,
+                        opponent: match.opponent,
+                        dateSeconds: match.date?.seconds ?? 0,
+                    },
+                ];
             })
-            .filter(
-                (
-                    item,
-                ): item is {
-                    goals: number;
-                    opponent: string;
-                    dateSeconds: number;
-                } => item !== null,
-            )
-            .sort((a, b) => a.dateSeconds - b.dateSeconds)
-            .map(({ goals, opponent }) => ({ goals, opponent })),
+            .sort((a, b) => a.dateSeconds - b.dateSeconds),
     );
 </script>
 

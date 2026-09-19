@@ -9,7 +9,7 @@ test.describe('Topscorers page', () => {
 
   test('has correct page title', async ({ page }) => {
     await page.goto('/topscorers')
-    await expect(page).toHaveTitle(/Topscorers - Apollo '69/)
+    await expect(page).toHaveTitle(/^Topscorers - /)
   })
 
   test('shows topscorers heading', async ({ page }) => {

@@ -48,6 +48,12 @@ export const useSeasonStore = defineStore('seasonStore', {
             );
             return season?.halfDurationMinutes ?? DEFAULT_HALF_DURATION_MINUTES;
         },
+        currentTrainingDays(state): number[] {
+            const season = state.seasons.find(
+                (s) => s.id === state.currentSeason,
+            );
+            return season?.trainingDays ?? [];
+        },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
                 (season) => season.active && season.id === state.currentSeason,
@@ -105,20 +111,6 @@ export const useSeasonStore = defineStore('seasonStore', {
                 );
             });
             await batch.commit();
-            await this.fetchSeasons();
-        },
-
-        async setTeamName(id: string, teamname: string) {
-            await updateDoc(doc(db, 'seasons', id), {
-                teamname: teamname.trim(),
-            });
-            await this.fetchSeasons();
-        },
-
-        async setHalfDuration(id: string, minutes: number) {
-            await updateDoc(doc(db, 'seasons', id), {
-                halfDurationMinutes: minutes,
-            });
             await this.fetchSeasons();
         },
 

@@ -24,14 +24,14 @@ const routes: RouteRecordRaw[] = [
         path: '/',
         name: 'home',
         component: () => import('@/pages/home/index.vue'),
-        meta: { title: "Home - Apollo '69" },
+        meta: { title: 'Home' },
     },
     {
         path: '/match/:id',
         name: 'matchDetail',
         component: () => import('@/pages/matches/[id].vue'),
         meta: {
-            title: "Wedstrijddetails - Apollo '69",
+            title: 'Wedstrijddetails',
             breadcrumb: [
                 {
                     labelKey: 'match.game',
@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
         name: 'playerDetail',
         component: () => import('@/pages/players/[id].vue'),
         meta: {
-            title: "Spelerdetails - Apollo '69",
+            title: 'Spelerdetails',
             breadcrumb: [
                 {
                     labelKey: 'player.player',
@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
         name: 'players',
         component: () => import('@/pages/players/index.vue'),
         meta: {
-            title: "Spelers - Apollo '69",
+            title: 'Spelers',
             heading: { labelKey: 'player.player', count: 2 },
         },
     },
@@ -72,7 +72,7 @@ const routes: RouteRecordRaw[] = [
         name: 'topscorers',
         component: () => import('@/pages/topscorers/index.vue'),
         meta: {
-            title: "Topscorers - Apollo '69",
+            title: 'Topscorers',
             heading: { labelKey: 'common.topscorers' },
         },
     },
@@ -81,7 +81,7 @@ const routes: RouteRecordRaw[] = [
         name: 'washing',
         component: () => import('@/pages/washing/index.vue'),
         meta: {
-            title: "Wasschema - Apollo '69",
+            title: 'Wasschema',
             heading: { labelKey: 'washing.title' },
         },
     },
@@ -90,7 +90,7 @@ const routes: RouteRecordRaw[] = [
         name: 'training',
         component: () => import('@/pages/training/index.vue'),
         meta: {
-            title: "Trainingen - Apollo '69",
+            title: 'Trainingen',
             heading: { labelKey: 'training.title' },
         },
     },
@@ -99,7 +99,7 @@ const routes: RouteRecordRaw[] = [
         name: 'trainingDetail',
         component: () => import('@/pages/training/[id].vue'),
         meta: {
-            title: "Trainingdetails - Apollo '69",
+            title: 'Trainingdetails',
             breadcrumb: [
                 {
                     labelKey: 'training.training',
@@ -114,7 +114,7 @@ const routes: RouteRecordRaw[] = [
         path: '/login',
         name: 'auth',
         component: () => import('@/pages/login/index.vue'),
-        meta: { title: "Login -  Apollo '69", layout: 'blank' },
+        meta: { title: 'Login', layout: 'blank' },
     },
 ];
 

@@ -9,6 +9,7 @@ import type { Router } from 'vue-router';
 import App from '@/App.vue';
 
 import i18n from '@/config/i18n';
+import { CLUBNAME } from '@/constants';
 import router from '@/router';
 
 declare module 'pinia' {
@@ -31,9 +32,9 @@ app.use(router);
 app.use(pinia);
 
 router.afterEach((to) => {
-    if (to.meta.title) {
-        document.title = to.meta.title as string;
-    }
+    document.title = to.meta.title
+        ? `${to.meta.title} - ${CLUBNAME}`
+        : CLUBNAME;
 });
 
 app.mount('#app');

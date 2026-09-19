@@ -10,6 +10,7 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import DatePicker from '@/components/ui/DatePicker.vue';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
 
@@ -23,19 +24,12 @@
         toCalendarDate(new Date()),
     );
 
-    const existingDates = computed(
-        () =>
-            new Set(
-                trainingStore.trainings
-                    .filter((tr) => tr.date)
-                    .map((tr) => dayjs(tr.date.toDate()).format('YYYY-MM-DD')),
-            ),
-    );
-
     const dateExists = computed(() => {
         const selected = fromCalendarDate(date.value);
         return selected
-            ? existingDates.value.has(dayjs(selected).format('YYYY-MM-DD'))
+            ? trainingStore.existingDates.has(
+                  dayjs(selected).format('YYYY-MM-DD'),
+              )
             : false;
     });
 
@@ -91,21 +85,14 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between gap-3">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="subtle"
-                    @click="closeDialog"
-                />
-                <UButton
-                    :disabled="dateExists"
-                    icon="i-lucide-check"
-                    :label="$t('training.add')"
-                    :loading="loading"
-                    @click="add"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('training.add')"
+                confirm-icon="i-lucide-check"
+                :disabled="dateExists"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="add"
+            />
         </template>
     </UModal>
 </template>

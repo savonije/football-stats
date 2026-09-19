@@ -8,6 +8,7 @@
     import { useTrainingStore } from '@/stores/trainingStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { trainingDatesInMonth } from '@/utils/training';
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     const model = defineModel<boolean>('visible');
     const { initialMonth } = defineProps<{ initialMonth?: Date }>();
@@ -45,27 +46,16 @@
             (month.value = new Date(value, month.value.getMonth(), 1)),
     });
 
-    const trainingDays = computed(
-        () =>
-            seasonStore.seasons.find((s) => s.id === seasonStore.currentSeason)
-                ?.trainingDays ?? [],
-    );
-
-    // Dates in the chosen month that already have a training, as YYYY-MM-DD.
-    const existingDates = computed(
-        () =>
-            new Set(
-                trainingStore.trainings
-                    .filter((tr) => tr.date)
-                    .map((tr) => dayjs(tr.date.toDate()).format('YYYY-MM-DD')),
-            ),
-    );
-
     // Configured training dates in the month that don't exist yet.
     const newDates = computed(() =>
-        trainingDatesInMonth(month.value, trainingDays.value).filter(
+        trainingDatesInMonth(
+            month.value,
+            seasonStore.currentTrainingDays,
+        ).filter(
             (date) =>
-                !existingDates.value.has(dayjs(date).format('YYYY-MM-DD')),
+                !trainingStore.existingDates.has(
+                    dayjs(date).format('YYYY-MM-DD'),
+                ),
         ),
     );
 
@@ -105,7 +95,7 @@
         <template #body>
             <div class="flex flex-col gap-4">
                 <UAlert
-                    v-if="!trainingDays.length"
+                    v-if="!seasonStore.currentTrainingDays.length"
                     color="warning"
                     :description="t('training.noTrainingDaysConfigured')"
                     variant="subtle"
@@ -145,21 +135,14 @@
         </template>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <UButton
-                    color="neutral"
-                    :label="$t('common.cancel')"
-                    variant="subtle"
-                    @click="closeDialog"
-                />
-                <UButton
-                    :disabled="!newDates.length"
-                    icon="i-lucide-check"
-                    :label="$t('training.generate')"
-                    :loading="loading"
-                    @click="generate"
-                />
-            </div>
+            <DialogFooter
+                :confirm-label="$t('training.generate')"
+                confirm-icon="i-lucide-check"
+                :disabled="!newDates.length"
+                :loading="loading"
+                @cancel="closeDialog"
+                @confirm="generate"
+            />
         </template>
     </UModal>
 </template>

@@ -9,7 +9,7 @@ test.describe('Home page', () => {
 
     test('has correct page title', async ({ page }) => {
         await page.goto('/');
-        await expect(page).toHaveTitle(/Home - Apollo '69/);
+        await expect(page).toHaveTitle(/^Home - /);
     });
 
     test('shows matches section heading', async ({ page }) => {

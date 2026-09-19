@@ -15,9 +15,7 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
-import { useSeasonStore } from '@/stores/seasonStore';
 import type { Appearance, Match } from '@/types';
-import { getDisplaySeconds } from '@/utils/match';
 
 let _unsubscribeMatches: (() => void) | null = null;
 let _unsubscribeMatchDetails: (() => void) | null = null;
@@ -66,13 +64,6 @@ export const useMatchStore = defineStore('matchStore', {
             this.fetchAppearances(seasonId, matchId);
         },
 
-        addMatch(seasonId: string, match: Match) {
-            return setDoc(
-                doc(db, `seasons/${seasonId}/matches`, match.id),
-                match,
-            );
-        },
-
         updateMatch(
             seasonId: string,
             matchId: string,
@@ -106,7 +97,6 @@ export const useMatchStore = defineStore('matchStore', {
             const now = Date.now();
 
             updateDoc(matchRef, {
-                running: true,
                 ended: false,
                 paused: false,
                 startTime: now,
@@ -122,7 +112,6 @@ export const useMatchStore = defineStore('matchStore', {
             const now = Date.now();
 
             return updateDoc(matchRef, {
-                running: false,
                 paused: true,
                 pausedAt: now,
                 halfTime: true,
@@ -135,7 +124,6 @@ export const useMatchStore = defineStore('matchStore', {
 
             return updateDoc(matchRef, {
                 half: 2,
-                running: true,
                 paused: false,
                 halfTime: false,
                 startTime: now,
@@ -150,7 +138,6 @@ export const useMatchStore = defineStore('matchStore', {
 
             updateDoc(matchRef, {
                 paused: true,
-                running: false,
                 pausedAt: now,
             });
         },
@@ -164,7 +151,6 @@ export const useMatchStore = defineStore('matchStore', {
 
             updateDoc(matchRef, {
                 paused: false,
-                running: true,
                 pausedDuration: pausedDuration + (now - pausedAt),
                 pausedAt: null,
             });
@@ -186,7 +172,6 @@ export const useMatchStore = defineStore('matchStore', {
             // detail can show what it finished on instead of counting forever.
             return updateDoc(matchRef, {
                 ended: true,
-                running: false,
                 paused: true,
                 pausedAt: Date.now(),
                 halfTime: false,
@@ -302,13 +287,6 @@ export const useMatchStore = defineStore('matchStore', {
     },
 
     getters: {
-        totalGoalsPerPlayer: (state) => (playerId: string) =>
-            state.appearances
-                .filter((a) => a.playerId === playerId && a.present)
-                .reduce((sum, a) => sum + (a.goals || 0), 0),
-
-        presentPlayers: (state) => state.appearances.filter((a) => a.present),
-
         presentPlayersWithNames: (state) => {
             const playerStore = usePlayerStore();
             return state.appearances
@@ -318,17 +296,6 @@ export const useMatchStore = defineStore('matchStore', {
                     playerName:
                         playerStore.getPlayerById(a.playerId)?.name ?? '',
                 }));
-        },
-
-        getMatchDuration: () => (match: Match) => {
-            if (!match.startTime) return 0;
-            const seasonStore = useSeasonStore();
-            const seconds = getDisplaySeconds(
-                match,
-                seasonStore.currentHalfDuration,
-                Date.now(),
-            );
-            return Math.floor(seconds / 60); // minutes
         },
     },
 });
