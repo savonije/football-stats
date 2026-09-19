@@ -9,14 +9,12 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Match } from '@/types';
-    import { isPlayed } from '@/utils/match';
+    import type { ScoreSide } from '@/utils/match';
+    import { getScoreSides, isPlayed } from '@/utils/match';
 
-    type GoalType = 'for' | 'against';
+    type GoalType = ScoreSide['type'];
 
-    interface Side {
-        type: GoalType;
-        name: string;
-        goals: number;
+    interface Side extends ScoreSide {
         addLabel: string;
         removeLabel: string;
     }
@@ -40,27 +38,18 @@
     const goalsFor = computed(() => match.result?.goalsFor ?? 0);
     const goalsAgainst = computed(() => match.result?.goalsAgainst ?? 0);
 
-    const club = computed<Side>(() => ({
-        type: 'for',
-        name: CLUBNAME,
-        goals: goalsFor.value,
-        addLabel: t('match.addGoalFor'),
-        removeLabel: t('match.removeGoalFor'),
-    }));
-
-    const opponent = computed<Side>(() => ({
-        type: 'against',
-        name: match.opponent,
-        goals: goalsAgainst.value,
-        addLabel: t('match.addGoalAgainst'),
-        removeLabel: t('match.removeGoalAgainst'),
-    }));
-
-    /** The home side comes first — that ordering is what says home or away. */
-    const sides = computed(() =>
-        match.home
-            ? [club.value, opponent.value]
-            : [opponent.value, club.value],
+    const sides = computed<Side[]>(() =>
+        getScoreSides(match, CLUBNAME).map((side) => ({
+            ...side,
+            addLabel:
+                side.type === 'for'
+                    ? t('match.addGoalFor')
+                    : t('match.addGoalAgainst'),
+            removeLabel:
+                side.type === 'for'
+                    ? t('match.removeGoalFor')
+                    : t('match.removeGoalAgainst'),
+        })),
     );
 
     const scoreClass = (side: Side) => {
@@ -101,7 +90,7 @@
         }
 
         showGoalToast(
-            t('match.goalTitleAgainst', { team: opponent.value.name }),
+            t('match.goalTitleAgainst', { team: match.opponent }),
             t('match.goalTypes.against'),
         );
     };
@@ -124,7 +113,7 @@
         );
 
         showGoalToast(
-            t('match.goalTitleFor', { team: club.value.name }),
+            t('match.goalTitleFor', { team: CLUBNAME }),
             t('match.goalTypes.forBy', {
                 player: players.value.find(
                     (player) => player.playerId === selectedPlayer.value,

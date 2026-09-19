@@ -32,16 +32,14 @@
 </script>
 
 <template>
-    <div class="grid gap-16">
-        <div class="md:w-1/3">
-            <LiveMatchWidget />
-        </div>
+    <div class="grid gap-5">
+        <LiveMatchWidget />
 
         <section
             v-if="recentMatchData.length > 0"
             class="shadow-card rounded-xl bg-white p-5"
         >
-            <h2 class="mb-6">{{ $t('match.recentResults') }}</h2>
+            <h2>{{ $t('match.recentResults') }}</h2>
             <MatchResultsChart
                 v-if="matchStore.matchesLoaded"
                 :data="recentMatchData"
@@ -52,6 +50,6 @@
             <MatchList />
         </section>
 
-        <TeamStats class="mt-16" />
+        <TeamStats />
     </div>
 </template>

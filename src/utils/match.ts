@@ -120,3 +120,32 @@ export const getFinalSeconds = (
         ? getDisplaySeconds(match, halfDurationMinutes, match.pausedAt)
         : half * halfDurationMinutes * 60;
 };
+
+export interface ScoreSide {
+    type: 'for' | 'against';
+    name: string;
+    goals: number;
+}
+
+/**
+ * The two sides of a match, home side first — that ordering is what says home
+ * or away, and it has to be the same everywhere a score is shown.
+ */
+export const getScoreSides = (
+    match: Pick<Match, 'home' | 'opponent' | 'result'>,
+    clubName: string,
+): ScoreSide[] => {
+    const club: ScoreSide = {
+        type: 'for',
+        name: clubName,
+        goals: match.result?.goalsFor ?? 0,
+    };
+
+    const opponent: ScoreSide = {
+        type: 'against',
+        name: match.opponent,
+        goals: match.result?.goalsAgainst ?? 0,
+    };
+
+    return match.home ? [club, opponent] : [opponent, club];
+};
