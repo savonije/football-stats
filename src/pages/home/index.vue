@@ -36,6 +36,8 @@
     <div class="grid grid-cols-1 gap-5">
         <LiveMatchWidget />
 
+        <TeamStats />
+
         <div class="flex flex-col gap-5 lg:flex-row">
             <section
                 v-if="recentMatchData.length > 0"
@@ -54,7 +56,5 @@
         <section>
             <MatchList />
         </section>
-
-        <TeamStats />
     </div>
 </template>
