@@ -82,18 +82,15 @@
         await playerStore.fetchPlayers();
     });
 
-    watch(
-        seasonPlayers,
-        (players) => {
-            form.players = players
-                .filter(
-                    (player) =>
-                        !isGuestInSeason(player, seasonStore.currentSeason),
-                )
-                .map((player) => player.id);
-        },
-        { immediate: true },
-    );
+    const selectAllPlayers = () => {
+        form.players = seasonPlayers.value
+            .filter(
+                (player) => !isGuestInSeason(player, seasonStore.currentSeason),
+            )
+            .map((player) => player.id);
+    };
+
+    watch(seasonPlayers, selectAllPlayers, { immediate: true });
 </script>
 
 <template>
@@ -140,9 +137,40 @@
                         class="w-full"
                         :items="playerOptions"
                         multiple
+                        :ui="{ input: '-order-1' }"
                         value-key="value"
                         data-testid="match-players"
-                    />
+                    >
+                        <!-- #content-top renders above the search input, so the
+                             input is reordered to keep the buttons below it -->
+                        <template #content-top>
+                            <div class="border-default flex gap-1 border-b">
+                                <UButton
+                                    block
+                                    class="flex-1"
+                                    color="neutral"
+                                    variant="ghost"
+                                    size="sm"
+                                    icon="i-lucide-check-check"
+                                    :label="t('common.selectAll')"
+                                    data-testid="select-all-players"
+                                    @click="selectAllPlayers"
+                                />
+                                <UButton
+                                    block
+                                    class="flex-1"
+                                    color="neutral"
+                                    variant="ghost"
+                                    size="sm"
+                                    icon="i-lucide-x"
+                                    :disabled="!form.players?.length"
+                                    :label="t('common.deselectAll')"
+                                    data-testid="deselect-all-players"
+                                    @click="form.players = []"
+                                />
+                            </div>
+                        </template>
+                    </USelectMenu>
                 </div>
 
                 <div>
