@@ -80,7 +80,7 @@
             title,
             description,
             color: 'info',
-            duration: 20000,
+            duration: 10000,
         });
 
     const closeModal = () => {
