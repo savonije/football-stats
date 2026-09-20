@@ -149,3 +149,18 @@ export const getScoreSides = (
 
     return match.home ? [club, opponent] : [opponent, club];
 };
+
+/**
+ * The match minute to log a goal on: minute 1 covers 0:00–0:59, so the clock
+ * reading is rounded down and offset by one. Null when the clock never ran,
+ * since a score edited outside a live match has no minute to speak of.
+ */
+export const getMatchMinute = (
+    match: TimedMatch | null | undefined,
+    halfDurationMinutes: number,
+    now: number,
+): number | null =>
+    hasStarted(match)
+        ? Math.floor(getDisplaySeconds(match, halfDurationMinutes, now) / 60) +
+          1
+        : null;

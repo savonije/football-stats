@@ -1,7 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 
 import {
     acceptConfirm,
+    becomesVisible,
     createMatch,
     deleteMatch,
     login,
@@ -40,6 +41,96 @@ test.describe('Match timer lifecycle', () => {
 
             await expect(status).toHaveText('1e helft');
             await expect(clock).not.toHaveText('0:00', { timeout: 5000 });
+        });
+
+        await test.step('record goals and revert them', async () => {
+            const squad = page.getByTestId('appearance');
+            if (!(await becomesVisible(squad.first(), 15_000))) return;
+
+            const timeline = page.getByTestId('goal-timeline-item');
+            const scoreFor = page.getByTestId('score-for');
+            const scoreAgainst = page.getByTestId('score-against');
+
+            /** Score for us, returning the label of the option picked. */
+            const scoreForUs = async (option?: string) => {
+                await page
+                    .getByRole('button', { name: 'Doelpunt voor toevoegen' })
+                    .click();
+
+                const dialog = page.getByRole('dialog', {
+                    name: 'Doelpuntenmaker',
+                });
+
+                // The board goes up straight away, the timeline waits for a
+                // scorer.
+                await expect(scoreFor).toHaveText('1');
+                await expect(timeline).toHaveCount(0);
+
+                await dialog.locator('[data-testid="goal-scorer"]').click();
+
+                const choice = option
+                    ? page.getByRole('option', { name: option })
+                    : page.getByRole('option').first();
+                const label = (await choice.innerText()).trim();
+                await choice.click();
+
+                await dialog.getByRole('button', { name: 'Opslaan' }).click();
+                await expect(dialog).toBeHidden();
+
+                return label;
+            };
+
+            const revert = async (side: 'voor' | 'tegen', score: Locator) => {
+                await page
+                    .getByRole('button', {
+                        name: `Doelpunt ${side} verwijderen`,
+                    })
+                    .click();
+
+                await expect(score).toHaveText('0');
+                await expect(timeline).toHaveCount(0);
+            };
+
+            await test.step('a goal by one of ours', async () => {
+                const scorer = await scoreForUs();
+
+                await expect(timeline).toHaveCount(1);
+                await expect(timeline.first()).toContainText(scorer);
+                await expect(timeline.first()).toContainText("'");
+
+                await revert('voor', scoreFor);
+            });
+
+            await test.step('an own goal by the opponent', async () => {
+                await scoreForUs('Eigen doelpunt tegenstander');
+
+                await expect(timeline).toHaveCount(1);
+                await expect(timeline.first()).toContainText('Eigen doelpunt');
+
+                await revert('voor', scoreFor);
+            });
+
+            await test.step('an own goal by one of ours', async () => {
+                await page
+                    .getByRole('button', { name: 'Doelpunt tegen toevoegen' })
+                    .click();
+
+                await expect(scoreAgainst).toHaveText('1');
+                await expect(timeline).toHaveCount(1);
+
+                // The goal is logged as the opponent's; the toast that follows
+                // is what turns it into an own goal.
+                await page
+                    .getByRole('button', {
+                        name: 'Eigen doelpunt',
+                        exact: true,
+                    })
+                    .click();
+
+                await expect(timeline.first()).toContainText('Eigen doelpunt');
+
+                await revert('tegen', scoreAgainst);
+            });
         });
 
         await test.step('end the first half', async () => {

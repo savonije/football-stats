@@ -10,9 +10,11 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Match } from '@/types';
     import type { ScoreSide } from '@/utils/match';
-    import { getScoreSides, isPlayed } from '@/utils/match';
+    import { getMatchMinute, getScoreSides, isPlayed } from '@/utils/match';
 
     type GoalType = ScoreSide['type'];
+
+    const OPPONENT_OWN_GOAL = '__ownGoal__';
 
     interface Side extends ScoreSide {
         addLabel: string;
@@ -30,8 +32,20 @@
 
     const modal = ref(false);
     const selectedPlayer = ref<string | null>(null);
+    const pendingMinute = ref<number | null>(null);
 
     const players = computed(() => matchStore.presentPlayersWithNames);
+
+    const scorerOptions = computed(() => [
+        ...players.value.map(({ playerId, playerName }) => ({
+            playerId,
+            playerName,
+        })),
+        {
+            playerId: OPPONENT_OWN_GOAL,
+            playerName: t('match.ownGoalByOpponent'),
+        },
+    ]);
     const played = computed(() => isPlayed(match));
     const editable = computed(() => canEdit.value && !match.ended);
 
@@ -61,68 +75,108 @@
             : 'text-primary-900';
     };
 
-    const showGoalToast = (title: string, description: string) =>
+    const showGoalToast = (
+        title: string,
+        description: string,
+        actions?: { label: string; onClick: () => void }[],
+    ) =>
         toast.add({
             title,
             description,
             color: 'info',
             duration: 20000,
+            actions,
         });
 
+    const closeModal = () => {
+        modal.value = false;
+        selectedPlayer.value = null;
+    };
+
     const updateGoals = async (type: GoalType, delta: 1 | -1) => {
-        const current = type === 'for' ? goalsFor.value : goalsAgainst.value;
-        const goals = current + delta;
+        if (delta < 0) {
+            await matchStore.removeLastGoal(
+                seasonStore.currentSeason,
+                match.id,
+                type,
+            );
+            return;
+        }
 
-        if (goals < 0) return;
-
-        await matchStore.updateMatchGoals(
-            seasonStore.currentSeason,
-            match.id,
-            type,
-            goals,
+        const minute = getMatchMinute(
+            match,
+            seasonStore.currentHalfDuration,
+            Date.now(),
         );
 
-        if (delta < 0) return;
+        await matchStore.scoreGoal(seasonStore.currentSeason, match.id, type);
 
         if (type === 'for') {
+            pendingMinute.value = minute;
             modal.value = true;
             return;
         }
 
+        await matchStore.logGoal(seasonStore.currentSeason, match.id, {
+            side: 'against',
+            minute,
+        });
+
         showGoalToast(
             t('match.goalTitleAgainst', { team: match.opponent }),
             t('match.goalTypes.against'),
+            [
+                {
+                    label: t('match.ownGoal'),
+                    onClick: () =>
+                        matchStore.markOwnGoal(
+                            seasonStore.currentSeason,
+                            match.id,
+                        ),
+                },
+            ],
         );
+    };
+
+    const saveOpponentOwnGoal = async () => {
+        await matchStore.logGoal(seasonStore.currentSeason, match.id, {
+            side: 'for',
+            minute: pendingMinute.value,
+            ownGoal: true,
+        });
+
+        showGoalToast(
+            t('match.goalTitleFor', { team: CLUBNAME }),
+            t('match.goalTypes.forOwnGoal'),
+        );
+
+        closeModal();
     };
 
     const saveGoal = async () => {
         if (!selectedPlayer.value) return;
 
-        const appearance = matchStore.appearances.find(
-            (player) =>
-                player.present && player.playerId === selectedPlayer.value,
-        );
+        if (selectedPlayer.value === OPPONENT_OWN_GOAL) {
+            await saveOpponentOwnGoal();
+            return;
+        }
 
-        if (!appearance) return;
-
-        await matchStore.incrementPlayerGoals(
-            seasonStore.currentSeason,
-            match.id,
-            appearance.id,
-            1,
-        );
+        await matchStore.logGoal(seasonStore.currentSeason, match.id, {
+            side: 'for',
+            minute: pendingMinute.value,
+            playerId: selectedPlayer.value,
+        });
 
         showGoalToast(
             t('match.goalTitleFor', { team: CLUBNAME }),
             t('match.goalTypes.forBy', {
                 player: players.value.find(
-                    (player) => player.playerId === selectedPlayer.value,
+                    (candidate) => candidate.playerId === selectedPlayer.value,
                 )?.playerName,
             }),
         );
 
-        modal.value = false;
-        selectedPlayer.value = null;
+        closeModal();
     };
 
     onMounted(() => {
@@ -212,10 +266,11 @@
             v-model:open="modal"
             :title="t('match.goalScorer')"
             :ui="{ content: 'w-md' }"
+            @update:open="!$event && closeModal()"
         >
             <template #body>
                 <UAlert
-                    v-if="!players.length"
+                    v-if="!scorerOptions.length"
                     color="warning"
                     :description="t('match.noPlayersAdded')"
                     icon="i-lucide-triangle-alert"
@@ -226,16 +281,17 @@
                     v-else
                     v-model="selectedPlayer"
                     class="w-full"
-                    :items="players"
+                    :items="scorerOptions"
                     label-key="playerName"
                     :placeholder="t('player.selectPlayer')"
                     value-key="playerId"
+                    data-testid="goal-scorer"
                 />
             </template>
 
             <template #footer>
                 <UButton
-                    v-if="players.length"
+                    v-if="scorerOptions.length"
                     icon="i-lucide-check"
                     :label="t('common.save')"
                     @click="saveGoal"

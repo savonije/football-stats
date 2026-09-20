@@ -5,6 +5,15 @@ interface MatchResult {
     goalsAgainst: number;
 }
 
+export interface MatchGoal {
+    side: 'for' | 'against';
+    /** Match minute, or null when the goal was logged with the clock stopped. */
+    minute: number | null;
+    /** Our scorer. Absent on own goals, which credit nobody. */
+    playerId?: string;
+    ownGoal?: boolean;
+}
+
 export interface Match {
     id: string;
     opponent: string;
@@ -12,6 +21,7 @@ export interface Match {
     ended: boolean;
     home: boolean;
     result?: MatchResult;
+    goals?: MatchGoal[];
     washing?: string;
     paused: boolean;
     startTime?: number;
