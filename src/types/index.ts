@@ -7,9 +7,7 @@ interface MatchResult {
 
 export interface MatchGoal {
     side: 'for' | 'against';
-    /** Match minute, or null when the goal was logged with the clock stopped. */
     minute: number | null;
-    /** Our scorer. Absent on own goals, which credit nobody. */
     playerId?: string;
     ownGoal?: boolean;
 }

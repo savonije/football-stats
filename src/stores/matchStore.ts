@@ -311,9 +311,6 @@ export const useMatchStore = defineStore('matchStore', {
          * are only logged once a scorer has been picked, so this runs a beat
          * after `scoreGoal` for those, and right behind it for the opponent's.
          */
-        // ponytail: the goal log is rewritten from the locally synced copy of
-        // the match, so two people scoring in the same second can drop one.
-        // Move it to a subcollection if the scoreboard ever has two operators.
         logGoal(seasonId: string, matchId: string, goal: MatchGoal) {
             return Promise.all([
                 updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
