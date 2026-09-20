@@ -9,6 +9,7 @@
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
+    import { useConfirmOldMatchEdit } from '@/composables/useConfirmOldMatchEdit';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Match } from '@/types';
@@ -19,12 +20,17 @@
     const { t } = useI18n();
     const toast = useAppToast();
     const confirm = useConfirmDialog();
+    const confirmOldMatchEdit = useConfirmOldMatchEdit();
     const router = useRouter();
     const matchStore = useMatchStore();
     const seasonStore = useSeasonStore();
     const canEdit = useCanEdit();
 
     const editingMatch = ref(false);
+
+    const openEditMatch = async () => {
+        if (await confirmOldMatchEdit(match)) editingMatch.value = true;
+    };
 
     const confirmDeleteMatch = async () => {
         const confirmed = await confirm({
@@ -55,7 +61,7 @@
             {
                 label: t('match.editMatch'),
                 icon: 'i-lucide-pencil',
-                onSelect: () => (editingMatch.value = true),
+                onSelect: openEditMatch,
             },
         ],
         [

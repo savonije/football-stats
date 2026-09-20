@@ -12,6 +12,8 @@ export default {
         'Weet je zeker dat je {0} wilt verwijderen uit deze wedstrijd?',
     editAppearance: 'Statistieken bewerken',
     editMatch: 'Wedstrijd bewerken',
+    editOldMatchConfirm:
+        'De wedstrijd is langer dan 2 weken geleden gespeeld, weet je zeker dat je hem wilt bewerken?',
     endFirstHalf: 'Eerste helft beëindigen',
     endFirstHalfConfirm:
         'Weet je zeker dat je de eerste helft wilt beëindigen? Dit kan niet ongedaan worden gemaakt.',

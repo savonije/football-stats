@@ -14,6 +14,7 @@
     import ScoreBoard from '@/pages/matches/_components/ScoreBoard.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
+    import { useConfirmOldMatchEdit } from '@/composables/useConfirmOldMatchEdit';
     import { useMatchStore } from '@/stores/matchStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { AppearanceWithName } from '@/types';
@@ -23,6 +24,7 @@
     const route = useRoute();
     const matchId = computed(() => route.params.id as string);
     const canEdit = useCanEdit();
+    const confirmOldMatchEdit = useConfirmOldMatchEdit();
 
     const { t } = useI18n();
     const editingAppearanceId = ref<string | null>(null);
@@ -53,7 +55,9 @@
             ) ?? null,
     );
 
-    const openEditDialog = (appearance: AppearanceWithName) => {
+    const openEditDialog = async (appearance: AppearanceWithName) => {
+        if (!(await confirmOldMatchEdit(matchStore.selectedMatch))) return;
+
         editingAppearanceId.value = appearance.id;
         editingAppearance.value = true;
     };
