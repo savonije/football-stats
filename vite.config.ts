@@ -4,6 +4,8 @@ import { fileURLToPath, URL } from 'node:url';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
+import fmt from './oxfmt.config';
+
 // https://vite.dev/config/
 export default defineConfig({
     staged: {
@@ -116,31 +118,7 @@ export default defineConfig({
             },
         ],
     },
-    fmt: {
-        arrowParens: 'always',
-        printWidth: 80,
-        singleQuote: true,
-        tabWidth: 4,
-        trailingComma: 'all',
-        vueIndentScriptAndStyle: true,
-        sortPackageJson: false,
-        sortTailwindcss: {},
-        sortImports: {
-            customGroups: [
-                {
-                    groupName: 'component',
-                    elementNamePattern: ['@/**/*.vue'],
-                },
-            ],
-            groups: [
-                ['builtin', 'external'],
-                'component',
-                'internal',
-                'unknown',
-            ],
-        },
-        ignorePatterns: ['.claude/**', 'public/**', '**/*.md'],
-    },
+    fmt,
     test: {
         // e2e/ holds Playwright specs, run by `vp run test`, not the Vitest built-in.
         include: ['src/**/*.{test,spec}.ts'],
