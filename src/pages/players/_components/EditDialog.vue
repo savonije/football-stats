@@ -104,7 +104,7 @@
                     class="mt-1 flex flex-col gap-3 rounded-lg border border-gray-200 p-3"
                 >
                     <p
-                        class="text-xs font-bold tracking-wide text-gray-500 uppercase"
+                        class="font-mono text-xs font-bold tracking-wide text-gray-500 uppercase"
                     >
                         {{ seasonStore.currentSeason }}
                     </p>

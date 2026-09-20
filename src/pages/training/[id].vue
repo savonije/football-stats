@@ -201,7 +201,7 @@
                     </span>
                     <span
                         v-if="attendee.status === 'unmarked'"
-                        class="text-xxs tracking-label block text-gray-400 uppercase"
+                        class="text-xxs tracking-label block font-mono text-gray-400 uppercase"
                     >
                         {{ t('training.unmarked') }}
                     </span>

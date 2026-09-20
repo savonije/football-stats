@@ -93,7 +93,7 @@
         class="shadow-card mt-4 flex flex-col gap-2.5 rounded-xl bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
     >
         <div
-            class="tracking-label text-primary-400 hidden text-xs font-bold uppercase sm:block"
+            class="tracking-label text-primary-400 hidden font-mono text-xs font-bold uppercase sm:block"
         >
             {{ statusLabel }}
         </div>

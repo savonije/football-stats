@@ -135,7 +135,7 @@
 <template>
     <div class="p-5">
         <div
-            class="tracking-label text-primary-400 text-xs font-bold uppercase"
+            class="tracking-label text-primary-400 font-mono text-xs font-bold uppercase"
         >
             {{ match.ended ? t('match.finalScore') : t('match.standing') }}
         </div>
@@ -145,7 +145,7 @@
         >
             <template v-for="(side, index) in sides" :key="side.type">
                 <div
-                    class="tracking-label text-primary-300 row-start-1 text-center text-xs leading-tight font-bold uppercase"
+                    class="tracking-label text-primary-300 row-start-1 text-center font-mono text-xs leading-tight font-bold uppercase"
                     :class="index === 0 ? 'col-start-1' : 'col-start-3'"
                 >
                     {{ side.name }}
@@ -193,14 +193,14 @@
 
             <div
                 v-if="!played"
-                class="tracking-label text-primary-300 col-span-full row-start-3 mt-2 text-xs font-bold uppercase"
+                class="tracking-label text-primary-300 col-span-full row-start-3 mt-2 font-mono text-xs font-bold uppercase"
             >
                 {{ t('match.noScoreYet') }}
             </div>
 
             <UBadge
                 v-else-if="match.ended"
-                class="tracking-badge text-xxs col-span-full row-start-3 mt-2 font-bold uppercase"
+                class="tracking-badge text-xxs col-span-full row-start-3 mt-2 font-mono font-bold uppercase"
                 color="primary"
                 icon="i-lucide-flag"
                 :label="t('match.isEnded')"

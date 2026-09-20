@@ -97,7 +97,7 @@
             </h2>
 
             <span
-                class="tracking-label text-primary-400 text-xs font-bold uppercase"
+                class="tracking-label text-primary-400 font-mono text-xs font-bold uppercase"
             >
                 {{
                     t('match.playersPresent', {

@@ -82,7 +82,7 @@
     <div class="flex flex-col gap-3 p-5 sm:items-center sm:justify-center">
         <UBadge
             v-if="isRunning"
-            class="tracking-badge text-xxs gap-1.5 self-start font-bold uppercase"
+            class="tracking-badge text-xxs gap-1.5 self-start font-mono font-bold uppercase"
             color="error"
             variant="subtle"
         >
@@ -100,7 +100,7 @@
 
         <UBadge
             v-else-if="isPaused"
-            class="tracking-badge text-xxs self-start font-bold uppercase"
+            class="tracking-badge text-xxs self-start font-mono font-bold uppercase"
             color="warning"
             icon="i-lucide-pause"
             :label="t('match.paused')"
@@ -147,7 +147,7 @@
 
                 <span
                     v-if="statusLabel"
-                    class="text-xxs tracking-badge text-primary-400 mt-1.5 font-bold uppercase"
+                    class="text-xxs tracking-badge text-primary-400 mt-1.5 font-mono font-bold uppercase"
                     data-testid="match-status"
                 >
                     {{ statusLabel }}

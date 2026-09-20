@@ -45,7 +45,7 @@
                     {{ CLUBNAME }}
                 </h1>
                 <p
-                    class="m-0 text-xs font-medium tracking-widest text-gray-500 uppercase"
+                    class="m-0 font-mono text-xs font-medium tracking-widest text-gray-500 uppercase"
                 >
                     Statistieken
                 </p>

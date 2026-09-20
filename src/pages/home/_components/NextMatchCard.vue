@@ -81,7 +81,7 @@
                     {{ formatDate({ day: 'numeric' }) }}
                 </span>
                 <span
-                    class="tracking-label text-xxs text-primary-600 font-bold uppercase"
+                    class="tracking-label text-xxs text-primary-600 font-mono font-bold uppercase"
                 >
                     {{ formatDate({ month: 'short' }) }}
                 </span>
@@ -97,7 +97,7 @@
             </div>
 
             <UBadge
-                class="tracking-badge text-xxs shrink-0 font-bold uppercase"
+                class="tracking-badge text-xxs shrink-0 font-mono font-bold uppercase"
                 color="primary"
                 :label="nextMatch.home ? t('common.home') : t('common.away')"
                 variant="subtle"

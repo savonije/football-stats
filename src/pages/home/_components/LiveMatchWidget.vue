@@ -108,7 +108,7 @@
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span
                     v-if="isPaused"
-                    class="tracking-badge text-xxs flex items-center gap-1.5 font-bold text-amber-300 uppercase"
+                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-amber-300 uppercase"
                 >
                     <UIcon name="i-lucide-pause" />
                     {{ t('match.paused') }}
@@ -116,7 +116,7 @@
 
                 <span
                     v-else
-                    class="tracking-badge text-xxs flex items-center gap-1.5 font-bold text-red-300 uppercase"
+                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-red-300 uppercase"
                 >
                     <span class="relative flex size-2.5">
                         <span
@@ -135,7 +135,7 @@
                 </span>
 
                 <span
-                    class="tracking-badge text-xxs text-primary-200 font-bold uppercase"
+                    class="tracking-badge text-xxs text-primary-200 font-mono font-bold uppercase"
                 >
                     {{ statusLabel }}
                 </span>

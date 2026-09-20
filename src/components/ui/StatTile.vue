@@ -25,7 +25,7 @@
             <slot />
         </template>
         <div
-            class="tracking-label text-primary-400 mt-1.5 text-[10px] font-bold uppercase"
+            class="tracking-label text-primary-400 mt-1.5 font-mono text-[10px] font-bold uppercase"
         >
             {{ label }}
         </div>

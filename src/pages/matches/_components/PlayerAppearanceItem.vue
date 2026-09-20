@@ -38,7 +38,7 @@
 
             <span
                 v-if="appearance.isGoalkeeper"
-                class="bg-primary/8 tracking-label text-primary inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-bold uppercase"
+                class="bg-primary/8 tracking-label text-primary inline-flex h-8 items-center gap-1.5 rounded-full px-3 font-mono text-xs font-bold uppercase"
             >
                 <UIcon class="size-4" name="i-lucide-hand" />
                 {{ $t('player.keeper') }}

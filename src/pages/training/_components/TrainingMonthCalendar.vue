@@ -105,7 +105,7 @@
             <span
                 v-for="label in weekdayLabels"
                 :key="label"
-                class="text-xs font-bold tracking-wide text-gray-400 uppercase"
+                class="font-mono text-xs font-bold tracking-wide text-gray-400 uppercase"
             >
                 {{ label }}
             </span>

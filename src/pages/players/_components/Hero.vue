@@ -50,7 +50,7 @@
                 </h1>
                 <span
                     v-if="!loading && isGuest"
-                    class="text-xxs tracking-badge mt-1 inline-block rounded-full border border-white/25 bg-white/12 px-2 py-0.5 font-bold text-white/75 uppercase"
+                    class="text-xxs tracking-badge mt-1 inline-block rounded-full border border-white/25 bg-white/12 px-2 py-0.5 font-mono font-bold text-white/75 uppercase"
                 >
                     {{ $t('player.guestPlayer') }}
                 </span>

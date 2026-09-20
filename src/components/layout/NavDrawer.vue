@@ -117,7 +117,7 @@
         'shadow-icon flex size-9 shrink-0 items-center justify-center rounded-lg text-sm text-white';
     const navChevron = 'ml-auto text-xxs opacity-40 transition-transform';
     const sectionLabel =
-        'mb-1.5 text-xxs font-extrabold tracking-widest text-white/40 uppercase';
+        'mb-1.5 text-xxs font-extrabold tracking-widest text-white/40 font-mono uppercase';
 
     defineExpose({
         open: () => {
@@ -134,7 +134,7 @@
         :ui="{
             content: 'bg-[image:var(--gradient-drawer)] shadow-drawer',
             header: 'border-b border-white/10 bg-white/[0.04]',
-            title: 'text-xxs font-extrabold tracking-[0.12em] text-white uppercase',
+            title: 'text-xxs font-extrabold tracking-[0.12em] text-white font-mono uppercase',
             close: 'text-white/60 hover:bg-white/10 hover:text-white',
             body: 'pt-8',
         }"
