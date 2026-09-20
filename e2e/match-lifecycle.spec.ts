@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 import {
     acceptConfirm,
@@ -11,6 +11,8 @@ import {
     skipWithoutEditableSeason,
     uniqueLabel,
 } from './helpers/app';
+
+const CLUB_NAME = process.env.VITE_CLUBNAME ?? '';
 
 test.describe('Match timer lifecycle', () => {
     let matchUrl = '';
@@ -53,6 +55,8 @@ test.describe('Match timer lifecycle', () => {
 
             /** Score for us, returning the label of the option picked. */
             const scoreForUs = async (option?: string) => {
+                const logged = await timeline.count();
+
                 await page
                     .getByRole('button', { name: 'Doelpunt voor toevoegen' })
                     .click();
@@ -63,8 +67,7 @@ test.describe('Match timer lifecycle', () => {
 
                 // The board goes up straight away, the timeline waits for a
                 // scorer.
-                await expect(scoreFor).toHaveText('1');
-                await expect(timeline).toHaveCount(0);
+                await expect(timeline).toHaveCount(logged);
 
                 await dialog.locator('[data-testid="goal-scorer"]').click();
 
@@ -80,34 +83,69 @@ test.describe('Match timer lifecycle', () => {
                 return label;
             };
 
-            const revert = async (side: 'voor' | 'tegen', score: Locator) => {
+            const revert = async (side: 'voor' | 'tegen') => {
                 await page
                     .getByRole('button', {
                         name: `Doelpunt ${side} verwijderen`,
                     })
                     .click();
 
-                await expect(score).toHaveText('0');
+                await expect(
+                    side === 'voor' ? scoreFor : scoreAgainst,
+                ).toHaveText('0');
                 await expect(timeline).toHaveCount(0);
             };
 
             await test.step('a goal by one of ours', async () => {
                 const scorer = await scoreForUs();
 
+                await expect(scoreFor).toHaveText('1');
                 await expect(timeline).toHaveCount(1);
                 await expect(timeline.first()).toContainText(scorer);
                 await expect(timeline.first()).toContainText("'");
 
-                await revert('voor', scoreFor);
+                await revert('voor');
             });
 
             await test.step('an own goal by the opponent', async () => {
                 await scoreForUs('Eigen doelpunt tegenstander');
 
+                await expect(scoreFor).toHaveText('1');
                 await expect(timeline).toHaveCount(1);
                 await expect(timeline.first()).toContainText('Eigen doelpunt');
 
-                await revert('voor', scoreFor);
+                await revert('voor');
+            });
+
+            await test.step('lowering the score in the edit dialog', async () => {
+                const first = await scoreForUs();
+                await scoreForUs();
+
+                await expect(scoreFor).toHaveText('2');
+                await expect(timeline).toHaveCount(2);
+
+                await page.getByRole('button', { name: 'Meer opties' }).click();
+                await page
+                    .getByRole('menuitem', { name: 'Wedstrijd bewerken' })
+                    .click();
+
+                const dialog = page.getByRole('dialog', {
+                    name: 'Wedstrijd bewerken',
+                });
+                const goals = dialog.getByLabel(CLUB_NAME);
+
+                await goals.click();
+                await goals.press('ArrowDown');
+
+                await dialog.getByRole('button', { name: 'Opslaan' }).click();
+                await expect(dialog).toBeHidden();
+
+                // The later goal is dropped, the first one survives.
+                await expect(scoreFor).toHaveText('1');
+                await expect(timeline).toHaveCount(1);
+                await expect(timeline.first()).toContainText(first);
+
+                await revert('voor');
             });
 
             await test.step('an own goal by one of ours', async () => {
@@ -129,7 +167,7 @@ test.describe('Match timer lifecycle', () => {
 
                 await expect(timeline.first()).toContainText('Eigen doelpunt');
 
-                await revert('tegen', scoreAgainst);
+                await revert('tegen');
             });
         });
 

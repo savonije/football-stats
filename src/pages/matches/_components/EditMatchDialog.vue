@@ -7,9 +7,11 @@
     import DatePicker from '@/components/ui/DatePicker.vue';
 
     import { useAppToast } from '@/composables/useAppToast';
+    import { CLUBNAME } from '@/constants';
     import { useMatchStore } from '@/stores/matchStore';
     import type { Match } from '@/types';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
+    import { isPlayed } from '@/utils/match';
 
     const { seasonId, match } = defineProps<{
         seasonId: string;
@@ -25,6 +27,8 @@
     const opponent = ref('');
     const date = shallowRef<CalendarDate | undefined>();
     const home = ref(true);
+    const goalsFor = ref(0);
+    const goalsAgainst = ref(0);
     const loading = ref(false);
 
     const homeOptions = [
@@ -51,6 +55,8 @@
                 opponent: opponent.value,
                 date: matchDate,
                 home: home.value,
+                goalsFor: goalsFor.value,
+                goalsAgainst: goalsAgainst.value,
             });
 
             toast.success(t('common.changesSaved'));
@@ -69,6 +75,8 @@
         opponent.value = match?.opponent ?? '';
         date.value = toCalendarDate(match?.date ? match.date.toDate() : null);
         home.value = match?.home ?? true;
+        goalsFor.value = match?.result?.goalsFor ?? 0;
+        goalsAgainst.value = match?.result?.goalsAgainst ?? 0;
     });
 </script>
 
@@ -106,6 +114,30 @@
                         class="w-full"
                         :items="homeOptions"
                     />
+                </div>
+
+                <div v-if="isPlayed(match)" class="flex gap-3">
+                    <div class="flex-1">
+                        <label for="goalsFor">{{ CLUBNAME }}</label>
+                        <UInputNumber
+                            id="goalsFor"
+                            v-model="goalsFor"
+                            class="w-full"
+                            :min="0"
+                        />
+                    </div>
+
+                    <div class="flex-1">
+                        <label for="goalsAgainst">
+                            {{ t('common.opponent') }}
+                        </label>
+                        <UInputNumber
+                            id="goalsAgainst"
+                            v-model="goalsAgainst"
+                            class="w-full"
+                            :min="0"
+                        />
+                    </div>
                 </div>
             </div>
         </template>

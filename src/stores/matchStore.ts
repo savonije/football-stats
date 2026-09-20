@@ -70,10 +70,43 @@ export const useMatchStore = defineStore('matchStore', {
         updateMatch(
             seasonId: string,
             matchId: string,
-            data: { opponent: string; date: Date; home: boolean },
+            data: {
+                opponent: string;
+                date: Date;
+                home: boolean;
+                goalsFor: number;
+                goalsAgainst: number;
+            },
         ) {
-            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
-            return updateDoc(matchRef, data);
+            const { goalsFor, goalsAgainst, ...match } = data;
+            const limit = { for: goalsFor, against: goalsAgainst };
+            const seen = { for: 0, against: 0 };
+            const goals: MatchGoal[] = [];
+            const tallies = [];
+
+            for (const goal of this.selectedMatch?.goals ?? []) {
+                seen[goal.side] += 1;
+
+                if (seen[goal.side] <= limit[goal.side]) goals.push(goal);
+                else if (goal.playerId)
+                    tallies.push(
+                        this.updatePlayerGoals(
+                            seasonId,
+                            matchId,
+                            goal.playerId,
+                            -1,
+                        ),
+                    );
+            }
+
+            return Promise.all([
+                updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
+                    ...match,
+                    result: { goalsFor, goalsAgainst },
+                    goals,
+                }),
+                ...tallies,
+            ]);
         },
 
         async deleteMatch(seasonId: string, matchId: string) {
