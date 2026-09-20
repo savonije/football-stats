@@ -331,24 +331,6 @@ export const useMatchStore = defineStore('matchStore', {
         },
 
         /**
-         * Turn the opponent's last goal into an own goal by one of ours. The
-         * score already counted against us, so only the timeline changes.
-         */
-        markOwnGoal(seasonId: string, matchId: string) {
-            const goals = [...(this.selectedMatch?.goals ?? [])];
-            const index = goals.map((goal) => goal.side).lastIndexOf('against');
-
-            if (index === -1) return;
-
-            goals[index] = { ...goals[index]!, ownGoal: true };
-
-            return updateDoc(
-                doc(db, `seasons/${seasonId}/matches/${matchId}`),
-                { goals },
-            );
-        },
-
-        /**
          * Undo the last goal for one side: the score, the timeline entry and
          * the scorer's tally all step back together.
          */

@@ -75,17 +75,12 @@
             : 'text-primary-900';
     };
 
-    const showGoalToast = (
-        title: string,
-        description: string,
-        actions?: { label: string; onClick: () => void }[],
-    ) =>
+    const showGoalToast = (title: string, description: string) =>
         toast.add({
             title,
             description,
             color: 'info',
             duration: 20000,
-            actions,
         });
 
     const closeModal = () => {
@@ -125,16 +120,6 @@
         showGoalToast(
             t('match.goalTitleAgainst', { team: match.opponent }),
             t('match.goalTypes.against'),
-            [
-                {
-                    label: t('match.ownGoal'),
-                    onClick: () =>
-                        matchStore.markOwnGoal(
-                            seasonStore.currentSeason,
-                            match.id,
-                        ),
-                },
-            ],
         );
     };
 

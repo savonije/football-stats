@@ -147,28 +147,6 @@ test.describe('Match timer lifecycle', () => {
 
                 await revert('voor');
             });
-
-            await test.step('an own goal by one of ours', async () => {
-                await page
-                    .getByRole('button', { name: 'Doelpunt tegen toevoegen' })
-                    .click();
-
-                await expect(scoreAgainst).toHaveText('1');
-                await expect(timeline).toHaveCount(1);
-
-                // The goal is logged as the opponent's; the toast that follows
-                // is what turns it into an own goal.
-                await page
-                    .getByRole('button', {
-                        name: 'Eigen doelpunt',
-                        exact: true,
-                    })
-                    .click();
-
-                await expect(timeline.first()).toContainText('Eigen doelpunt');
-
-                await revert('tegen');
-            });
         });
 
         await test.step('end the first half', async () => {
