@@ -22,29 +22,29 @@
         "prepare": "vp config"
     },
     "dependencies": {
-        "@iconify-json/lucide": "^1.2.132",
+        "@iconify-json/lucide": "^1.2.135",
         "@nuxt/ui": "^4.11.1",
         "@tanstack/vue-table": "^8.21.3",
         "@vueuse/core": "^14.4.0",
         "dayjs": "^1.11.23",
         "firebase": "^12.19.0",
         "pinia": "^3.0.3",
-        "vue": "^3.5.41",
-        "vue-i18n": "^11.4.9"
+        "vue": "^3.5.43",
+        "vue-i18n": "^11.4.12"
     },
     "devDependencies": {
         "@playwright/test": "^1.63.0",
         "@tsconfig/node22": "^22.0.6",
-        "@types/node": "^25.9.7",
+        "@types/node": "^25.9.8",
         "@vitejs/plugin-vue": "^6.0.9",
         "@vue/tsconfig": "^0.9.1",
-        "knip": "^6.35.1",
+        "knip": "^6.37.0",
         "npm-run-all2": "^8.0.4",
         "tailwindcss": "^4.1.13",
         "typescript": "^5.9.3",
         "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2",
         "vite-plugin-vue-devtools": "^8.2.1",
-        "vite-plus": "0.3.2",
+        "vite-plus": "0.3.3",
         "vue-router": "^5.3.1",
         "vue-tsc": "^3.3.11"
     },
