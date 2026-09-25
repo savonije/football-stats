@@ -82,24 +82,39 @@ export const attendanceStatus = (
     return isUpcomingTraining(training.date, now) ? 'unmarked' : 'absent';
 };
 
+type HeldTraining = Pick<
+    Training,
+    'date' | 'cancelled' | 'presentPlayerIds' | 'absentPlayerIds'
+>;
+
 /**
  * The trainings that count towards attendance: cancelled sessions and any that
  * have not been held yet are left out, so a player is never marked down for a
- * training nobody could attend.
+ * training nobody could attend. Today's training counts once attendance has
+ * been taken.
  */
-export const heldTrainings = <T extends Pick<Training, 'date' | 'cancelled'>>(
+export const heldTrainings = <T extends HeldTraining>(
     trainings: T[],
     now: Date = new Date(),
 ): T[] =>
-    trainings.filter(
-        (training) =>
-            !training.cancelled && !isUpcomingTraining(training.date, now),
-    );
+    trainings.filter((training) => {
+        if (training.cancelled || !training.date) return false;
+
+        const day = dayjs(training.date.toDate());
+        return (
+            day.isBefore(now, 'day') ||
+            (day.isSame(now, 'day') &&
+                !!(
+                    training.presentPlayerIds?.length ||
+                    training.absentPlayerIds?.length
+                ))
+        );
+    });
 
 /** Share of held trainings a player was present at, rounded to a whole percent. */
 export const attendancePercentage = (
     playerId: string,
-    trainings: Pick<Training, 'date' | 'cancelled' | 'presentPlayerIds'>[],
+    trainings: HeldTraining[],
     now: Date = new Date(),
 ): number => {
     const held = heldTrainings(trainings, now);
