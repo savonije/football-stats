@@ -3,6 +3,8 @@
     import { computed, onMounted, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+
     import { useCanEdit } from '@/composables/useCanEdit';
     import { CLUBNAME } from '@/constants';
     import { useMatchStore } from '@/stores/matchStore';
@@ -13,8 +15,6 @@
     import { getMatchMinute, getScoreSides, isPlayed } from '@/utils/match';
 
     type GoalType = ScoreSide['type'];
-
-    const OPPONENT_OWN_GOAL = '__ownGoal__';
 
     interface Side extends ScoreSide {
         addLabel: string;
@@ -36,16 +36,6 @@
 
     const players = computed(() => matchStore.presentPlayersWithNames);
 
-    const scorerOptions = computed(() => [
-        ...players.value.map(({ playerId, playerName }) => ({
-            playerId,
-            playerName,
-        })),
-        {
-            playerId: OPPONENT_OWN_GOAL,
-            playerName: t('match.ownGoalByOpponent'),
-        },
-    ]);
     const played = computed(() => isPlayed(match));
     const editable = computed(() => canEdit.value && !match.ended);
 
@@ -140,11 +130,6 @@
 
     const saveGoal = async () => {
         if (!selectedPlayer.value) return;
-
-        if (selectedPlayer.value === OPPONENT_OWN_GOAL) {
-            await saveOpponentOwnGoal();
-            return;
-        }
 
         await matchStore.logGoal(seasonStore.currentSeason, match.id, {
             side: 'for',
@@ -254,32 +239,43 @@
             @update:open="!$event && closeModal()"
         >
             <template #body>
-                <UAlert
-                    v-if="!scorerOptions.length"
-                    color="warning"
-                    :description="t('match.noPlayersAdded')"
-                    icon="i-lucide-triangle-alert"
-                    variant="subtle"
-                />
+                <div class="flex flex-col gap-3">
+                    <UAlert
+                        v-if="!players.length"
+                        color="warning"
+                        :description="t('match.noPlayersAdded')"
+                        icon="i-lucide-triangle-alert"
+                        variant="subtle"
+                    />
 
-                <USelect
-                    v-else
-                    v-model="selectedPlayer"
-                    class="w-full"
-                    :items="scorerOptions"
-                    label-key="playerName"
-                    :placeholder="t('player.selectPlayer')"
-                    value-key="playerId"
-                    data-testid="goal-scorer"
-                />
+                    <USelect
+                        v-else
+                        v-model="selectedPlayer"
+                        class="w-full"
+                        :items="players"
+                        label-key="playerName"
+                        :placeholder="t('player.selectPlayer')"
+                        value-key="playerId"
+                        data-testid="goal-scorer"
+                    />
+
+                    <UButton
+                        class="self-start"
+                        color="neutral"
+                        :label="t('match.ownGoalByOpponent')"
+                        variant="outline"
+                        @click="saveOpponentOwnGoal"
+                    />
+                </div>
             </template>
 
             <template #footer>
-                <UButton
-                    v-if="scorerOptions.length"
-                    icon="i-lucide-check"
-                    :label="t('common.save')"
-                    @click="saveGoal"
+                <DialogFooter
+                    :confirm-label="t('common.save')"
+                    confirm-icon="i-lucide-check"
+                    :disabled="!selectedPlayer"
+                    @cancel="closeModal"
+                    @confirm="saveGoal"
                 />
             </template>
         </UModal>
