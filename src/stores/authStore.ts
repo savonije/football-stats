@@ -31,13 +31,11 @@ export const useStoreAuth = defineStore('storeAuth', {
             });
         },
         loginUser(credentials: { email: string; password: string }) {
-            signInWithEmailAndPassword(
+            return signInWithEmailAndPassword(
                 auth,
                 credentials.email,
                 credentials.password,
-            ).catch((error) => {
-                console.log(error.message);
-            });
+            );
         },
         logoutUser() {
             return signOut(auth);

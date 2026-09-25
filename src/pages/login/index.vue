@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { FirebaseError } from 'firebase/app';
     import { reactive, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -15,14 +16,29 @@
 
     const errorMessage = ref('');
 
-    const submitForm = () => {
+    const INVALID_CREDENTIAL_CODES = [
+        'auth/invalid-credential',
+        'auth/invalid-email',
+        'auth/user-not-found',
+        'auth/wrong-password',
+    ];
+
+    const submitForm = async () => {
         if (!credentials.email) {
             errorMessage.value = t('errors.emailError');
         } else if (!credentials.password) {
             errorMessage.value = t('errors.passwordError');
         } else {
             errorMessage.value = '';
-            storeAuth.loginUser(credentials);
+            try {
+                await storeAuth.loginUser(credentials);
+            } catch (error) {
+                errorMessage.value =
+                    error instanceof FirebaseError &&
+                    INVALID_CREDENTIAL_CODES.includes(error.code)
+                        ? t('errors.invalidCredentials')
+                        : t('errors.loginFailed');
+            }
         }
     };
 </script>
