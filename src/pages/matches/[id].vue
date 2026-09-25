@@ -7,6 +7,7 @@
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
     import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
+    import GoalTimeline from '@/pages/matches/_components/GoalTimeline.vue';
     import MatchControls from '@/pages/matches/_components/MatchControls.vue';
     import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
     import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
@@ -90,6 +91,8 @@
         </div>
 
         <MatchControls :season-id="seasonStore.currentSeason" />
+
+        <GoalTimeline :match="matchStore.selectedMatch" />
 
         <div class="mt-8 mb-4 flex items-baseline justify-between gap-3">
             <h2 class="mb-0 text-xl">

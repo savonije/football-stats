@@ -1,16 +1,18 @@
 <script setup lang="ts">
     import { useToast } from '@nuxt/ui/composables/useToast';
-    import { computed, onMounted, ref } from 'vue';
+    import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
+
+    import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
     import { CLUBNAME } from '@/constants';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import type { Match } from '@/types';
+    import type { Match, MatchGoal } from '@/types';
     import type { ScoreSide } from '@/utils/match';
-    import { getScoreSides, isPlayed } from '@/utils/match';
+    import { getMatchMinute, getScoreSides, isPlayed } from '@/utils/match';
 
     type GoalType = ScoreSide['type'];
 
@@ -30,8 +32,10 @@
 
     const modal = ref(false);
     const selectedPlayer = ref<string | null>(null);
+    const pendingMinute = ref<number | null>(null);
 
     const players = computed(() => matchStore.presentPlayersWithNames);
+
     const played = computed(() => isPlayed(match));
     const editable = computed(() => canEdit.value && !match.ended);
 
@@ -61,68 +65,80 @@
             : 'text-primary-900';
     };
 
-    const showGoalToast = (title: string, description: string) =>
-        toast.add({
-            title,
-            description,
-            color: 'info',
-            duration: 20000,
-        });
+    const goalDescription = (goal: MatchGoal) => {
+        if (goal.side === 'against') return t('match.goalTypes.against');
+        if (goal.ownGoal) return t('match.goalTypes.forOwnGoal');
+
+        const player =
+            goal.playerId && playerStore.getPlayerById(goal.playerId)?.name;
+        return player
+            ? t('match.goalTypes.forBy', { player })
+            : t('match.goalTypes.for');
+    };
+
+    watch(
+        () => [match.id, match.goals?.length ?? 0] as const,
+        ([id, count], [previousId, previousCount]) => {
+            const goal = match.goals?.at(-1);
+            if (id !== previousId || count <= previousCount || !goal) return;
+
+            toast.add({
+                title:
+                    goal.side === 'for'
+                        ? t('match.goalTitleFor', { team: CLUBNAME })
+                        : t('match.goalTitleAgainst', { team: match.opponent }),
+                description: goalDescription(goal),
+                color: goal.side === 'for' ? 'primary' : 'warning',
+                duration: 10000,
+            });
+        },
+    );
+
+    const closeModal = () => {
+        modal.value = false;
+        selectedPlayer.value = null;
+    };
 
     const updateGoals = async (type: GoalType, delta: 1 | -1) => {
-        const current = type === 'for' ? goalsFor.value : goalsAgainst.value;
-        const goals = current + delta;
+        if (delta < 0) {
+            await matchStore.removeLastGoal(
+                seasonStore.currentSeason,
+                match.id,
+                type,
+            );
+            return;
+        }
 
-        if (goals < 0) return;
-
-        await matchStore.updateMatchGoals(
-            seasonStore.currentSeason,
-            match.id,
-            type,
-            goals,
+        const minute = getMatchMinute(
+            match,
+            seasonStore.currentHalfDuration,
+            Date.now(),
         );
 
-        if (delta < 0) return;
+        await matchStore.scoreGoal(seasonStore.currentSeason, match.id, type);
 
         if (type === 'for') {
+            pendingMinute.value = minute;
             modal.value = true;
             return;
         }
 
-        showGoalToast(
-            t('match.goalTitleAgainst', { team: match.opponent }),
-            t('match.goalTypes.against'),
-        );
+        await matchStore.logGoal(seasonStore.currentSeason, match.id, {
+            side: 'against',
+            minute,
+        });
     };
 
-    const saveGoal = async () => {
-        if (!selectedPlayer.value) return;
+    const saveGoal = async (
+        scorer: Pick<MatchGoal, 'playerId' | 'ownGoal'>,
+    ) => {
+        await matchStore.logGoal(seasonStore.currentSeason, match.id, {
+            side: 'for',
+            minute: pendingMinute.value,
+            ...scorer,
+        });
 
-        const appearance = matchStore.appearances.find(
-            (player) =>
-                player.present && player.playerId === selectedPlayer.value,
-        );
-
-        if (!appearance) return;
-
-        await matchStore.incrementPlayerGoals(
-            seasonStore.currentSeason,
-            match.id,
-            appearance.id,
-            1,
-        );
-
-        showGoalToast(
-            t('match.goalTitleFor', { team: CLUBNAME }),
-            t('match.goalTypes.forBy', {
-                player: players.value.find(
-                    (player) => player.playerId === selectedPlayer.value,
-                )?.playerName,
-            }),
-        );
-
-        modal.value = false;
-        selectedPlayer.value = null;
+        closeModal();
     };
 
     onMounted(() => {
@@ -212,33 +228,46 @@
             v-model:open="modal"
             :title="t('match.goalScorer')"
             :ui="{ content: 'w-md' }"
+            @update:open="!$event && closeModal()"
         >
             <template #body>
-                <UAlert
-                    v-if="!players.length"
-                    color="warning"
-                    :description="t('match.noPlayersAdded')"
-                    icon="i-lucide-triangle-alert"
-                    variant="subtle"
-                />
+                <div class="flex flex-col gap-3">
+                    <UAlert
+                        v-if="!players.length"
+                        color="warning"
+                        :description="t('match.noPlayersAdded')"
+                        icon="i-lucide-triangle-alert"
+                        variant="subtle"
+                    />
 
-                <USelect
-                    v-else
-                    v-model="selectedPlayer"
-                    class="w-full"
-                    :items="players"
-                    label-key="playerName"
-                    :placeholder="t('player.selectPlayer')"
-                    value-key="playerId"
-                />
+                    <USelect
+                        v-else
+                        v-model="selectedPlayer"
+                        class="w-full"
+                        :items="players"
+                        label-key="playerName"
+                        :placeholder="t('player.selectPlayer')"
+                        value-key="playerId"
+                        data-testid="goal-scorer"
+                    />
+
+                    <UButton
+                        class="self-start"
+                        color="neutral"
+                        :label="t('match.ownGoalByOpponent')"
+                        variant="outline"
+                        @click="saveGoal({ ownGoal: true })"
+                    />
+                </div>
             </template>
 
             <template #footer>
-                <UButton
-                    v-if="players.length"
-                    icon="i-lucide-check"
-                    :label="t('common.save')"
-                    @click="saveGoal"
+                <DialogFooter
+                    :confirm-label="t('common.save')"
+                    confirm-icon="i-lucide-check"
+                    :disabled="!selectedPlayer"
+                    @cancel="closeModal"
+                    @confirm="saveGoal({ playerId: selectedPlayer! })"
                 />
             </template>
         </UModal>

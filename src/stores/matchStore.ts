@@ -15,7 +15,10 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
-import type { Appearance, Match } from '@/types';
+import type { Appearance, Match, MatchGoal } from '@/types';
+
+const resultField = (side: MatchGoal['side']) =>
+    side === 'for' ? ('goalsFor' as const) : ('goalsAgainst' as const);
 
 let _unsubscribeMatches: (() => void) | null = null;
 let _unsubscribeMatchDetails: (() => void) | null = null;
@@ -67,10 +70,43 @@ export const useMatchStore = defineStore('matchStore', {
         updateMatch(
             seasonId: string,
             matchId: string,
-            data: { opponent: string; date: Date; home: boolean },
+            data: {
+                opponent: string;
+                date: Date;
+                home: boolean;
+                goalsFor: number;
+                goalsAgainst: number;
+            },
         ) {
-            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
-            return updateDoc(matchRef, data);
+            const { goalsFor, goalsAgainst, ...match } = data;
+            const limit = { for: goalsFor, against: goalsAgainst };
+            const seen = { for: 0, against: 0 };
+            const goals: MatchGoal[] = [];
+            const tallies = [];
+
+            for (const goal of this.selectedMatch?.goals ?? []) {
+                seen[goal.side] += 1;
+
+                if (seen[goal.side] <= limit[goal.side]) goals.push(goal);
+                else if (goal.playerId)
+                    tallies.push(
+                        this.updatePlayerGoals(
+                            seasonId,
+                            matchId,
+                            goal.playerId,
+                            -1,
+                        ),
+                    );
+            }
+
+            return Promise.all([
+                updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
+                    ...match,
+                    result: { goalsFor, goalsAgainst },
+                    goals,
+                }),
+                ...tallies,
+            ]);
         },
 
         async deleteMatch(seasonId: string, matchId: string) {
@@ -257,32 +293,93 @@ export const useMatchStore = defineStore('matchStore', {
             );
         },
 
-        updateMatchGoals(
-            seasonId: string,
-            matchId: string,
-            type: 'for' | 'against',
-            goals: number,
-        ) {
+        /** -----------------------------
+         *  GOALS
+         * ----------------------------- */
+
+        /** Put a goal on the board. The timeline entry follows in `logGoal`. */
+        scoreGoal(seasonId: string, matchId: string, side: MatchGoal['side']) {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+
             return updateDoc(matchRef, {
-                [`result.${type === 'for' ? 'goalsFor' : 'goalsAgainst'}`]:
-                    goals,
+                [`result.${resultField(side)}`]: increment(1),
             });
         },
 
-        incrementPlayerGoals(
+        /**
+         * Record a goal on the timeline and credit its scorer. Our own goals
+         * are only logged once a scorer has been picked, so this runs a beat
+         * after `scoreGoal` for those, and right behind it for the opponent's.
+         */
+        logGoal(seasonId: string, matchId: string, goal: MatchGoal) {
+            return Promise.all([
+                updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
+                    goals: [...(this.selectedMatch?.goals ?? []), goal],
+                }),
+                goal.playerId
+                    ? this.updatePlayerGoals(
+                          seasonId,
+                          matchId,
+                          goal.playerId,
+                          1,
+                      )
+                    : null,
+            ]);
+        },
+
+        /**
+         * Undo the last goal for one side: the score, the timeline entry and
+         * the scorer's tally all step back together.
+         */
+        removeLastGoal(
             seasonId: string,
             matchId: string,
-            appearanceId: string,
-            delta = 1,
+            side: MatchGoal['side'],
         ) {
-            const appearanceRef = doc(
-                db,
-                `seasons/${seasonId}/matches/${matchId}/appearances/${appearanceId}`,
+            const field = resultField(side);
+
+            if ((this.selectedMatch?.result?.[field] ?? 0) <= 0) return;
+
+            const goals = [...(this.selectedMatch?.goals ?? [])];
+            const index = goals.map((goal) => goal.side).lastIndexOf(side);
+            const removed = index === -1 ? null : goals.splice(index, 1)[0];
+
+            return Promise.all([
+                updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
+                    [`result.${field}`]: increment(-1),
+                    goals,
+                }),
+                removed?.playerId
+                    ? this.updatePlayerGoals(
+                          seasonId,
+                          matchId,
+                          removed.playerId,
+                          -1,
+                      )
+                    : null,
+            ]);
+        },
+
+        updatePlayerGoals(
+            seasonId: string,
+            matchId: string,
+            playerId: string,
+            delta: 1 | -1,
+        ) {
+            const appearance = this.appearances.find(
+                (a) => a.playerId === playerId,
             );
-            return updateDoc(appearanceRef, {
-                goals: increment(delta),
-            });
+
+            if (!appearance) return;
+            if (delta < 0 && appearance.goals <= 0) return;
+
+            return updateDoc(
+                doc(
+                    db,
+                    `seasons/${seasonId}/matches/${matchId}/appearances/${appearance.id}`,
+                ),
+                { goals: increment(delta) },
+            );
         },
     },
 
