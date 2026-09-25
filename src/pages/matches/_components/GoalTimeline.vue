@@ -54,7 +54,7 @@
                 />
 
                 <span
-                    class="truncate"
+                    class="truncate text-sm"
                     :class="
                         goal.side === 'for'
                             ? 'text-primary-900 font-medium'
