@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { useToast } from '@nuxt/ui/composables/useToast';
-    import { computed, onMounted, ref } from 'vue';
+    import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
@@ -10,7 +10,7 @@
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import type { Match } from '@/types';
+    import type { Match, MatchGoal } from '@/types';
     import type { ScoreSide } from '@/utils/match';
     import { getMatchMinute, getScoreSides, isPlayed } from '@/utils/match';
 
@@ -65,13 +65,34 @@
             : 'text-primary-900';
     };
 
-    const showGoalToast = (title: string, description: string) =>
-        toast.add({
-            title,
-            description,
-            color: 'info',
-            duration: 10000,
-        });
+    const goalDescription = (goal: MatchGoal) => {
+        if (goal.side === 'against') return t('match.goalTypes.against');
+        if (goal.ownGoal) return t('match.goalTypes.forOwnGoal');
+
+        const player =
+            goal.playerId && playerStore.getPlayerById(goal.playerId)?.name;
+        return player
+            ? t('match.goalTypes.forBy', { player })
+            : t('match.goalTypes.for');
+    };
+
+    watch(
+        () => [match.id, match.goals?.length ?? 0] as const,
+        ([id, count], [previousId, previousCount]) => {
+            const goal = match.goals?.at(-1);
+            if (id !== previousId || count <= previousCount || !goal) return;
+
+            toast.add({
+                title:
+                    goal.side === 'for'
+                        ? t('match.goalTitleFor', { team: CLUBNAME })
+                        : t('match.goalTitleAgainst', { team: match.opponent }),
+                description: goalDescription(goal),
+                color: goal.side === 'for' ? 'primary' : 'warning',
+                duration: 10000,
+            });
+        },
+    );
 
     const closeModal = () => {
         modal.value = false;
@@ -106,45 +127,16 @@
             side: 'against',
             minute,
         });
-
-        showGoalToast(
-            t('match.goalTitleAgainst', { team: match.opponent }),
-            t('match.goalTypes.against'),
-        );
     };
 
-    const saveOpponentOwnGoal = async () => {
+    const saveGoal = async (
+        scorer: Pick<MatchGoal, 'playerId' | 'ownGoal'>,
+    ) => {
         await matchStore.logGoal(seasonStore.currentSeason, match.id, {
             side: 'for',
             minute: pendingMinute.value,
-            ownGoal: true,
+            ...scorer,
         });
-
-        showGoalToast(
-            t('match.goalTitleFor', { team: CLUBNAME }),
-            t('match.goalTypes.forOwnGoal'),
-        );
-
-        closeModal();
-    };
-
-    const saveGoal = async () => {
-        if (!selectedPlayer.value) return;
-
-        await matchStore.logGoal(seasonStore.currentSeason, match.id, {
-            side: 'for',
-            minute: pendingMinute.value,
-            playerId: selectedPlayer.value,
-        });
-
-        showGoalToast(
-            t('match.goalTitleFor', { team: CLUBNAME }),
-            t('match.goalTypes.forBy', {
-                player: players.value.find(
-                    (candidate) => candidate.playerId === selectedPlayer.value,
-                )?.playerName,
-            }),
-        );
 
         closeModal();
     };
@@ -264,7 +256,7 @@
                         color="neutral"
                         :label="t('match.ownGoalByOpponent')"
                         variant="outline"
-                        @click="saveOpponentOwnGoal"
+                        @click="saveGoal({ ownGoal: true })"
                     />
                 </div>
             </template>
@@ -275,7 +267,7 @@
                     confirm-icon="i-lucide-check"
                     :disabled="!selectedPlayer"
                     @cancel="closeModal"
-                    @confirm="saveGoal"
+                    @confirm="saveGoal({ playerId: selectedPlayer! })"
                 />
             </template>
         </UModal>
