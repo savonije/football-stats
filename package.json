@@ -22,8 +22,8 @@
         "prepare": "vp config"
     },
     "dependencies": {
-        "@iconify-json/lucide": "^1.2.135",
-        "@nuxt/ui": "^4.11.1",
+        "@iconify-json/lucide": "^1.2.137",
+        "@nuxt/ui": "^4.11.2",
         "@tanstack/vue-table": "^8.21.3",
         "@vueuse/core": "^14.4.0",
         "dayjs": "^1.11.23",
@@ -38,7 +38,7 @@
         "@types/node": "^25.9.8",
         "@vitejs/plugin-vue": "^6.0.9",
         "@vue/tsconfig": "^0.9.1",
-        "knip": "^6.37.0",
+        "knip": "^6.38.0",
         "npm-run-all2": "^8.0.4",
         "tailwindcss": "^4.1.13",
         "typescript": "^5.9.3",
