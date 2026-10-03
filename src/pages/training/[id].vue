@@ -39,6 +39,12 @@
             : '',
     );
 
+    const weekday = computed(() =>
+        training.value?.date
+            ? dayjs(training.value.date.toDate()).format('dddd')
+            : '',
+    );
+
     const attendees = computed(() => {
         const current = training.value;
 
@@ -139,7 +145,7 @@
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="mb-1 text-2xl font-bold capitalize">
-                    {{ dateLabel }}
+                    {{ weekday }} {{ dateLabel }}
                 </h1>
                 <p class="text-primary-400 text-sm font-medium">
                     {{
