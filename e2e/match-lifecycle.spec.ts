@@ -29,6 +29,43 @@ test.describe('Match timer lifecycle', () => {
         matchUrl = '';
     });
 
+    test('sets and clears the kickoff time', async ({ page }) => {
+        matchUrl = await createMatch(page, uniqueLabel('E2E aftrap'));
+
+        const setKickoff = async (time: string) => {
+            await page.getByRole('button', { name: 'Meer opties' }).click();
+            await page
+                .getByRole('menuitem', { name: 'Wedstrijd bewerken' })
+                .click();
+
+            const dialog = page.getByRole('dialog', {
+                name: 'Wedstrijd bewerken',
+            });
+            await dialog.getByLabel('Aftrap').fill(time);
+            await dialog.getByRole('button', { name: 'Opslaan' }).click();
+            await expect(dialog).toBeHidden();
+        };
+
+        // A second tab renders what came back from the server.
+        const serverHeading = async () => {
+            const other = await page.context().newPage();
+            await other.goto(matchUrl);
+            const heading = other.locator('h1').last().locator('..');
+            await expect(heading).toBeVisible();
+            return { other, heading };
+        };
+
+        await setKickoff('10:15');
+        const first = await serverHeading();
+        await expect(first.heading).toContainText(', 10:15');
+        await first.other.close();
+
+        await setKickoff('');
+        const second = await serverHeading();
+        await expect(second.heading).not.toContainText(':');
+        await second.other.close();
+    });
+
     test('runs a match from kick-off to full time', async ({ page }) => {
         matchUrl = await createMatch(page, uniqueLabel('E2E timer'));
 

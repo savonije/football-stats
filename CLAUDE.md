@@ -79,7 +79,10 @@ players/{playerId}                         # { ..., seasons: { [seasonId]: { act
 seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
 seasons/{seasonId}/trainings/{trainingId}  # { date, presentPlayerIds: string[], cancelled? }
+settings/app                               # { sportlinkClientId? } — club-wide, edited via "Instellingen"
 ```
+
+Matches imported by the KNVB sync ("Wedstrijdschema synchroniseren") carry a `knvbCode` (Sportlink `wedstrijdcode`) and a real kickoff in `date`; hand-entered matches sit at midnight, which `hasKickoffTime()` in `src/utils/date.ts` reads as "no kickoff". The sync calls Sportlink Club.Dataservice (`data.sportlink.com`, open CORS) straight from the browser via `src/services/knvbService.ts`, resolves the teamcode from the season `teamname`, and only ever adds matches — the matching and mismatch warnings live in the pure `reconcileKnvbMatches()` in `src/utils/knvb.ts`. It is hidden while `sportlinkClientId` is empty.
 
 Season-level settings (team name, half duration, training days) live on the season doc, so per-season behaviour is configurable rather than hardcoded — read them via `seasonStore` getters (`currentTeamName`, `currentHalfDuration`), which fall back to `src/constants`. Document shapes are typed in `src/types/index.ts` (`Season` lives in `seasonStore.ts`).
 
@@ -94,9 +97,9 @@ Players are a single top-level collection but carry a per-season `seasons` map (
 
 ### State management (Pinia)
 
-Five stores: `authStore`, `matchStore`, `playerStore`, `seasonStore`, `trainingStore`. All use the **options** form of `defineStore` (`state`/`getters`/`actions` object), not setup stores — match that shape when adding one. `onSnapshot` unsubscribe handles are kept in module-level `let _unsubscribe*` variables and called before re-subscribing, so refetching on a season switch doesn't leak listeners.
+Six stores: `authStore`, `matchStore`, `playerStore`, `seasonStore`, `settingsStore`, `trainingStore`. All use the **options** form of `defineStore` (`state`/`getters`/`actions` object), not setup stores — match that shape when adding one. `onSnapshot` unsubscribe handles are kept in module-level `let _unsubscribe*` variables and called before re-subscribing, so refetching on a season switch doesn't leak listeners.
 
-Naming gotcha: `authStore.ts` exports `useStoreAuth` (store id `storeAuth`), not `useAuthStore` like the other four.
+Naming gotcha: `authStore.ts` exports `useStoreAuth` (store id `storeAuth`), not `useAuthStore` like the other five.
 
 The router is injected into every store via a Pinia plugin in `main.ts`, so stores can navigate with `this.router.push(...)`.
 

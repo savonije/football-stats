@@ -5,14 +5,18 @@
 
     import AddMatchDialog from '@/components/dialogs/AddMatchDialog.vue';
     import AddPlayerDialog from '@/components/dialogs/AddPlayerDialog.vue';
+    import ImportKnvbDialog from '@/components/dialogs/ImportKnvbDialog.vue';
     import ManageSeasonsDialog from '@/components/dialogs/ManageSeasonsDialog.vue';
+    import SettingsDialog from '@/components/dialogs/SettingsDialog.vue';
 
     import { useAppToast } from '@/composables/useAppToast';
     import { useStoreAuth } from '@/stores/authStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { useSettingsStore } from '@/stores/settingsStore';
 
     const storeAuth = useStoreAuth();
     const seasonStore = useSeasonStore();
+    const settingsStore = useSettingsStore();
     const { t } = useI18n();
     const toast = useAppToast();
 
@@ -20,7 +24,9 @@
     const navAnimated = ref(false);
     const showAddMatchDialog = ref(false);
     const showAddPlayerDialog = ref(false);
+    const showSyncDialog = ref(false);
     const showManageSeasonsDialog = ref(false);
+    const showSettingsDialog = ref(false);
 
     const { start: startNavAnimation, stop: stopNavAnimation } = useTimeoutFn(
         () => {
@@ -81,6 +87,15 @@
             dialog: showAddMatchDialog,
         },
         {
+            show:
+                seasonStore.isCurrentSeasonActive &&
+                !!settingsStore.sportlinkClientId,
+            icon: 'i-lucide-refresh-cw',
+            iconClass: 'bg-[image:var(--gradient-accent-blue)]',
+            label: t('knvbImport.syncSchedule'),
+            dialog: showSyncDialog,
+        },
+        {
             show: true,
             icon: 'i-lucide-user-plus',
             iconClass: 'bg-[image:var(--gradient-accent-purple)]',
@@ -93,6 +108,13 @@
             iconClass: 'bg-[image:var(--gradient-accent-teal)]',
             label: t('seasons.manageSeasons'),
             dialog: showManageSeasonsDialog,
+        },
+        {
+            show: true,
+            icon: 'i-lucide-settings',
+            iconClass: 'bg-[image:var(--gradient-accent-amber)]',
+            label: t('settings.title'),
+            dialog: showSettingsDialog,
         },
     ]);
 
@@ -244,5 +266,7 @@
 
     <AddMatchDialog v-model:visible="showAddMatchDialog" />
     <AddPlayerDialog v-model:visible="showAddPlayerDialog" />
+    <ImportKnvbDialog v-model:visible="showSyncDialog" />
     <ManageSeasonsDialog v-model:visible="showManageSeasonsDialog" />
+    <SettingsDialog v-model:visible="showSettingsDialog" />
 </template>

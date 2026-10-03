@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import type { CalendarDate } from '@internationalized/date';
+    import dayjs from 'dayjs';
     import { ref, shallowRef, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -10,7 +11,11 @@
     import { CLUBNAME } from '@/constants';
     import { useMatchStore } from '@/stores/matchStore';
     import type { Match } from '@/types';
-    import { fromCalendarDate, toCalendarDate } from '@/utils/date';
+    import {
+        fromCalendarDate,
+        hasKickoffTime,
+        toCalendarDate,
+    } from '@/utils/date';
     import { isPlayed } from '@/utils/match';
 
     const { seasonId, match } = defineProps<{
@@ -26,6 +31,7 @@
 
     const opponent = ref('');
     const date = shallowRef<CalendarDate | undefined>();
+    const kickoff = ref('');
     const home = ref(true);
     const goalsFor = ref(0);
     const goalsAgainst = ref(0);
@@ -47,6 +53,9 @@
             toast.warn(t('common.validation.fillAll'));
             return;
         }
+
+        const [hours = 0, minutes = 0] = kickoff.value.split(':').map(Number);
+        matchDate.setHours(hours, minutes);
 
         loading.value = true;
 
@@ -73,7 +82,12 @@
     watch(visible, (isVisible) => {
         if (!isVisible) return;
         opponent.value = match?.opponent ?? '';
-        date.value = toCalendarDate(match?.date ? match.date.toDate() : null);
+        const matchDate = match?.date ? match.date.toDate() : null;
+        date.value = toCalendarDate(matchDate);
+        kickoff.value =
+            matchDate && hasKickoffTime(matchDate)
+                ? dayjs(matchDate).format('HH:mm')
+                : '';
         home.value = match?.home ?? true;
         goalsFor.value = match?.result?.goalsFor ?? 0;
         goalsAgainst.value = match?.result?.goalsAgainst ?? 0;
@@ -101,9 +115,21 @@
                     />
                 </div>
 
-                <div>
-                    <label for="date">{{ t('common.date') }}</label>
-                    <DatePicker id="date" v-model="date" />
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label for="date">{{ t('common.date') }}</label>
+                        <DatePicker id="date" v-model="date" />
+                    </div>
+
+                    <div class="w-32">
+                        <label for="kickoff">{{ t('match.kickoff') }}</label>
+                        <UInput
+                            id="kickoff"
+                            v-model="kickoff"
+                            class="w-full"
+                            type="time"
+                        />
+                    </div>
                 </div>
 
                 <div>
