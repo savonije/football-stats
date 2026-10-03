@@ -18,6 +18,7 @@ export default {
     hasBag: 'Heeft tas',
     home: 'Thuis',
     homeOrAway: 'Uit of thuis',
+    homePage: 'Home',
     loadingData: 'Data wordt geladen...',
     manage: 'Beheer',
     menu: 'Menu',

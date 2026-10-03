@@ -1,5 +1,4 @@
 <script setup lang="ts">
-    import { computed } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useRoute } from 'vue-router';
 
@@ -9,16 +8,14 @@
 
     const route = useRoute();
     const { t } = useI18n();
-
-    const crumbs = computed(() => route.meta.breadcrumb ?? []);
 </script>
 
 <template>
     <nav
-        v-if="crumbs.length"
+        v-if="route.meta.breadcrumb"
         class="mb-4 flex items-center gap-1.5 text-xs font-medium"
     >
-        <template v-for="(crumb, i) in crumbs" :key="i">
+        <template v-for="(crumb, i) in route.meta.breadcrumb" :key="i">
             <Router-Link
                 class="text-primary-500 hover:text-primary-700 flex items-center gap-[5px] no-underline transition-colors duration-150"
                 :to="crumb.to"

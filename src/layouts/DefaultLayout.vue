@@ -1,20 +1,29 @@
 <script setup lang="ts">
+    import { computed } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useRoute } from 'vue-router';
 
     import PageFooter from '@/components/layout/PageFooter.vue';
     import PageHeader from '@/components/layout/PageHeader.vue';
+    import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
 
     const route = useRoute();
     const { t } = useI18n();
+
+    const heading = computed(
+        () =>
+            route.meta.heading &&
+            t(route.meta.heading.labelKey, route.meta.heading.count ?? 1),
+    );
 </script>
 
 <template>
     <PageHeader />
     <main class="page-enter container flex grow flex-col">
-        <h1 v-if="route.meta.heading" class="mb-3">
-            {{ t(route.meta.heading.labelKey, route.meta.heading.count ?? 1) }}
-        </h1>
+        <template v-if="heading">
+            <AppBreadcrumb :label="heading" />
+            <h1 class="mb-3">{{ heading }}</h1>
+        </template>
         <slot />
     </main>
     <PageFooter />

@@ -2,6 +2,7 @@
     import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
     import { computed } from 'vue';
 
+    import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
     import LiveMatchWidget from '@/pages/home/_components/LiveMatchWidget.vue';
     import MatchList from '@/pages/home/_components/MatchList.vue';
     import MatchResultsChart from '@/pages/home/_components/MatchResultsChart.vue';
@@ -33,6 +34,8 @@
 </script>
 
 <template>
+    <AppBreadcrumb :label="$t('common.homePage')" />
+
     <div class="grid grid-cols-1 gap-5">
         <LiveMatchWidget />
 

@@ -19,12 +19,20 @@ declare module 'vue-router' {
     }
 }
 
+const homeCrumb = [
+    {
+        labelKey: 'common.homePage',
+        to: { name: 'home' },
+        icon: 'i-lucide-house',
+    },
+];
+
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'home',
         component: () => import('@/pages/home/index.vue'),
-        meta: { title: 'Home' },
+        meta: { title: 'Home', breadcrumb: [] },
     },
     {
         path: '/match/:id',
@@ -32,14 +40,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/matches/[id].vue'),
         meta: {
             title: 'Wedstrijddetails',
-            breadcrumb: [
-                {
-                    labelKey: 'match.game',
-                    count: 2,
-                    to: { name: 'home' },
-                    icon: 'i-lucide-house',
-                },
-            ],
+            breadcrumb: homeCrumb,
         },
     },
     {
@@ -49,6 +50,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Spelerdetails',
             breadcrumb: [
+                ...homeCrumb,
                 {
                     labelKey: 'player.player',
                     count: 2,
@@ -65,6 +67,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Spelers',
             heading: { labelKey: 'player.player', count: 2 },
+            breadcrumb: homeCrumb,
         },
     },
     {
@@ -74,6 +77,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Topscorers',
             heading: { labelKey: 'common.topscorers' },
+            breadcrumb: homeCrumb,
         },
     },
     {
@@ -83,6 +87,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Wasschema',
             heading: { labelKey: 'washing.title' },
+            breadcrumb: homeCrumb,
         },
     },
     {
@@ -92,6 +97,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Trainingen',
             heading: { labelKey: 'training.title' },
+            breadcrumb: homeCrumb,
         },
     },
     {
@@ -101,6 +107,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Trainingdetails',
             breadcrumb: [
+                ...homeCrumb,
                 {
                     labelKey: 'training.training',
                     count: 2,
