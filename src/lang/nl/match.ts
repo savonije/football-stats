@@ -39,6 +39,7 @@ export default {
     matchesPlayed: 'Wedstrijden gespeeld',
     isPaused: 'Wedstrijd gepauzeerd',
     isEnded: 'Wedstrijd beëindigd',
+    kickoff: 'Aftrap',
     live: 'Live',
     messages: {
         firstHalfEnded: 'Eerste helft beëindigd',

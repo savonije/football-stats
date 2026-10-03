@@ -6,11 +6,14 @@
     import DefaultLayout from '@/layouts/DefaultLayout.vue';
 
     import { useStoreAuth } from '@/stores/authStore';
+    import { useSettingsStore } from '@/stores/settingsStore';
 
     const storeAuth = useStoreAuth();
+    const settingsStore = useSettingsStore();
 
     onMounted(() => {
         storeAuth.init();
+        settingsStore.fetchSettings();
     });
 </script>
 
