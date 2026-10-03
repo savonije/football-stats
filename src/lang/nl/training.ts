@@ -36,6 +36,8 @@ export default {
     cancelled: 'Afgelast',
     cancel: 'Training afgelasten',
     uncancel: 'Afgelasting ongedaan maken',
+    lock: 'Alleen-lezen aanzetten',
+    unlock: 'Bewerken toestaan',
     messages: {
         trainingAddError: 'Kon de training niet toevoegen',
         trainingsGenerated:

@@ -148,8 +148,19 @@ export const deleteMatch = async (page: Page, matchUrl: string) => {
     await expect(page).toHaveURL('/');
 };
 
+/** Trainings older than a week open read-only; switch that off. */
+export const unlockTraining = async (page: Page) => {
+    const toggle = page.getByTestId('read-only-toggle');
+    if (!(await becomesVisible(toggle))) return;
+
+    if ((await toggle.getAttribute('aria-pressed')) === 'true') {
+        await toggle.click();
+    }
+};
+
 export const deleteTraining = async (page: Page, trainingUrl: string) => {
     await page.goto(trainingUrl);
+    await unlockTraining(page);
 
     const menu = page.getByRole('button', { name: 'Meer opties' });
     if (!(await becomesVisible(menu))) return;

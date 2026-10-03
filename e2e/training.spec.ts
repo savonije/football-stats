@@ -6,6 +6,7 @@ import {
     login,
     skipWithoutFirebaseConfig,
     skipWithoutCredentials,
+    unlockTraining,
     skipWithoutEditableSeason,
 } from './helpers/app';
 
@@ -191,6 +192,7 @@ test.describe('Trainings', () => {
         await dayCell.click();
         await expect(page).toHaveURL(/\/training\/.+/);
         trainingUrl = page.url();
+        await unlockTraining(page);
 
         const switches = page.getByRole('switch');
         const hasSquad = await becomesVisible(switches.first(), 15_000);

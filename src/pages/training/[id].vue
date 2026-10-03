@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { DropdownMenuItem } from '@nuxt/ui/components/DropdownMenu.vue';
     import dayjs from 'dayjs';
-    import { computed, onMounted } from 'vue';
+    import { computed, onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useRoute, useRouter } from 'vue-router';
 
@@ -33,6 +33,18 @@
 
     const training = computed(() => trainingStore.selectedTraining);
     const isCancelled = computed(() => training.value?.cancelled === true);
+
+    const readOnly = ref(false);
+
+    watch(
+        () => training.value?.date.toMillis(),
+        (millis) => {
+            readOnly.value =
+                millis !== undefined &&
+                dayjs(millis).isBefore(dayjs().subtract(7, 'day'), 'day');
+        },
+        { immediate: true },
+    );
 
     const dateLabel = computed(() =>
         training.value?.date
@@ -192,7 +204,20 @@
                     {{ t('training.cancelled') }}
                 </UBadge>
 
-                <UDropdownMenu v-if="canEdit" :items="menuItems">
+                <UButton
+                    v-if="canEdit"
+                    color="neutral"
+                    :icon="readOnly ? 'i-lucide-lock' : 'i-lucide-lock-open'"
+                    variant="subtle"
+                    :aria-label="
+                        readOnly ? t('training.unlock') : t('training.lock')
+                    "
+                    :aria-pressed="readOnly"
+                    data-testid="read-only-toggle"
+                    @click="readOnly = !readOnly"
+                />
+
+                <UDropdownMenu v-if="canEdit && !readOnly" :items="menuItems">
                     <UButton
                         color="neutral"
                         icon="i-lucide-ellipsis-vertical"
@@ -228,7 +253,10 @@
                     </span>
                 </div>
 
-                <div v-if="canEdit && !isCancelled" class="flex items-center">
+                <div
+                    v-if="canEdit && !isCancelled && !readOnly"
+                    class="flex items-center"
+                >
                     <USwitch
                         :aria-label="attendee.playerName"
                         :model-value="attendee.status === 'present'"
