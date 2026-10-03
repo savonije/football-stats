@@ -42,14 +42,14 @@
         "npm-run-all2": "^8.0.4",
         "tailwindcss": "^4.1.13",
         "typescript": "^5.9.3",
-        "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0-rc.0",
+        "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0",
         "vite-plugin-vue-devtools": "^8.2.1",
         "vite-plus": "1.0.0",
         "vue-router": "^5.3.1",
         "vue-tsc": "^3.3.11"
     },
     "overrides": {
-        "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0-rc.0"
+        "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
     },
     "devEngines": {
         "packageManager": {
@@ -57,5 +57,12 @@
             "version": ">=11.13.0",
             "onFail": "download"
         }
+    },
+    "allowScripts": {
+        "@firebase/util": false,
+        "vue-demi": false,
+        "esbuild": false,
+        "protobufjs": false,
+        "fsevents": false
     }
 }
