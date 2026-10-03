@@ -6,6 +6,7 @@
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
+    import { useConfirmDialog } from '@/composables/useConfirmDialog';
     import { CLUBNAME } from '@/constants';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
@@ -24,6 +25,7 @@
     const { match } = defineProps<{ match: Match }>();
 
     const canEdit = useCanEdit();
+    const confirm = useConfirmDialog();
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
@@ -101,6 +103,20 @@
 
     const updateGoals = async (type: GoalType, delta: 1 | -1) => {
         if (delta < 0) {
+            if (
+                type === 'for' &&
+                goalsFor.value > 0 &&
+                !(await confirm({
+                    title: t('match.removeGoalFor'),
+                    message: t('match.removeGoalForConfirm', {
+                        team: CLUBNAME,
+                    }),
+                    confirmLabel: t('common.delete'),
+                    confirmColor: 'error',
+                }))
+            )
+                return;
+
             await matchStore.removeLastGoal(
                 seasonStore.currentSeason,
                 match.id,
@@ -114,8 +130,6 @@
             seasonStore.currentHalfDuration,
             Date.now(),
         );
-
-        await matchStore.scoreGoal(seasonStore.currentSeason, match.id, type);
 
         if (type === 'for') {
             pendingMinute.value = minute;

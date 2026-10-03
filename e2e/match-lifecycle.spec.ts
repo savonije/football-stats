@@ -53,9 +53,10 @@ test.describe('Match timer lifecycle', () => {
             const scoreFor = page.getByTestId('score-for');
             const scoreAgainst = page.getByTestId('score-against');
 
-            /** Score for us, returning the label of the option picked. */
-            const scoreForUs = async (option?: string) => {
+            /** Score for us, returning the scorer picked. */
+            const scoreForUs = async ({ ownGoal = false } = {}) => {
                 const logged = await timeline.count();
+                const score = await scoreFor.innerText();
 
                 await page
                     .getByRole('button', { name: 'Doelpunt voor toevoegen' })
@@ -65,15 +66,24 @@ test.describe('Match timer lifecycle', () => {
                     name: 'Doelpuntenmaker',
                 });
 
-                // The board goes up straight away, the timeline waits for a
-                // scorer.
+                // Board and timeline both wait for a scorer.
+                await expect(dialog).toBeVisible();
+                await expect(scoreFor).toHaveText(score);
                 await expect(timeline).toHaveCount(logged);
+
+                if (ownGoal) {
+                    await dialog
+                        .getByRole('button', {
+                            name: 'Eigen doelpunt tegenstander',
+                        })
+                        .click();
+                    await expect(dialog).toBeHidden();
+                    return '';
+                }
 
                 await dialog.locator('[data-testid="goal-scorer"]').click();
 
-                const choice = option
-                    ? page.getByRole('option', { name: option })
-                    : page.getByRole('option').first();
+                const choice = page.getByRole('option').first();
                 const label = (await choice.innerText()).trim();
                 await choice.click();
 
@@ -90,6 +100,10 @@ test.describe('Match timer lifecycle', () => {
                     })
                     .click();
 
+                // Our own goals carry a minute that cannot be restored, so
+                // removing one asks first.
+                if (side === 'voor') await acceptConfirm(page, 'Verwijderen');
+
                 await expect(
                     side === 'voor' ? scoreFor : scoreAgainst,
                 ).toHaveText('0');
@@ -104,11 +118,46 @@ test.describe('Match timer lifecycle', () => {
                 await expect(timeline.first()).toContainText(scorer);
                 await expect(timeline.first()).toContainText("'");
 
+                await test.step('backing out of the removal', async () => {
+                    await page
+                        .getByRole('button', {
+                            name: 'Doelpunt voor verwijderen',
+                        })
+                        .click();
+                    const confirmation = page.getByRole('alertdialog');
+                    await confirmation
+                        .getByRole('button', { name: 'Annuleren' })
+                        .click();
+                    await expect(confirmation).toBeHidden();
+
+                    await expect(scoreFor).toHaveText('1');
+                    await expect(timeline).toHaveCount(1);
+                });
+
+                await revert('voor');
+            });
+
+            await test.step('cancelling the scorer leaves the score alone', async () => {
+                const scorer = await scoreForUs();
+
+                await page
+                    .getByRole('button', { name: 'Doelpunt voor toevoegen' })
+                    .click();
+                const dialog = page.getByRole('dialog', {
+                    name: 'Doelpuntenmaker',
+                });
+                await dialog.getByRole('button', { name: 'Annuleren' }).click();
+                await expect(dialog).toBeHidden();
+
+                await expect(scoreFor).toHaveText('1');
+                await expect(timeline).toHaveCount(1);
+                await expect(timeline.first()).toContainText(scorer);
+
                 await revert('voor');
             });
 
             await test.step('an own goal by the opponent', async () => {
-                await scoreForUs('Eigen doelpunt tegenstander');
+                await scoreForUs({ ownGoal: true });
 
                 await expect(scoreFor).toHaveText('1');
                 await expect(timeline).toHaveCount(1);

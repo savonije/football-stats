@@ -297,23 +297,14 @@ export const useMatchStore = defineStore('matchStore', {
          *  GOALS
          * ----------------------------- */
 
-        /** Put a goal on the board. The timeline entry follows in `logGoal`. */
-        scoreGoal(seasonId: string, matchId: string, side: MatchGoal['side']) {
-            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
-
-            return updateDoc(matchRef, {
-                [`result.${resultField(side)}`]: increment(1),
-            });
-        },
-
         /**
-         * Record a goal on the timeline and credit its scorer. Our own goals
-         * are only logged once a scorer has been picked, so this runs a beat
-         * after `scoreGoal` for those, and right behind it for the opponent's.
+         * Put a goal on the board, on the timeline and on its scorer's tally
+         * in one go, so the score never runs ahead of the timeline.
          */
         logGoal(seasonId: string, matchId: string, goal: MatchGoal) {
             return Promise.all([
                 updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
+                    [`result.${resultField(goal.side)}`]: increment(1),
                     goals: [...(this.selectedMatch?.goals ?? []), goal],
                 }),
                 goal.playerId
@@ -337,12 +328,19 @@ export const useMatchStore = defineStore('matchStore', {
             side: MatchGoal['side'],
         ) {
             const field = resultField(side);
+            const score = this.selectedMatch?.result?.[field] ?? 0;
 
-            if ((this.selectedMatch?.result?.[field] ?? 0) <= 0) return;
+            if (score <= 0) return;
 
+            // A score ahead of its timeline has untracked goals; take one of
+            // those first rather than a logged goal.
             const goals = [...(this.selectedMatch?.goals ?? [])];
-            const index = goals.map((goal) => goal.side).lastIndexOf(side);
-            const removed = index === -1 ? null : goals.splice(index, 1)[0];
+            const sides = goals.map((goal) => goal.side);
+            const logged = sides.filter((s) => s === side).length;
+            const removed =
+                logged >= score
+                    ? goals.splice(sides.lastIndexOf(side), 1)[0]
+                    : null;
 
             return Promise.all([
                 updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {

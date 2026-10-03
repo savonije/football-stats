@@ -64,6 +64,8 @@ export default {
     recentResults: 'Recente resultaten',
     removeGoalAgainst: 'Doelpunt tegen verwijderen',
     removeGoalFor: 'Doelpunt voor verwijderen',
+    removeGoalForConfirm:
+        'Het laatste doelpunt van {team} wordt verwijderd, inclusief de minuut waarin het viel. Dit kan niet ongedaan worden gemaakt.',
     running: 'Wedstrijd is bezig...',
     secondHalf: '2e helft',
     standing: 'Stand',
