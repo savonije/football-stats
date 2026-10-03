@@ -151,10 +151,11 @@ export const deleteMatch = async (page: Page, matchUrl: string) => {
 export const deleteTraining = async (page: Page, trainingUrl: string) => {
     await page.goto(trainingUrl);
 
-    const remove = page.getByRole('button', { name: 'Verwijderen' });
-    if (!(await becomesVisible(remove))) return;
+    const menu = page.getByRole('button', { name: 'Meer opties' });
+    if (!(await becomesVisible(menu))) return;
 
-    await remove.click();
+    await menu.click();
+    await page.getByRole('menuitem', { name: 'Training verwijderen' }).click();
     await acceptConfirm(page, 'Verwijderen');
     await expect(page).toHaveURL('/training');
 };

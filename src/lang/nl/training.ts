@@ -30,6 +30,7 @@ export default {
         total: 'Totaal',
     },
     trainingDays: 'Trainingsdagen',
+    deleteTraining: 'Training verwijderen',
     deleteTrainingConfirm:
         'Weet je zeker dat je deze training wilt verwijderen?',
     cancelled: 'Afgelast',

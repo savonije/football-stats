@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import type { DropdownMenuItem } from '@nuxt/ui/components/DropdownMenu.vue';
     import dayjs from 'dayjs';
     import { computed, onMounted } from 'vue';
     import { useI18n } from 'vue-i18n';
@@ -110,7 +111,7 @@
 
     const confirmDelete = async () => {
         const confirmed = await confirm({
-            title: t('common.delete'),
+            title: t('training.deleteTraining'),
             message: t('training.deleteTrainingConfirm'),
             confirmLabel: t('common.delete'),
             confirmColor: 'error',
@@ -127,6 +128,30 @@
 
         router.push({ name: 'training' });
     };
+
+    const menuItems = computed<DropdownMenuItem[][]>(() => [
+        [
+            isCancelled.value
+                ? {
+                      label: t('training.uncancel'),
+                      icon: 'i-lucide-undo-2',
+                      onSelect: uncancelTraining,
+                  }
+                : {
+                      label: t('training.cancel'),
+                      icon: 'i-lucide-ban',
+                      onSelect: cancelTraining,
+                  },
+        ],
+        [
+            {
+                label: t('training.deleteTraining'),
+                icon: 'i-lucide-trash',
+                color: 'error' as const,
+                onSelect: confirmDelete,
+            },
+        ],
+    ]);
 
     onMounted(() => {
         playerStore.fetchPlayers();
@@ -157,35 +182,25 @@
                 </p>
             </div>
 
-            <UBadge
-                v-if="isCancelled"
-                color="error"
-                icon="i-lucide-ban"
-                variant="subtle"
-            >
-                {{ t('training.cancelled') }}
-            </UBadge>
-        </div>
+            <div class="flex items-center gap-3">
+                <UBadge
+                    v-if="isCancelled"
+                    color="error"
+                    icon="i-lucide-ban"
+                    variant="subtle"
+                >
+                    {{ t('training.cancelled') }}
+                </UBadge>
 
-        <div v-if="canEdit" class="mb-6">
-            <UButton
-                v-if="!isCancelled"
-                color="error"
-                icon="i-lucide-ban"
-                :label="t('training.cancel')"
-                size="sm"
-                variant="outline"
-                @click="cancelTraining"
-            />
-            <UButton
-                v-else
-                color="neutral"
-                icon="i-lucide-undo-2"
-                :label="t('training.uncancel')"
-                size="sm"
-                variant="subtle"
-                @click="uncancelTraining"
-            />
+                <UDropdownMenu v-if="canEdit" :items="menuItems">
+                    <UButton
+                        color="neutral"
+                        icon="i-lucide-ellipsis-vertical"
+                        variant="subtle"
+                        :aria-label="t('common.moreOptions')"
+                    />
+                </UDropdownMenu>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -221,16 +236,6 @@
                     />
                 </div>
             </div>
-        </div>
-
-        <div v-if="canEdit" class="mt-12 flex justify-between gap-6">
-            <UButton
-                color="error"
-                icon="i-lucide-trash"
-                :label="t('common.delete')"
-                variant="outline"
-                @click="confirmDelete"
-            />
         </div>
     </div>
 
