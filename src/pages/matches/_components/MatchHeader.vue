@@ -6,9 +6,17 @@
 
     import { CLUBNAME } from '@/constants';
     import type { Match } from '@/types';
+    import { hasKickoffTime } from '@/utils/date';
 
     const { match } = defineProps<{ match: Match }>();
     const emit = defineEmits<{ addPlayers: [] }>();
+
+    const dateLabel = computed(() => {
+        const date = match.date.toDate();
+        return dayjs(date).format(
+            hasKickoffTime(date) ? 'D MMMM YYYY, HH:mm' : 'D MMMM YYYY',
+        );
+    });
 
     /** The home side is named first, which is what says home or away. */
     const title = computed(() =>
@@ -29,7 +37,7 @@
                 v-if="match.date"
                 class="text-primary-400 mt-1.5 text-sm font-medium"
             >
-                {{ dayjs(match.date.toDate()).format('D MMMM YYYY') }}
+                {{ dateLabel }}
             </div>
         </div>
 

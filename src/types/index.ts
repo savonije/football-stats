@@ -27,6 +27,7 @@ export interface Match {
     pausedDuration?: number;
     half?: number;
     halfTime?: boolean;
+    knvbCode?: number;
 }
 
 export interface NewMatch {
@@ -36,6 +37,7 @@ export interface NewMatch {
     result?: MatchResult;
     washing?: string;
     playerIds?: string[];
+    knvbCode?: number;
 }
 
 export interface Appearance {

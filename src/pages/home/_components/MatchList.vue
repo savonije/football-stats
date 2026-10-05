@@ -6,10 +6,15 @@
     import { useI18n } from 'vue-i18n';
     import { useRouter } from 'vue-router';
 
+    import ImportKnvbDialog from '@/components/dialogs/ImportKnvbDialog.vue';
+
+    import { useCanEdit } from '@/composables/useCanEdit';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { useSettingsStore } from '@/stores/settingsStore';
     import type { Match } from '@/types';
+    import { hasKickoffTime } from '@/utils/date';
     import { hasStarted } from '@/utils/match';
     import { isPlayed } from '@/utils/match';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
@@ -18,6 +23,9 @@
     const seasonStore = useSeasonStore();
     const playerStore = usePlayerStore();
     const router = useRouter();
+    const canEdit = useCanEdit();
+    const settingsStore = useSettingsStore();
+    const showSyncDialog = ref(false);
 
     const { t } = useI18n();
 
@@ -37,6 +45,13 @@
             ? (playerStore.getPlayerById(match.washing)?.name ??
               t('washing.notAssigned'))
             : t('washing.notAssigned');
+
+    const formatMatchDate = (match: Match) => {
+        const date = match.date.toDate();
+        return dayjs(date).format(
+            hasKickoffTime(date) ? 'DD-MM-YYYY HH:mm' : 'DD-MM-YYYY',
+        );
+    };
 
     const resultClass = (match: Match) => {
         if (!hasStarted(match) || !match.result) return 'text-gray-500';
@@ -125,6 +140,14 @@
     <div class="mb-6 flex flex-wrap items-center gap-3">
         <h1 class="mr-auto mb-0">{{ t('match.game', 2) }}</h1>
 
+        <UButton
+            v-if="canEdit && settingsStore.sportlinkClientId"
+            icon="i-lucide-refresh-cw"
+            :label="t('knvbImport.syncSchedule')"
+            variant="subtle"
+            @click="showSyncDialog = true"
+        />
+
         <div class="flex w-full items-center gap-3 md:w-auto">
             <UInput
                 v-model="globalFilter"
@@ -164,11 +187,7 @@
             @select="onSelect"
         >
             <template #date-cell="{ row }">
-                {{
-                    row.original.date
-                        ? dayjs(row.original.date.toDate()).format('DD-MM-YYYY')
-                        : '-'
-                }}
+                {{ row.original.date ? formatMatchDate(row.original) : '-' }}
             </template>
 
             <template #homeOrAway-cell="{ row }">
@@ -220,4 +239,6 @@
             />
         </div>
     </template>
+
+    <ImportKnvbDialog v-model:visible="showSyncDialog" />
 </template>

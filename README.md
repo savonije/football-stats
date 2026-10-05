@@ -8,6 +8,7 @@ Built with **Vite+**, styled with **Tailwind CSS** and **Nuxt UI**, powered by *
 ## ✨ Features
 
 - 🏆 Track matches per season, with a live match timer that stays in sync across viewers
+- 📅 Sync the match schedule from the KNVB (see [KNVB match sync](#-knvb-match-sync))
 - 🔎 Player pages, top scorers and training attendance
 - 🧺 Wasschema (washing rota)
 - 📱 Mobile-first SPA, installable to the iOS home screen
@@ -88,7 +89,7 @@ npx playwright test e2e/home.spec.ts       # a single file
 npx playwright test -g "shows top scorers" # by test title
 ```
 
-The read-only specs run as-is. The specs that sign in and write (`match-lifecycle`, `match-players`, `training`) create data, drive it through the UI and delete it again, so they need a **staging** Firebase project — never production:
+The read-only specs run as-is. The specs that sign in and write (`match-lifecycle`, `match-players`, `training`, `knvb-import`) create data, drive it through the UI and delete it again, so they need a **staging** Firebase project — never production:
 
 1. Point `.env` at a staging project (`npm run test` builds with `--mode staging`, ignoring `.env.production`).
 2. Add an email/password user in that project only: Firebase Console → **Authentication → Users**.
@@ -157,6 +158,12 @@ firebase deploy
 
 ---
 
+## 📅 KNVB match sync
+
+The **Wedstrijdschema synchroniseren** button on the home page (also in the menu) pulls the team's upcoming fixtures from the KNVB through [Sportlink Club.Dataservice](https://sportlinkservices.freshdesk.com/nl/support/solutions/articles/9000062942-lijst-met-artikelen-van-club-dataservice).
+
+---
+
 ## 📂 Project Structure
 
 ```plaintext
@@ -164,13 +171,13 @@ src/
 ├── pages/         # Route pages (index.vue / [id].vue) with co-located _components/
 ├── components/    # Shared components (ui/, layout/, dialogs/)
 ├── layouts/       # Page layouts (DefaultLayout, BlankLayout)
-├── stores/        # Pinia stores (auth, match, player, season, training)
-├── services/      # One-shot Firestore reads/writes
+├── stores/        # Pinia stores (auth, match, player, season, settings, training)
+├── services/      # One-shot Firestore reads/writes, KNVB (Sportlink) fetch
 ├── composables/   # Reusable composition functions (e.g. useCanEdit)
 ├── router/        # App routes
 ├── firebase/      # Firebase config & init
 ├── lang/          # i18n strings (Dutch)
-├── utils/         # Helpers (date, match, playerSeason, table, training)
+├── utils/         # Helpers (date, knvb, match, playerSeason, table, training)
 ├── types/         # Shared TypeScript types
 ├── config/        # i18n & dayjs setup
 ├── constants/     # App-wide constants
