@@ -57,7 +57,7 @@ Config comes from `VITE_*` env vars (see `.env.example`): Firebase credentials p
 
 `npm run type-check` covers `e2e/**` too (it is in `tsconfig.node.json`), so spec type errors surface before the suite runs. `vp fmt` formats the whole repo — `src/`, `e2e/` and the root configs alike — so e2e specs are held to the same style as source.
 
-CI (`.github/workflows/`) runs `check` (`vp check`: format, lint and type check in one job), `knip`, and the Playwright suite on every push/PR to `main` — run `vp check --fix` before handing work off, or CI will fail on formatting alone. A `vp staged` pre-commit hook (`.vite-hooks/pre-commit`, installed by the `prepare` script) runs `vp check --fix` on staged files, so most of this is caught before the push. `knip` currently passes clean and exits non-zero on any finding, so don't leave unused files or exports behind — an internal e2e helper should stay unexported rather than become an unused export.
+CI (`.github/workflows/`) runs `check` (`vp check`: format, lint and type check, followed by `npm run type-check` — vp check only type-checks `.ts` files, so vue-tsc is what checks `.vue` files), `knip`, and the Playwright suite on every push/PR to `main` — run `vp check --fix` before handing work off, or CI will fail on formatting alone. A `vp staged` pre-commit hook (`.vite-hooks/pre-commit`, installed by the `prepare` script) runs `vp check --fix` on staged files, so most of this is caught before the push. `knip` currently passes clean and exits non-zero on any finding, so don't leave unused files or exports behind — an internal e2e helper should stay unexported rather than become an unused export.
 
 ### Home screen install
 
