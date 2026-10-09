@@ -52,6 +52,8 @@
     --gradient-accent-green: linear-gradient(135deg, #22c55e, #15803d);
     --gradient-accent-red: linear-gradient(135deg, #ef4444, #b91c1c);
 
+    --breakpoint-xs: 24rem;
+
     --text-xxs: 0.65rem;
 
     --tracking-label: 0.06em;
@@ -61,9 +63,9 @@
 
     --animate-score-pop: score-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    --animate-nav-slide-in: nav-slide-in 0.3s ease-out forwards;
+    --animate-slide-in: slide-in 0.3s ease-out forwards;
 
-    @keyframes nav-slide-in {
+    @keyframes slide-in {
         from {
             opacity: 0;
             transform: translateX(16px);
@@ -118,4 +120,9 @@ body {
 
 label {
     @apply mb-0 block text-sm font-bold;
+}
+
+/* fade-in one by one: pair with an animate-* class and a --i index style */
+@utility stagger {
+    @apply opacity-0 [animation-delay:calc(0.05s+var(--i,0)*0.07s)];
 }

@@ -171,5 +171,5 @@ later class, so a cap set on the base slot is silently dropped.
    `PlayerStatTile.vue` for the card/tile pattern) — match the established style.
 3. Reach for the scale utility or theme token. Only fall back to `[arbitrary]` when
    nothing fits, and prefer adding a token to `@theme` for anything recurring.
-4. Use Tailwind responsive breakpoints (`sm/md/lg/xl`) for layout, per `CLAUDE.md`.
+4. Use Tailwind responsive breakpoints (`xs/sm/md/lg/xl`) for layout, per `CLAUDE.md`. `xs` (24rem) is a project token for splitting small and larger phones.
 5. Run `npm run prettier` (sorts classes) and `npm run type-check` after edits.

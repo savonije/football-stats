@@ -148,7 +148,7 @@
     };
 
     const navItem =
-        'flex w-full items-center gap-3 rounded-lg border-none bg-transparent px-3 py-2.5 text-left text-base font-medium text-white/80 no-underline opacity-0 transition-colors duration-200 [animation-delay:calc(0.05s+var(--i,0)*0.07s)] hover:bg-white/10 hover:text-white';
+        'flex w-full items-center gap-3 rounded-lg border-none bg-transparent px-3 py-2.5 text-left text-base font-medium text-white/80 no-underline stagger transition-colors duration-200 hover:bg-white/10 hover:text-white';
     const navIcon =
         'shadow-icon flex size-9 shrink-0 items-center justify-center rounded-lg text-sm text-white';
     const navChevron = 'ml-auto text-xxs opacity-40 transition-transform';
@@ -178,7 +178,7 @@
         <template #body>
             <div
                 class="flex flex-col"
-                :class="navAnimated && '[&_.nav-item]:animate-nav-slide-in'"
+                :class="navAnimated && '[&_.nav-item]:animate-slide-in'"
             >
                 <p :class="sectionLabel">{{ t('common.navigation') }}</p>
                 <nav class="flex flex-col gap-0.5">
