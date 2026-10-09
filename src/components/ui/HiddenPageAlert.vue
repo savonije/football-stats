@@ -1,7 +1,10 @@
 <script setup lang="ts">
     import { useIsAdmin } from '@/composables/useIsAdmin';
 
-    const { hidden } = defineProps<{ hidden: boolean }>();
+    const { hidden, title = 'settings.hiddenForVisitors' } = defineProps<{
+        hidden: boolean;
+        title?: string;
+    }>();
 
     const isAdmin = useIsAdmin();
 </script>
@@ -12,7 +15,7 @@
         class="mb-4"
         color="warning"
         icon="i-lucide-eye-off"
-        :title="$t('settings.hiddenForVisitors')"
+        :title="$t(title)"
         variant="subtle"
     />
 </template>

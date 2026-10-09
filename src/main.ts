@@ -27,8 +27,8 @@ const app = createApp(App);
 
 app.use(ui);
 app.use(i18n);
-app.use(router);
 app.use(pinia);
+app.use(router);
 
 router.afterEach((to) => {
     document.title = to.meta.title

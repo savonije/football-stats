@@ -10,6 +10,7 @@
     import { addMatch } from '@/services/matchService';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
+    import { useSettingsStore } from '@/stores/settingsStore';
     import type { NewMatch } from '@/types';
     import { fromCalendarDate, toCalendarDate } from '@/utils/date';
     import { isGuestInSeason } from '@/utils/playerSeason';
@@ -18,6 +19,7 @@
     const { t } = useI18n();
     const toast = useAppToast();
     const seasonStore = useSeasonStore();
+    const settingsStore = useSettingsStore();
     const loading = ref(false);
 
     const form = reactive<Omit<NewMatch, 'date'> & { players?: string[] }>({
@@ -173,7 +175,7 @@
                     </USelectMenu>
                 </div>
 
-                <div>
+                <div v-if="settingsStore.washingEnabled">
                     <label for="washing">{{ t('washing.washer') }}</label>
                     <USelect
                         id="washing"

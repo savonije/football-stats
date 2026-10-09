@@ -85,17 +85,21 @@
                 },
             },
         },
-        {
-            id: 'washer',
-            header: t('washing.washer'),
-            enableGlobalFilter: false,
-            meta: {
-                class: {
-                    td: 'hidden md:table-cell',
-                    th: 'hidden md:table-cell',
-                },
-            },
-        },
+        ...(settingsStore.washingEnabled
+            ? [
+                  {
+                      id: 'washer',
+                      header: t('washing.washer'),
+                      enableGlobalFilter: false,
+                      meta: {
+                          class: {
+                              td: 'hidden md:table-cell',
+                              th: 'hidden md:table-cell',
+                          },
+                      },
+                  },
+              ]
+            : []),
         {
             id: 'result',
             header: t('common.result'),

@@ -11,10 +11,12 @@ export const useSettingsStore = defineStore('settingsStore', {
     state: (): {
         sportlinkClientId: string;
         regulationsEnabled: boolean;
+        washingEnabled: boolean;
         settingsLoaded: boolean;
     } => ({
         sportlinkClientId: '',
         regulationsEnabled: false,
+        washingEnabled: true,
         settingsLoaded: false,
     }),
 
@@ -28,6 +30,7 @@ export const useSettingsStore = defineStore('settingsStore', {
                         snap.data()?.sportlinkClientId ?? '';
                     this.regulationsEnabled =
                         snap.data()?.regulationsEnabled ?? false;
+                    this.washingEnabled = snap.data()?.washingEnabled ?? true;
                     this.settingsLoaded = true;
                 },
                 (err) => {
@@ -40,12 +43,14 @@ export const useSettingsStore = defineStore('settingsStore', {
         async updateSettings(settings: {
             sportlinkClientId: string;
             regulationsEnabled: boolean;
+            washingEnabled: boolean;
         }) {
             await setDoc(
                 settingsRef(),
                 {
                     sportlinkClientId: settings.sportlinkClientId.trim(),
                     regulationsEnabled: settings.regulationsEnabled,
+                    washingEnabled: settings.washingEnabled,
                 },
                 { merge: true },
             );

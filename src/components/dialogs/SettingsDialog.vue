@@ -14,6 +14,7 @@
 
     const sportlinkClientId = ref('');
     const regulationsEnabled = ref(false);
+    const washingEnabled = ref(true);
     const loading = ref(false);
 
     const closeDialog = () => (model.value = false);
@@ -24,6 +25,7 @@
             await settingsStore.updateSettings({
                 sportlinkClientId: sportlinkClientId.value,
                 regulationsEnabled: regulationsEnabled.value,
+                washingEnabled: washingEnabled.value,
             });
             toast.success(t('common.changesSaved'));
             closeDialog();
@@ -39,6 +41,7 @@
         if (!visible) return;
         sportlinkClientId.value = settingsStore.sportlinkClientId;
         regulationsEnabled.value = settingsStore.regulationsEnabled;
+        washingEnabled.value = settingsStore.washingEnabled;
     });
 </script>
 
@@ -67,6 +70,12 @@
                 v-model="regulationsEnabled"
                 class="mt-6"
                 :label="t('settings.regulationsEnabled')"
+            />
+
+            <USwitch
+                v-model="washingEnabled"
+                class="mt-4"
+                :label="t('settings.washingEnabled')"
             />
         </template>
 

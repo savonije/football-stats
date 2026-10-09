@@ -6,10 +6,12 @@
 
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
+    import { useSettingsStore } from '@/stores/settingsStore';
     import { hasStarted } from '@/utils/match';
 
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
+    const settingsStore = useSettingsStore();
     const { t } = useI18n();
 
     const nextMatch = computed(() => {
@@ -105,6 +107,7 @@
         </div>
 
         <div
+            v-if="settingsStore.washingEnabled"
             class="border-primary-100 mt-4 flex items-center justify-between border-t pt-3 text-sm"
         >
             <span class="font-semibold text-gray-600">

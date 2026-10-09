@@ -1,9 +1,13 @@
+import { until } from '@vueuse/core';
 import {
     createRouter,
     createWebHistory,
     type RouteLocationRaw,
     type RouteRecordRaw,
 } from 'vue-router';
+
+import { auth } from '@/firebase';
+import { useSettingsStore } from '@/stores/settingsStore';
 
 declare module 'vue-router' {
     interface RouteMeta {
@@ -18,6 +22,16 @@ declare module 'vue-router' {
         }>;
     }
 }
+
+const requireSetting =
+    (key: 'washingEnabled' | 'regulationsEnabled') => async () => {
+        const settingsStore = useSettingsStore();
+        await Promise.all([
+            auth.authStateReady(),
+            until(() => settingsStore.settingsLoaded).toBe(true),
+        ]);
+        return settingsStore[key] || !!auth.currentUser || { name: 'home' };
+    };
 
 const homeCrumb = [
     {
@@ -84,6 +98,7 @@ const routes: RouteRecordRaw[] = [
         path: '/washing',
         name: 'washing',
         component: () => import('@/pages/washing/index.vue'),
+        beforeEnter: requireSetting('washingEnabled'),
         meta: {
             title: 'Wasschema',
             heading: { labelKey: 'washing.title' },
@@ -121,6 +136,7 @@ const routes: RouteRecordRaw[] = [
         path: '/regulations',
         name: 'regulations',
         component: () => import('@/pages/regulations/index.vue'),
+        beforeEnter: requireSetting('regulationsEnabled'),
         meta: {
             title: 'Regels & afspraken',
             heading: { labelKey: 'regulations.title' },

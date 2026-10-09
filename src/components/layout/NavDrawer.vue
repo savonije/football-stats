@@ -64,12 +64,16 @@
             iconClass: 'bg-[image:var(--gradient-accent-teal)]',
             label: t('player.player', 2),
         },
-        {
-            to: { name: 'washing' },
-            icon: 'i-lucide-sparkles',
-            iconClass: 'bg-[image:var(--gradient-accent-purple)]',
-            label: t('washing.title'),
-        },
+        ...(settingsStore.washingEnabled || storeAuth.user?.id
+            ? [
+                  {
+                      to: { name: 'washing' },
+                      icon: 'i-lucide-sparkles',
+                      iconClass: 'bg-[image:var(--gradient-accent-purple)]',
+                      label: t('washing.title'),
+                  },
+              ]
+            : []),
         {
             to: { name: 'training' },
             icon: 'i-lucide-calendar',
