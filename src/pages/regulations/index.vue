@@ -49,6 +49,9 @@
     const tableClasses =
         '[&_.tableWrapper]:overflow-x-auto [&_table]:w-full [&_table]:border-collapse [&_:is(th,td)]:border [&_:is(th,td)]:border-gray-200 [&_:is(th,td)]:px-3 [&_:is(th,td)]:py-2 [&_:is(th,td)]:text-left [&_:is(th,td)]:align-top [&_th]:bg-primary-50 [&_th]:font-semibold [&_.selectedCell]:bg-primary-100';
 
+    const headingClasses =
+        '[&_:is(h2,h3)]:mb-2 [&_:is(h2,h3)+*]:mt-0 [&_h2]:mt-10 [&_h3]:mt-8';
+
     const toolbarItems: EditorToolbarItem<typeof handlers>[][] = [
         [
             {
@@ -197,7 +200,9 @@
                 :extensions="extensions"
                 :handlers="handlers"
                 :placeholder="t('regulations.placeholder')"
-                :ui="{ base: ['min-h-64 sm:px-0', tableClasses] }"
+                :ui="{
+                    base: ['min-h-64 sm:px-0', headingClasses, tableClasses],
+                }"
             >
                 <UEditorToolbar
                     class="mb-4 overflow-x-auto border-b border-gray-200 pb-2"
@@ -247,7 +252,7 @@
                 content-type="markdown"
                 :editable="false"
                 :extensions="extensions"
-                :ui="{ base: ['sm:px-0', tableClasses] }"
+                :ui="{ base: ['sm:px-0', headingClasses, tableClasses] }"
             />
 
             <p
