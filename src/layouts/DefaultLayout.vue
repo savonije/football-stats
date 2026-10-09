@@ -5,6 +5,7 @@
 
     import PageFooter from '@/components/layout/PageFooter.vue';
     import PageHeader from '@/components/layout/PageHeader.vue';
+    import PageTransition from '@/components/layout/PageTransition.vue';
     import AppBreadcrumb from '@/components/ui/AppBreadcrumb.vue';
 
     const route = useRoute();
@@ -20,14 +21,18 @@
 <template>
     <PageHeader />
     <main class="page-enter container flex grow flex-col">
-        <template v-if="heading">
-            <AppBreadcrumb :label="heading" />
-            <div class="mb-3 flex items-center justify-between gap-4">
-                <h1 class="mb-0">{{ heading }}</h1>
-                <div id="page-actions" />
+        <PageTransition>
+            <div :key="route.path" class="flex grow flex-col">
+                <template v-if="heading">
+                    <AppBreadcrumb :label="heading" />
+                    <div class="mb-3 flex items-center justify-between gap-4">
+                        <h1 class="mb-0">{{ heading }}</h1>
+                        <div id="page-actions" />
+                    </div>
+                </template>
+                <slot />
             </div>
-        </template>
-        <slot />
+        </PageTransition>
     </main>
     <PageFooter />
 </template>
