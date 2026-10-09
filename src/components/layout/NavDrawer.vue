@@ -76,12 +76,16 @@
             iconClass: 'bg-[image:var(--gradient-accent-green)]',
             label: t('training.title'),
         },
-        {
-            to: { name: 'regulations' },
-            icon: 'i-lucide-scroll-text',
-            iconClass: 'bg-[image:var(--gradient-accent-blue)]',
-            label: t('regulations.title'),
-        },
+        ...(settingsStore.regulationsEnabled || storeAuth.user?.id
+            ? [
+                  {
+                      to: { name: 'regulations' },
+                      icon: 'i-lucide-scroll-text',
+                      iconClass: 'bg-[image:var(--gradient-accent-blue)]',
+                      label: t('regulations.title'),
+                  },
+              ]
+            : []),
     ]);
 
     const manageActions = computed(() => [

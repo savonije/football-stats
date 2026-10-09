@@ -79,7 +79,7 @@ players/{playerId}                         # { ..., seasons: { [seasonId]: { act
 seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
 seasons/{seasonId}/trainings/{trainingId}  # { date, presentPlayerIds: string[], cancelled? }
-settings/app                               # { sportlinkClientId? } — club-wide, edited via "Instellingen"
+settings/app                               # { sportlinkClientId?, regulationsEnabled? } — club-wide, edited via "Instellingen"
 general/regulations                        # { content, updatedAt, updatedBy: { id, email } } — markdown for "Regels & afspraken", admin-editable
 ```
 

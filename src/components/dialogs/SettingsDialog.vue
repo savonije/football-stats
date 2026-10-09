@@ -13,6 +13,7 @@
     const settingsStore = useSettingsStore();
 
     const sportlinkClientId = ref('');
+    const regulationsEnabled = ref(false);
     const loading = ref(false);
 
     const closeDialog = () => (model.value = false);
@@ -22,6 +23,7 @@
         try {
             await settingsStore.updateSettings({
                 sportlinkClientId: sportlinkClientId.value,
+                regulationsEnabled: regulationsEnabled.value,
             });
             toast.success(t('common.changesSaved'));
             closeDialog();
@@ -34,7 +36,9 @@
     };
 
     watch(model, (visible) => {
-        if (visible) sportlinkClientId.value = settingsStore.sportlinkClientId;
+        if (!visible) return;
+        sportlinkClientId.value = settingsStore.sportlinkClientId;
+        regulationsEnabled.value = settingsStore.regulationsEnabled;
     });
 </script>
 
@@ -58,6 +62,12 @@
                     {{ t('settings.sportlinkClientIdHelp') }}
                 </p>
             </div>
+
+            <USwitch
+                v-model="regulationsEnabled"
+                class="mt-6"
+                :label="t('settings.regulationsEnabled')"
+            />
         </template>
 
         <template #footer>

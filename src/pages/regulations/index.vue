@@ -6,14 +6,18 @@
     import { onMounted, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import HiddenPageAlert from '@/components/ui/HiddenPageAlert.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useIsAdmin } from '@/composables/useIsAdmin';
     import { useRegulationsStore } from '@/stores/regulationsStore';
+    import { useSettingsStore } from '@/stores/settingsStore';
 
     const { t } = useI18n();
     const toast = useAppToast();
     const isAdmin = useIsAdmin();
     const regulationsStore = useRegulationsStore();
+    const settingsStore = useSettingsStore();
 
     const draft = ref('');
     const editing = ref(false);
@@ -178,6 +182,12 @@
         />
     </Teleport>
 
+    <HiddenPageAlert
+        :hidden="
+            settingsStore.settingsLoaded && !settingsStore.regulationsEnabled
+        "
+    />
+
     <div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
         <template v-if="editing">
             <UEditor
@@ -213,8 +223,20 @@
         </template>
 
         <template v-else>
-            <p v-if="!regulationsStore.regulationsLoaded" class="text-gray-500">
+            <p
+                v-if="
+                    !regulationsStore.regulationsLoaded ||
+                    !settingsStore.settingsLoaded
+                "
+                class="text-gray-500"
+            >
                 {{ t('common.loadingData') }}
+            </p>
+            <p
+                v-else-if="!isAdmin && !settingsStore.regulationsEnabled"
+                class="text-gray-500"
+            >
+                {{ t('regulations.disabled') }}
             </p>
             <p v-else-if="!regulationsStore.content" class="text-gray-500">
                 {{ t('regulations.empty') }}

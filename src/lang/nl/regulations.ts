@@ -4,6 +4,7 @@ export default {
     placeholder: 'Schrijf hier de regels en afspraken van het team...',
     saveError: 'Opslaan is mislukt',
     lastEdited: 'Laatst bewerkt door {name} op {date}',
+    disabled: 'Deze pagina is niet beschikbaar.',
     toolbar: {
         heading2: 'Kop',
         heading3: 'Subkop',

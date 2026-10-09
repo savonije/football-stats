@@ -8,8 +8,13 @@ const settingsRef = () => doc(db, 'settings', 'app');
 let _unsubscribeSettings: (() => void) | null = null;
 
 export const useSettingsStore = defineStore('settingsStore', {
-    state: (): { sportlinkClientId: string; settingsLoaded: boolean } => ({
+    state: (): {
+        sportlinkClientId: string;
+        regulationsEnabled: boolean;
+        settingsLoaded: boolean;
+    } => ({
         sportlinkClientId: '',
+        regulationsEnabled: false,
         settingsLoaded: false,
     }),
 
@@ -21,6 +26,8 @@ export const useSettingsStore = defineStore('settingsStore', {
                 (snap) => {
                     this.sportlinkClientId =
                         snap.data()?.sportlinkClientId ?? '';
+                    this.regulationsEnabled =
+                        snap.data()?.regulationsEnabled ?? false;
                     this.settingsLoaded = true;
                 },
                 (err) => {
@@ -30,10 +37,16 @@ export const useSettingsStore = defineStore('settingsStore', {
             );
         },
 
-        async updateSettings(settings: { sportlinkClientId: string }) {
+        async updateSettings(settings: {
+            sportlinkClientId: string;
+            regulationsEnabled: boolean;
+        }) {
             await setDoc(
                 settingsRef(),
-                { sportlinkClientId: settings.sportlinkClientId.trim() },
+                {
+                    sportlinkClientId: settings.sportlinkClientId.trim(),
+                    regulationsEnabled: settings.regulationsEnabled,
+                },
                 { merge: true },
             );
         },
