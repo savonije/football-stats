@@ -80,6 +80,7 @@ seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
 seasons/{seasonId}/trainings/{trainingId}  # { date, presentPlayerIds: string[], cancelled? }
 settings/app                               # { sportlinkClientId? } — club-wide, edited via "Instellingen"
+general/regulations                        # { content } — markdown for "Regels & afspraken", admin-editable
 ```
 
 Matches imported by the KNVB sync ("Wedstrijdschema synchroniseren") carry a `knvbCode` (Sportlink `wedstrijdcode`) and a real kickoff in `date`; hand-entered matches sit at midnight, which `hasKickoffTime()` in `src/utils/date.ts` reads as "no kickoff". The sync calls Sportlink Club.Dataservice (`data.sportlink.com`, open CORS) straight from the browser via `src/services/knvbService.ts`, resolves the teamcode from the season `teamname`, and only ever adds matches — the matching and mismatch warnings live in the pure `reconcileKnvbMatches()` in `src/utils/knvb.ts`. It is hidden while `sportlinkClientId` is empty.
@@ -97,9 +98,9 @@ Players are a single top-level collection but carry a per-season `seasons` map (
 
 ### State management (Pinia)
 
-Six stores: `authStore`, `matchStore`, `playerStore`, `seasonStore`, `settingsStore`, `trainingStore`. All use the **options** form of `defineStore` (`state`/`getters`/`actions` object), not setup stores — match that shape when adding one. `onSnapshot` unsubscribe handles are kept in module-level `let _unsubscribe*` variables and called before re-subscribing, so refetching on a season switch doesn't leak listeners.
+Seven stores: `authStore`, `matchStore`, `playerStore`, `regulationsStore`, `seasonStore`, `settingsStore`, `trainingStore`. All use the **options** form of `defineStore` (`state`/`getters`/`actions` object), not setup stores — match that shape when adding one. `onSnapshot` unsubscribe handles are kept in module-level `let _unsubscribe*` variables and called before re-subscribing, so refetching on a season switch doesn't leak listeners.
 
-Naming gotcha: `authStore.ts` exports `useStoreAuth` (store id `storeAuth`), not `useAuthStore` like the other five.
+Naming gotcha: `authStore.ts` exports `useStoreAuth` (store id `storeAuth`), not `useAuthStore` like the other six.
 
 The router is injected into every store via a Pinia plugin in `main.ts`, so stores can navigate with `this.router.push(...)`.
 
@@ -111,9 +112,9 @@ The router is injected into every store via a Pinia plugin in `main.ts`, so stor
 
 ### Routing & UI layer
 
-Routes are defined manually in `src/router/index.ts` (not file-system auto-routing) but point at page components under `src/pages/` that follow a file-based naming convention: `pages/<domain>/index.vue` for list/index routes and `pages/<domain>/[id].vue` for detail routes. Route `meta` is typed (`title`, `layout`, `heading`, `breadcrumb`) and drives the page header and breadcrumbs.
+Routes are defined manually in `src/router/index.ts` (not file-system auto-routing) but point at page components under `src/pages/` that follow a file-based naming convention: `pages/<domain>/index.vue` for list/index routes and `pages/<domain>/[id].vue` for detail routes. Route `meta` is typed (`title`, `layout`, `heading`, `breadcrumb`) and drives the page header and breadcrumbs. `DefaultLayout` puts an empty `#page-actions` element opposite the `meta.heading` title; a page fills it with `<Teleport defer to="#page-actions">` (the `defer` is required, the layout is not in the DOM yet when the page mounts on first load) — see the edit button in `pages/regulations/index.vue`.
 
-Each page keeps its own private sub-components in a co-located `_components/` folder (e.g. `pages/matches/_components/MatchTimer.vue`). Truly shared components live under `src/components/` (`ui/`, `layout/`, `dialogs/`). Domains: home, matches, players, topscorers, training, washing (wasschema), login.
+Each page keeps its own private sub-components in a co-located `_components/` folder (e.g. `pages/matches/_components/MatchTimer.vue`). Truly shared components live under `src/components/` (`ui/`, `layout/`, `dialogs/`). Domains: home, matches, players, regulations (regels & afspraken), topscorers, training, washing (wasschema), login.
 
 [Nuxt UI v4](https://ui.nuxt.com) handles UI components — it works in plain Vue via `@nuxt/ui/vue-plugin`, with the `ui()` Vite plugin registered in `vite.config.ts`. Components are auto-imported under the `U` prefix (`UButton`, `UModal`, …) and need no import statement; composable auto-import is deliberately **off** (`autoImport: false`) so `useToast`/`useOverlay` are imported explicitly like everything else in this repo.
 

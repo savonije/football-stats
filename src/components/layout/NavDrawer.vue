@@ -76,6 +76,12 @@
             iconClass: 'bg-[image:var(--gradient-accent-green)]',
             label: t('training.title'),
         },
+        {
+            to: { name: 'regulations' },
+            icon: 'i-lucide-scroll-text',
+            iconClass: 'bg-[image:var(--gradient-accent-blue)]',
+            label: t('regulations.title'),
+        },
     ]);
 
     const manageActions = computed(() => [
@@ -242,7 +248,7 @@
                     <Router-Link
                         class="nav-item group"
                         :class="navItem"
-                        style="--i: 4"
+                        style="--i: 5"
                         :to="{ name: 'auth' }"
                         @click="drawerVisible = false"
                     >

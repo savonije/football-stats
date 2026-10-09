@@ -22,7 +22,10 @@
     <main class="page-enter container flex grow flex-col">
         <template v-if="heading">
             <AppBreadcrumb :label="heading" />
-            <h1 class="mb-3">{{ heading }}</h1>
+            <div class="mb-3 flex items-center justify-between gap-4">
+                <h1 class="mb-0">{{ heading }}</h1>
+                <div id="page-actions" />
+            </div>
         </template>
         <slot />
     </main>
