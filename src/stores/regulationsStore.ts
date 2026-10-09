@@ -1,15 +1,23 @@
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
+import { useStoreAuth } from '@/stores/authStore';
 
 const regulationsRef = () => doc(db, 'general', 'regulations');
 
 let _unsubscribeRegulations: (() => void) | null = null;
 
 export const useRegulationsStore = defineStore('regulationsStore', {
-    state: (): { content: string; regulationsLoaded: boolean } => ({
+    state: (): {
+        content: string;
+        updatedAt: Date | null;
+        updatedBy: string | null;
+        regulationsLoaded: boolean;
+    } => ({
         content: '',
+        updatedAt: null,
+        updatedBy: null,
         regulationsLoaded: false,
     }),
 
@@ -19,7 +27,10 @@ export const useRegulationsStore = defineStore('regulationsStore', {
             _unsubscribeRegulations = onSnapshot(
                 regulationsRef(),
                 (snap) => {
-                    this.content = snap.data()?.content ?? '';
+                    const data = snap.data({ serverTimestamps: 'estimate' });
+                    this.content = data?.content ?? '';
+                    this.updatedAt = data?.updatedAt?.toDate() ?? null;
+                    this.updatedBy = data?.updatedBy?.email ?? null;
                     this.regulationsLoaded = true;
                 },
                 (err) => {
@@ -30,7 +41,12 @@ export const useRegulationsStore = defineStore('regulationsStore', {
         },
 
         async updateRegulations(content: string) {
-            await setDoc(regulationsRef(), { content });
+            const { user } = useStoreAuth();
+            await setDoc(regulationsRef(), {
+                content,
+                updatedAt: serverTimestamp(),
+                updatedBy: { id: user?.id ?? null, email: user?.email ?? null },
+            });
         },
     },
 });

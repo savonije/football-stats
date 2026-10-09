@@ -3,6 +3,7 @@ export default {
     empty: 'Er zijn nog geen regels en afspraken vastgelegd.',
     placeholder: 'Schrijf hier de regels en afspraken van het team...',
     saveError: 'Opslaan is mislukt',
+    lastEdited: 'Laatst bewerkt door {name} op {date}',
     toolbar: {
         heading2: 'Kop',
         heading3: 'Subkop',

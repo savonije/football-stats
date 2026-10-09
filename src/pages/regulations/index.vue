@@ -2,6 +2,7 @@
     import type { EditorToolbarItem } from '@nuxt/ui/components/EditorToolbar.vue';
     import type { EditorHandler } from '@nuxt/ui/runtime/types/editor.js';
     import { TableKit } from '@tiptap/extension-table';
+    import dayjs from 'dayjs';
     import { onMounted, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -226,6 +227,20 @@
                 :extensions="extensions"
                 :ui="{ base: ['sm:px-0', tableClasses] }"
             />
+
+            <p
+                v-if="isAdmin && regulationsStore.updatedAt"
+                class="mt-6 text-sm text-gray-500"
+            >
+                {{
+                    t('regulations.lastEdited', {
+                        name: regulationsStore.updatedBy ?? '?',
+                        date: dayjs(regulationsStore.updatedAt).format(
+                            'DD-MM-YYYY HH:mm',
+                        ),
+                    })
+                }}
+            </p>
         </template>
     </div>
 </template>

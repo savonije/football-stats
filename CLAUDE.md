@@ -80,7 +80,7 @@ seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
 seasons/{seasonId}/trainings/{trainingId}  # { date, presentPlayerIds: string[], cancelled? }
 settings/app                               # { sportlinkClientId? } — club-wide, edited via "Instellingen"
-general/regulations                        # { content } — markdown for "Regels & afspraken", admin-editable
+general/regulations                        # { content, updatedAt, updatedBy: { id, email } } — markdown for "Regels & afspraken", admin-editable
 ```
 
 Matches imported by the KNVB sync ("Wedstrijdschema synchroniseren") carry a `knvbCode` (Sportlink `wedstrijdcode`) and a real kickoff in `date`; hand-entered matches sit at midnight, which `hasKickoffTime()` in `src/utils/date.ts` reads as "no kickoff". The sync calls Sportlink Club.Dataservice (`data.sportlink.com`, open CORS) straight from the browser via `src/services/knvbService.ts`, resolves the teamcode from the season `teamname`, and only ever adds matches — the matching and mismatch warnings live in the pure `reconcileKnvbMatches()` in `src/utils/knvb.ts`. It is hidden while `sportlinkClientId` is empty.
