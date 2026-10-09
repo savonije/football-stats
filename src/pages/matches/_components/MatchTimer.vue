@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { useTimestamp } from '@vueuse/core';
+    import { useIntervalFn, useTimestamp } from '@vueuse/core';
     import { computed } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -22,7 +22,9 @@
     const seasonStore = useSeasonStore();
     const { t } = useI18n();
 
-    const now = useTimestamp({ interval: 1000 });
+    const now = useTimestamp({
+        scheduler: (cb) => useIntervalFn(cb, 1000),
+    });
 
     const match = computed(() => matchStore.selectedMatch);
     const halfDuration = computed(() => seasonStore.currentHalfDuration);

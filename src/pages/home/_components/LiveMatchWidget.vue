@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { useTimestamp } from '@vueuse/core';
+    import { useIntervalFn, useTimestamp } from '@vueuse/core';
     import { computed, reactive, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { RouterLink } from 'vue-router';
@@ -20,7 +20,9 @@
     const seasonStore = useSeasonStore();
     const { t } = useI18n();
 
-    const now = useTimestamp({ interval: 30_000 });
+    const now = useTimestamp({
+        scheduler: (cb) => useIntervalFn(cb, 30_000),
+    });
 
     const liveMatch = computed(
         () => matchStore.matches.find((m) => hasStarted(m) && !m.ended) ?? null,
