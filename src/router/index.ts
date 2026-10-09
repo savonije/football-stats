@@ -118,6 +118,16 @@ const routes: RouteRecordRaw[] = [
         },
     },
     {
+        path: '/regulations',
+        name: 'regulations',
+        component: () => import('@/pages/regulations/index.vue'),
+        meta: {
+            title: 'Regels & afspraken',
+            heading: { labelKey: 'regulations.title' },
+            breadcrumb: homeCrumb,
+        },
+    },
+    {
         path: '/login',
         name: 'auth',
         component: () => import('@/pages/login/index.vue'),
