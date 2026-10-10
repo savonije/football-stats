@@ -85,8 +85,12 @@
                 :to="{ name: 'playerDetail', params: { id: player.id } }"
             >
                 <div
-                    class="relative flex flex-col items-center gap-2 px-3 pt-5 pb-4 [background:var(--gradient-brand)]"
+                    class="relative flex flex-col items-center gap-2 px-3 pt-5 pb-4 [background:var(--gradient-header)]"
                 >
+                    <div
+                        class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-45 mix-blend-overlay"
+                        aria-hidden="true"
+                    />
                     <span
                         class="relative flex size-16 items-center justify-center rounded-full border-[3px] border-white/25 bg-white/12 text-2xl font-black text-white transition group-hover:scale-105 sm:size-20 sm:text-3xl"
                     >

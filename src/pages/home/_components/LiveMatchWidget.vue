@@ -96,10 +96,10 @@
 <template>
     <div
         v-if="liveMatch"
-        class="shadow-hero relative overflow-hidden rounded-2xl [background:var(--gradient-brand)]"
+        class="shadow-card relative overflow-hidden rounded-2xl [background:var(--gradient-frost)]"
     >
         <div
-            class="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(-55deg,transparent,transparent_20px,rgba(255,255,255,0.015)_20px,rgba(255,255,255,0.015)_40px)]"
+            class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-18 mix-blend-multiply"
             aria-hidden="true"
         />
 
@@ -110,7 +110,7 @@
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span
                     v-if="isPaused"
-                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-amber-300 uppercase"
+                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-amber-600 uppercase"
                 >
                     <UIcon name="i-lucide-pause" />
                     {{ t('match.paused') }}
@@ -118,7 +118,7 @@
 
                 <span
                     v-else
-                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-red-300 uppercase"
+                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-red-600 uppercase"
                 >
                     <span class="relative flex size-2.5">
                         <span
@@ -132,12 +132,12 @@
                     {{ t('match.live') }}
                 </span>
 
-                <span class="text-amber text-sm font-bold tabular-nums">
+                <span class="text-sm font-bold text-amber-600 tabular-nums">
                     {{ currentMinute }}&prime;
                 </span>
 
                 <span
-                    class="tracking-badge text-xxs text-primary-200 font-mono font-bold uppercase"
+                    class="tracking-badge text-xxs text-primary-500 font-mono font-bold uppercase"
                 >
                     {{ statusLabel }}
                 </span>
@@ -150,8 +150,8 @@
                     class="flex items-baseline gap-3"
                     :class="
                         leader && leader !== side.type
-                            ? 'text-primary-300'
-                            : 'text-white'
+                            ? 'text-primary-400'
+                            : 'text-primary-950'
                     "
                 >
                     <span
@@ -174,7 +174,7 @@
 
             <div class="mt-3 flex items-center gap-3">
                 <span
-                    class="h-1.5 w-full overflow-hidden rounded-full bg-white/20"
+                    class="bg-primary-900/10 h-1.5 w-full overflow-hidden rounded-full"
                 >
                     <span
                         class="block h-full rounded-full"
@@ -185,7 +185,7 @@
 
                 <span
                     v-if="minutesLeft > 0"
-                    class="text-primary-200 shrink-0 text-xs font-semibold"
+                    class="text-primary-500 shrink-0 text-xs font-semibold"
                 >
                     {{ t('match.minutesLeft', { count: minutesLeft }) }}
                 </span>

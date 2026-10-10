@@ -37,7 +37,7 @@
     <AppBreadcrumb :label="$t('common.homePage')" />
 
     <div class="grid grid-cols-1 gap-5">
-        <LiveMatchWidget />
+        <LiveMatchWidget class="lg:w-2/3" />
 
         <TeamStats />
 

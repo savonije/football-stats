@@ -23,10 +23,10 @@
 
 <template>
     <div
-        class="shadow-hero relative mb-6 overflow-hidden rounded-2xl [background:var(--gradient-brand)]"
+        class="shadow-hero relative mb-6 overflow-hidden rounded-2xl [background:var(--gradient-hero)]"
     >
         <div
-            class="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(-55deg,transparent,transparent_20px,rgba(255,255,255,0.015)_20px,rgba(255,255,255,0.015)_40px)]"
+            class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-45 mix-blend-overlay"
             aria-hidden="true"
         />
 

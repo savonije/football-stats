@@ -39,18 +39,35 @@
         ),
         var(--color-primary-900);
 
-    /* grain overlay, pair with mix-blend-overlay and an opacity */
-    --texture-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    --gradient-hero:
+        radial-gradient(
+            55% 150% at 100% 100%,
+            var(--color-primary-500),
+            transparent 70%
+        ),
+        radial-gradient(40% 110% at 30% -20%, #3b4fc4, transparent 70%),
+        radial-gradient(
+            30% 120% at 0% 100%,
+            var(--color-primary-700),
+            transparent 70%
+        ),
+        var(--color-primary-950);
 
-    /* brand banner gradient (page header / player hero) */
-    --gradient-brand: linear-gradient(
-        135deg,
-        var(--color-primary-950) 0%,
-        var(--color-primary-900) 30%,
-        var(--color-primary-700) 60%,
-        var(--color-primary-600) 80%,
-        var(--color-primary-500) 100%
-    );
+    --gradient-frost:
+        radial-gradient(
+            50% 160% at 100% 0%,
+            rgba(98, 133, 209, 0.45),
+            transparent 70%
+        ),
+        radial-gradient(
+            40% 140% at 0% 100%,
+            rgba(182, 199, 234, 0.7),
+            transparent 70%
+        ),
+        linear-gradient(180deg, #fff, var(--color-primary-100));
+
+    /* grain overlay, pair with mix-blend-overlay (multiply on light) and an opacity */
+    --texture-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 
     --gradient-drawer: linear-gradient(
         160deg,
