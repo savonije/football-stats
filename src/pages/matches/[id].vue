@@ -99,9 +99,7 @@
                 {{ t('player.player', 2) }}
             </h2>
 
-            <span
-                class="tracking-label text-primary-400 font-mono text-xs font-bold uppercase"
-            >
+            <span class="text-primary-500 text-sm font-medium">
                 {{
                     t('match.playersPresent', {
                         count: matchStore.presentPlayersWithNames.length,

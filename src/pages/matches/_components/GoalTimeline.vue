@@ -26,9 +26,7 @@
 
 <template>
     <div v-if="goals.length" class="shadow-card mt-4 rounded-xl bg-white p-5">
-        <div
-            class="tracking-label text-primary-400 font-mono text-xs font-bold uppercase"
-        >
+        <div class="text-primary-500 text-sm font-medium">
             {{ t('common.goal', 2) }}
         </div>
 
@@ -40,7 +38,7 @@
                 data-testid="goal-timeline-item"
             >
                 <span
-                    class="text-primary-400 w-8 shrink-0 text-right font-mono text-sm font-bold tabular-nums"
+                    class="text-primary-400 w-8 shrink-0 text-right text-sm font-semibold tabular-nums"
                 >
                     {{ goal.minute ? `${goal.minute}'` : '—' }}
                 </span>

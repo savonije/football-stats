@@ -20,7 +20,6 @@ export default {
     endMatch: 'Wedstrijd beëindigen',
     endMatchConfirm: 'Weet je zeker dat je deze wedstrijd wilt beëindigen?',
     endMatchSuccess: 'Wedstrijd succesvol beëindigd',
-    finalScore: 'Eindstand',
     firstHalf: '1e helft',
     game: 'Wedstrijd | Wedstrijden',
     goalScorer: 'Doelpuntenmaker',
@@ -67,9 +66,8 @@ export default {
     removeGoalFor: 'Doelpunt voor verwijderen',
     removeGoalForConfirm:
         'Het laatste doelpunt van {team} wordt verwijderd, inclusief de minuut waarin het viel. Dit kan niet ongedaan worden gemaakt.',
-    running: 'Wedstrijd is bezig...',
+    running: 'Wedstrijd is bezig',
     secondHalf: '2e helft',
-    standing: 'Stand',
     startSecondHalf: 'Tweede helft starten',
     unknownScorer: 'Onbekende maker',
     viewMatchDetails: 'Bekijk wedstrijd details',

@@ -92,10 +92,14 @@
         v-if="canEdit && match && !match.ended"
         class="shadow-card mt-4 flex flex-col gap-2.5 rounded-xl bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
     >
-        <div
-            class="tracking-label text-primary-400 hidden font-mono text-xs font-bold uppercase sm:block"
-        >
-            {{ statusLabel }}
+        <div class="text-primary-500 hidden text-sm font-medium sm:block">
+            <span>{{ statusLabel }}</span>
+            <span
+                v-if="isRunning && !isHalfTime"
+                class="animate-dots inline-block motion-reduce:animate-none"
+                aria-hidden="true"
+                >...</span
+            >
         </div>
 
         <div class="flex flex-col-reverse gap-2.5 sm:flex-row sm:items-center">

@@ -163,19 +163,13 @@
 </script>
 
 <template>
-    <div class="p-5">
+    <div class="flex flex-col justify-center p-5">
         <div
-            class="tracking-label text-primary-400 font-mono text-xs font-bold uppercase"
-        >
-            {{ match.ended ? t('match.finalScore') : t('match.standing') }}
-        </div>
-
-        <div
-            class="mt-3 grid grid-cols-[1fr_auto_1fr] items-center justify-items-center gap-x-3 gap-y-2"
+            class="grid grid-cols-[1fr_auto_1fr] items-center justify-items-center gap-x-3 gap-y-2"
         >
             <template v-for="(side, index) in sides" :key="side.type">
                 <div
-                    class="tracking-label text-primary-300 row-start-1 text-center font-mono text-xs leading-tight font-bold uppercase"
+                    class="text-primary-800 row-start-1 text-center text-base leading-tight font-bold sm:text-lg"
                     :class="index === 0 ? 'col-start-1' : 'col-start-3'"
                 >
                     {{ side.name }}
@@ -223,14 +217,14 @@
 
             <div
                 v-if="!played"
-                class="tracking-label text-primary-300 col-span-full row-start-3 mt-2 font-mono text-xs font-bold uppercase"
+                class="text-primary-400 col-span-full row-start-3 mt-2 text-sm"
             >
                 {{ t('match.noScoreYet') }}
             </div>
 
             <UBadge
                 v-else-if="match.ended"
-                class="tracking-badge text-xxs col-span-full row-start-3 mt-2 font-mono font-bold uppercase"
+                class="col-span-full row-start-3 mt-2"
                 color="primary"
                 icon="i-lucide-flag"
                 :label="t('match.isEnded')"
