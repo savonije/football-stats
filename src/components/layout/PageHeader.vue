@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
     import { useI18n } from 'vue-i18n';
+    import { useRouter } from 'vue-router';
 
     import NavDrawer from '@/components/layout/NavDrawer.vue';
 
@@ -9,8 +10,14 @@
 
     const seasonStore = useSeasonStore();
     const { t } = useI18n();
+    const router = useRouter();
 
     const navDrawer = ref<InstanceType<typeof NavDrawer>>();
+
+    const switchSeason = (seasonId: string) => {
+        seasonStore.setSeason(seasonId);
+        router.push({ name: 'home' });
+    };
 
     onMounted(() => {
         seasonStore.fetchSeasons();
@@ -59,7 +66,7 @@
                         :model-value="seasonStore.currentSeason"
                         size="sm"
                         value-key="id"
-                        @update:model-value="seasonStore.setSeason"
+                        @update:model-value="switchSeason"
                     />
                     <span v-else class="text-xs text-white/70">{{
                         seasonStore.currentSeason
