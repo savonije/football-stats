@@ -33,6 +33,9 @@
     const date = shallowRef<CalendarDate | undefined>();
     const kickoff = ref('');
     const home = ref(true);
+    const location = ref('');
+    const field = ref('');
+    const dressingRoom = ref('');
     const goalsFor = ref(0);
     const goalsAgainst = ref(0);
     const loading = ref(false);
@@ -64,6 +67,9 @@
                 opponent: opponent.value,
                 date: matchDate,
                 home: home.value,
+                location: location.value.trim(),
+                field: field.value.trim(),
+                dressingRoom: dressingRoom.value.trim(),
                 goalsFor: goalsFor.value,
                 goalsAgainst: goalsAgainst.value,
             });
@@ -89,6 +95,9 @@
                 ? dayjs(matchDate).format('HH:mm')
                 : '';
         home.value = match?.home ?? true;
+        location.value = match?.location ?? '';
+        field.value = match?.field ?? '';
+        dressingRoom.value = match?.dressingRoom ?? '';
         goalsFor.value = match?.result?.goalsFor ?? 0;
         goalsAgainst.value = match?.result?.goalsAgainst ?? 0;
     });
@@ -140,6 +149,31 @@
                         class="w-full"
                         :items="homeOptions"
                     />
+                </div>
+
+                <div>
+                    <label for="location">{{
+                        t('match.venue.location')
+                    }}</label>
+                    <UInput id="location" v-model="location" class="w-full" />
+                </div>
+
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label for="field">{{ t('match.venue.field') }}</label>
+                        <UInput id="field" v-model="field" class="w-full" />
+                    </div>
+
+                    <div class="flex-1">
+                        <label for="dressingRoom">
+                            {{ t('match.venue.dressingRoom') }}
+                        </label>
+                        <UInput
+                            id="dressingRoom"
+                            v-model="dressingRoom"
+                            class="w-full"
+                        />
+                    </div>
                 </div>
 
                 <div v-if="isPlayed(match)" class="flex gap-3">

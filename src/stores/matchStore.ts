@@ -15,7 +15,7 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
-import type { Appearance, Match, MatchGoal } from '@/types';
+import type { Appearance, Match, MatchGoal, MatchVenue } from '@/types';
 
 const resultField = (side: MatchGoal['side']) =>
     side === 'for' ? ('goalsFor' as const) : ('goalsAgainst' as const);
@@ -70,7 +70,7 @@ export const useMatchStore = defineStore('matchStore', {
         updateMatch(
             seasonId: string,
             matchId: string,
-            data: {
+            data: MatchVenue & {
                 opponent: string;
                 date: Date;
                 home: boolean;

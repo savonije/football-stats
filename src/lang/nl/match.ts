@@ -72,4 +72,9 @@ export default {
     unknownScorer: 'Onbekende maker',
     viewMatchDetails: 'Bekijk wedstrijd details',
     winPercentage: 'Winstpercentage',
+    venue: {
+        dressingRoom: 'Kleedkamer',
+        field: 'Veld',
+        location: 'Locatie',
+    },
 };

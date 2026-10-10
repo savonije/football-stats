@@ -1,4 +1,4 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 
 import { db } from '@/firebase';
 import type { Match } from '@/types';
@@ -16,6 +16,11 @@ const get = async <T>(
     if (!response.ok) throw new Error(`Sportlink ${path}: ${response.status}`);
     return (await response.json()) as T;
 };
+
+const titleCase = (text: string) =>
+    text
+        .toLowerCase()
+        .replace(/(^|[\s-])\p{L}/gu, (char) => char.toUpperCase());
 
 /** Resolves the season team name (e.g. "JO10-1") to a KNVB teamcode. */
 const findTeamCode = async (clientId: string, teamName: string) => {
@@ -52,6 +57,11 @@ export const fetchKnvbMatches = async (
             thuisteamid: number;
             uitteam: string;
             status: string;
+            accommodatie?: string;
+            plaats?: string;
+            veld?: string;
+            kleedkamerthuisteam?: string;
+            kleedkameruitteam?: string;
         }[]
     >('programma', clientId, {
         teamcode: String(teamCode),
@@ -70,6 +80,20 @@ export const fetchKnvbMatches = async (
                 date: new Date(m.wedstrijddatum),
                 opponent: home ? m.uitteam : m.thuisteam,
                 home,
+                venue: {
+                    location: [
+                        m.accommodatie?.trim(),
+                        m.plaats && titleCase(m.plaats.trim()),
+                    ]
+                        .filter(Boolean)
+                        .join(', '),
+                    field: m.veld?.trim() ?? '',
+                    dressingRoom:
+                        (home
+                            ? m.kleedkamerthuisteam
+                            : m.kleedkameruitteam
+                        )?.trim() ?? '',
+                },
             };
         })
         .filter((m) => m.date.getTime() >= now);
@@ -81,3 +105,17 @@ export const fetchSeasonMatches = async (seasonId: string) => {
     );
     return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Match);
 };
+
+/** The KNVB wins: an existing match is overwritten with its schedule. */
+export const applyKnvbMatch = (
+    seasonId: string,
+    matchId: string,
+    knvb: KnvbMatch,
+) =>
+    updateDoc(doc(db, 'seasons', seasonId, 'matches', matchId), {
+        opponent: knvb.opponent,
+        date: knvb.date,
+        home: knvb.home,
+        knvbCode: knvb.code,
+        ...knvb.venue,
+    });

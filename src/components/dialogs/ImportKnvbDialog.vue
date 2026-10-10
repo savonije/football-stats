@@ -7,59 +7,35 @@
 
     import { useAppToast } from '@/composables/useAppToast';
     import {
+        applyKnvbMatch,
         fetchKnvbMatches,
         fetchSeasonMatches,
     } from '@/services/knvbService';
     import { addMatch } from '@/services/matchService';
-    import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useSettingsStore } from '@/stores/settingsStore';
-    import {
-        reconcileKnvbMatches,
-        type KnvbMatch,
-        type KnvbWarning,
-    } from '@/utils/knvb';
-    import { isGuestInSeason } from '@/utils/playerSeason';
+    import { reconcileKnvbMatches, type KnvbMatch } from '@/utils/knvb';
 
     const model = defineModel<boolean>('visible');
 
     const { t } = useI18n();
     const toast = useAppToast();
     const seasonStore = useSeasonStore();
-    const playerStore = usePlayerStore();
     const settingsStore = useSettingsStore();
 
     const fetching = ref(false);
     const saving = ref(false);
     const error = ref('');
     const toAdd = ref<KnvbMatch[]>([]);
-    const warnings = ref<KnvbWarning[]>([]);
+    const updated = ref<KnvbMatch[]>([]);
 
     const formatDate = (date: Date) => dayjs(date).format('DD-MM-YYYY HH:mm');
-
-    const warningText = ({ match, knvb, field }: KnvbWarning) => {
-        const ours = match.date.toDate();
-        const [oursText, knvbText] =
-            field === 'opponent'
-                ? [match.opponent, knvb.opponent]
-                : field === 'time'
-                  ? [
-                        dayjs(ours).format('HH:mm'),
-                        dayjs(knvb.date).format('HH:mm'),
-                    ]
-                  : [formatDate(ours), formatDate(knvb.date)];
-        return t(`knvbImport.warning.${field}`, {
-            ours: oursText,
-            knvb: knvbText,
-        });
-    };
 
     const load = async () => {
         fetching.value = true;
         error.value = '';
         toAdd.value = [];
-        warnings.value = [];
-        if (!playerStore.playersLoaded) playerStore.fetchPlayers();
+        updated.value = [];
         try {
             const [knvbMatches, existing] = await Promise.all([
                 fetchKnvbMatches(
@@ -74,8 +50,18 @@
                 });
                 return;
             }
-            ({ toAdd: toAdd.value, warnings: warnings.value } =
-                reconcileKnvbMatches(existing, knvbMatches));
+            const { toAdd: newMatches, toUpdate } = reconcileKnvbMatches(
+                existing,
+                knvbMatches,
+            );
+            const seasonId = seasonStore.currentSeason;
+            await Promise.all(
+                toUpdate.map(({ match, knvb }) =>
+                    applyKnvbMatch(seasonId, match.id, knvb),
+                ),
+            );
+            toAdd.value = newMatches;
+            updated.value = toUpdate.map(({ knvb }) => knvb);
         } catch (err) {
             console.error(err);
             error.value = t('knvbImport.fetchError');
@@ -88,10 +74,6 @@
 
     const importMatches = async () => {
         const seasonId = seasonStore.currentSeason;
-        const playerIds = playerStore
-            .playersInSeason(seasonId)
-            .filter((player) => !isGuestInSeason(player, seasonId))
-            .map((player) => player.id);
 
         saving.value = true;
         try {
@@ -101,7 +83,7 @@
                     date: match.date,
                     home: match.home,
                     knvbCode: match.code,
-                    playerIds,
+                    venue: match.venue,
                 });
             }
             toast.success(
@@ -149,7 +131,9 @@
                                 ? t('knvbImport.newMatches', {
                                       count: toAdd.length,
                                   })
-                                : t('knvbImport.allExist')
+                                : updated.length
+                                  ? t('knvbImport.syncCompleted')
+                                  : t('knvbImport.allExist')
                         }}
                     </p>
 
@@ -180,19 +164,20 @@
                     </ul>
 
                     <UAlert
-                        v-if="warnings.length"
-                        color="warning"
-                        :title="t('knvbImport.warningsTitle')"
-                        variant="subtle"
-                        data-testid="knvb-warnings"
+                        v-if="updated.length"
+                        color="primary"
+                        icon="i-lucide-bell-ring"
+                        variant="solid"
+                        data-testid="knvb-updated"
                     >
                         <template #description>
                             <ul class="flex flex-col gap-1">
-                                <li
-                                    v-for="warning in warnings"
-                                    :key="`${warning.match.id}-${warning.field}`"
-                                >
-                                    {{ warningText(warning) }}
+                                <li v-for="match in updated" :key="match.code">
+                                    {{
+                                        t('knvbImport.matchUpdated', {
+                                            match: `${match.opponent} (${formatDate(match.date)})`,
+                                        })
+                                    }}
                                 </li>
                             </ul>
                         </template>
@@ -205,9 +190,7 @@
             <DialogFooter
                 :confirm-label="$t('common.add')"
                 confirm-icon="i-lucide-check"
-                :disabled="
-                    fetching || !toAdd.length || !playerStore.playersLoaded
-                "
+                :disabled="fetching || !toAdd.length"
                 :loading="saving"
                 @cancel="closeDialog"
                 @confirm="importMatches"

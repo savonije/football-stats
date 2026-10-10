@@ -28,7 +28,13 @@ export interface Match {
     half?: number;
     halfTime?: boolean;
     knvbCode?: number;
+    location?: string;
+    field?: string;
+    dressingRoom?: string;
 }
+
+/** Venue details synced from the KNVB, empty until Sportlink fills them in. */
+export type MatchVenue = Pick<Match, 'location' | 'field' | 'dressingRoom'>;
 
 export interface NewMatch {
     opponent: string;
@@ -38,6 +44,7 @@ export interface NewMatch {
     washing?: string;
     playerIds?: string[];
     knvbCode?: number;
+    venue?: MatchVenue;
 }
 
 export interface Appearance {

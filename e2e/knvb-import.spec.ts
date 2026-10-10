@@ -88,7 +88,7 @@ test.describe('KNVB import', () => {
         }
     });
 
-    test('adds new matches once and warns about mismatches', async ({
+    test('adds new matches once and overwrites changed ones', async ({
         page,
     }) => {
         const teamName = await page.locator('h1 span').last().innerText();
@@ -103,7 +103,8 @@ test.describe('KNVB import', () => {
         matchUrls.push(await createMatch(page, existing));
 
         await mockSportlink(page, teamName, [
-            // Same day as the match just created, different opponent.
+            // Same day as the match just created, different opponent: the
+            // sync overwrites it with the KNVB one.
             {
                 code,
                 date: dayjs().endOf('day').subtract(1, 'minute'),
@@ -123,7 +124,7 @@ test.describe('KNVB import', () => {
         await expect(dialog.getByTestId('knvb-new-matches')).not.toContainText(
             conflicting,
         );
-        await expect(dialog.getByTestId('knvb-warnings')).toContainText(
+        await expect(dialog.getByTestId('knvb-updated')).toContainText(
             conflicting,
         );
 
@@ -137,12 +138,15 @@ test.describe('KNVB import', () => {
         await other.getByRole('cell', { name: imported, exact: true }).click();
         await expect(other).toHaveURL(/\/match\/.+/);
         matchUrls.push(other.url());
+        await other.goto('/');
+        await other.getByPlaceholder('Zoek tegenstander').fill(conflicting);
+        await expect(
+            other.getByRole('cell', { name: conflicting, exact: true }),
+        ).toBeVisible();
         await other.close();
 
         const again = await openImport(page);
-        await expect(again.getByTestId('knvb-warnings')).toContainText(
-            conflicting,
-        );
+        await expect(again.getByTestId('knvb-updated')).toBeHidden();
         await expect(again.getByTestId('knvb-new-matches')).toBeHidden();
     });
 

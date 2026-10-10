@@ -1,19 +1,13 @@
 import dayjs from 'dayjs';
 
-import type { Match } from '@/types';
-import { hasKickoffTime } from '@/utils/date';
+import type { Match, MatchVenue } from '@/types';
 
 export interface KnvbMatch {
     code: number;
     date: Date;
     opponent: string;
     home: boolean;
-}
-
-export interface KnvbWarning {
-    match: Match;
-    knvb: KnvbMatch;
-    field: 'opponent' | 'time' | 'date';
+    venue: Required<MatchVenue>;
 }
 
 // KNVB writes "O10-1JM" where the season name may say "JO10-1".
@@ -29,41 +23,33 @@ const sameOpponent = (a: string, b: string) => {
     return x.includes(y) || y.includes(x);
 };
 
+const VENUE_FIELDS = ['location', 'field', 'dressingRoom'] as const;
+
+const differs = (match: Match, knvb: KnvbMatch) =>
+    !sameOpponent(match.opponent, knvb.opponent) ||
+    match.home !== knvb.home ||
+    match.date.toDate().getTime() !== knvb.date.getTime() ||
+    VENUE_FIELDS.some((field) => (match[field] ?? '') !== knvb.venue[field]);
+
 export const reconcileKnvbMatches = (
     existing: Match[],
     knvbMatches: KnvbMatch[],
 ) => {
     const toAdd: KnvbMatch[] = [];
-    const warnings: KnvbWarning[] = [];
+    const toUpdate: { match: Match; knvb: KnvbMatch }[] = [];
 
     for (const knvb of knvbMatches) {
-        const byCode = existing.find((m) => m.knvbCode === knvb.code);
         const match =
-            byCode ??
+            existing.find((m) => m.knvbCode === knvb.code) ??
             existing.find(
                 (m) =>
                     m.knvbCode == null &&
                     dayjs(m.date.toDate()).isSame(knvb.date, 'day'),
             );
 
-        if (!match) {
-            toAdd.push(knvb);
-            continue;
-        }
-
-        const date = match.date.toDate();
-        if (!sameOpponent(match.opponent, knvb.opponent)) {
-            warnings.push({ match, knvb, field: 'opponent' });
-        }
-        if (byCode && !dayjs(date).isSame(knvb.date, 'day')) {
-            warnings.push({ match, knvb, field: 'date' });
-        } else if (
-            hasKickoffTime(date) &&
-            date.getTime() !== knvb.date.getTime()
-        ) {
-            warnings.push({ match, knvb, field: 'time' });
-        }
+        if (!match) toAdd.push(knvb);
+        else if (differs(match, knvb)) toUpdate.push({ match, knvb });
     }
 
-    return { toAdd, warnings };
+    return { toAdd, toUpdate };
 };
