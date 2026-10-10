@@ -19,18 +19,19 @@
 
 <template>
     <header
-        class="header-root sticky top-0 z-50 mb-12 py-3 text-white sm:p-3 sm:py-5"
+        class="relative z-50 mb-12 overflow-hidden py-3 text-white [background:var(--gradient-header)] sm:p-3 sm:py-5"
     >
+        <div
+            class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-45 mix-blend-overlay"
+            aria-hidden="true"
+        />
         <div
             class="relative z-10 container flex items-center justify-between gap-6"
         >
             <div class="flex items-center gap-4">
-                <Router-Link
-                    class="logo-link hidden lg:flex"
-                    :to="{ name: 'home' }"
-                >
+                <Router-Link class="hidden lg:flex" :to="{ name: 'home' }">
                     <img
-                        class="max-h-14"
+                        class="max-h-14 transition-[filter] duration-300"
                         src="/images/logo.webp"
                         :alt="`${CLUBNAME} ${seasonStore.currentTeamName} logo`"
                     />
@@ -79,38 +80,3 @@
 
     <NavDrawer ref="navDrawer" />
 </template>
-
-<style scoped>
-    .header-root {
-        background: var(--gradient-brand);
-        box-shadow:
-            0 4px 24px rgba(17, 26, 54, 0.45),
-            0 1px 0 rgba(255, 255, 255, 0.07) inset;
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* Diagonal pitch-stripe texture overlay */
-    .header-root::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-            -55deg,
-            transparent,
-            transparent 20px,
-            rgba(255, 255, 255, 0.018) 20px,
-            rgba(255, 255, 255, 0.018) 40px
-        );
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .logo-link img {
-        transition: filter 0.3s ease;
-    }
-
-    .logo-link:hover img {
-        filter: drop-shadow(0 0 10px rgba(96, 133, 209, 0.85));
-    }
-</style>
