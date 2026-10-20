@@ -36,4 +36,6 @@ router.afterEach((to) => {
         : CLUBNAME;
 });
 
+window.addEventListener('vite:preloadError', () => window.location.reload());
+
 app.mount('#app');
