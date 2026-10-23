@@ -104,6 +104,8 @@
             ? [
                   {
                       id: 'period',
+                      accessorFn: (match: Match) =>
+                          seasonStore.periodNumberOf(match.date.toDate()),
                       header: t('seasons.period'),
                       enableGlobalFilter: false,
                       meta: {
@@ -215,18 +217,12 @@
 
             <template #period-cell="{ row }">
                 <UBadge
-                    v-if="
-                        seasonStore.periodNumberOf(row.original.date.toDate())
-                    "
+                    v-if="row.getValue('period')"
                     color="neutral"
                     variant="subtle"
                 >
                     {{
-                        t('seasons.periodLabel', {
-                            n: seasonStore.periodNumberOf(
-                                row.original.date.toDate(),
-                            ),
-                        })
+                        t('seasons.periodLabel', { n: row.getValue('period') })
                     }}
                 </UBadge>
             </template>

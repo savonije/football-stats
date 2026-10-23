@@ -149,9 +149,7 @@ export const useSeasonStore = defineStore('seasonStore', {
             await updateDoc(doc(db, 'seasons', id), {
                 teamname: settings.teamname.trim(),
                 halfDurationMinutes: settings.halfDurationMinutes,
-                periods: [...settings.periods].sort((a, b) =>
-                    a.start.localeCompare(b.start),
-                ),
+                periods: settings.periods,
             });
             this.currentPeriod = 0;
             await this.fetchSeasons();

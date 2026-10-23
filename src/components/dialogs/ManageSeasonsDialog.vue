@@ -81,9 +81,16 @@
             return;
         }
 
+        const sorted = [...periods.value].sort((a, b) =>
+            a.start && b.start ? a.start.compare(b.start) : 0,
+        );
         if (
-            periods.value.some(
-                (p) => !p.start || !p.end || p.start.compare(p.end) > 0,
+            sorted.some(
+                (p, i) =>
+                    !p.start ||
+                    !p.end ||
+                    p.start.compare(p.end) > 0 ||
+                    (i > 0 && p.start.compare(sorted[i - 1].end!) <= 0),
             )
         ) {
             toast.warn(t('seasons.messages.invalidPeriods'));
@@ -95,7 +102,7 @@
             await seasonStore.updateSeasonSettings(selectedId.value, {
                 teamname: form.teamname,
                 halfDurationMinutes: halfDuration,
-                periods: periods.value.map((p) => ({
+                periods: sorted.map((p) => ({
                     start: p.start!.toString(),
                     end: p.end!.toString(),
                 })),

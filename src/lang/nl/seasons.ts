@@ -28,7 +28,7 @@ export default {
         activeChanged: 'Actief seizoen gewijzigd',
         settingsSaved: 'Instellingen opgeslagen',
         invalidPeriods:
-            'Vul bij elke periode een begin- en einddatum in, met het begin vóór het einde',
+            'Vul bij elke periode een begin- en einddatum in, met het begin vóór het einde, zonder dat periodes overlappen',
         invalidFormat:
             'Gebruik het formaat JJJJ-JJJJ met twee opeenvolgende jaren',
     },

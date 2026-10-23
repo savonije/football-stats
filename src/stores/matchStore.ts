@@ -393,7 +393,6 @@ export const useMatchStore = defineStore('matchStore', {
                 : state.matches;
         },
         periodAppearances(state): Appearance[] {
-            if (!useSeasonStore().selectedPeriod) return state.appearances;
             const ids = new Set(this.periodMatches.map((m) => m.id));
             return state.appearances.filter((a) => ids.has(a.matchId));
         },
