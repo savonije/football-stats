@@ -7,6 +7,7 @@
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSettingsStore } from '@/stores/settingsStore';
+    import { hasKickoffTime } from '@/utils/date';
     import { hasStarted } from '@/utils/match';
 
     const matchStore = useMatchStore();
@@ -42,6 +43,30 @@
 
         return player?.name ?? t('washing.notAssigned');
     });
+
+    const kickoff = computed(() =>
+        date.value && hasKickoffTime(date.value)
+            ? dayjs(date.value).format('HH:mm')
+            : '',
+    );
+
+    const stripPrefix = (value: string | undefined, prefix: string) =>
+        value?.replace(new RegExp(`^${prefix}\\s*`, 'i'), '');
+
+    const venueTiles = computed(() =>
+        [
+            {
+                icon: 'i-lucide-goal',
+                label: t('match.venue.field'),
+                value: stripPrefix(nextMatch.value?.field, 'veld'),
+            },
+            {
+                icon: 'i-lucide-shirt',
+                label: t('match.venue.dressingRoom'),
+                value: stripPrefix(nextMatch.value?.dressingRoom, 'kleedkamer'),
+            },
+        ].filter((tile) => tile.value),
+    );
 </script>
 
 <template>
@@ -95,6 +120,7 @@
                 </p>
                 <p class="mb-0 text-sm text-gray-600">
                     {{ formatDate({ weekday: 'long' }) }}
+                    <template v-if="kickoff">· {{ kickoff }}</template>
                 </p>
             </div>
 
@@ -104,6 +130,37 @@
                 :label="nextMatch.home ? t('common.home') : t('common.away')"
                 variant="subtle"
             />
+        </div>
+
+        <p
+            v-if="nextMatch.location"
+            class="text-primary-700 mt-4 mb-0 flex items-start gap-2 text-sm font-semibold"
+        >
+            <UIcon
+                class="text-primary-400 mt-0.5 size-4 shrink-0"
+                name="i-lucide-map-pin"
+            />
+            {{ nextMatch.location }}
+        </p>
+
+        <div v-if="venueTiles.length" class="mt-3 flex gap-2">
+            <div
+                v-for="tile in venueTiles"
+                :key="tile.icon"
+                class="bg-primary-50 min-w-0 flex-1 rounded-lg px-3 py-2"
+            >
+                <span
+                    class="tracking-label text-xxs text-primary-600 flex items-center gap-1 font-mono font-bold uppercase"
+                >
+                    <UIcon class="size-3" :name="tile.icon" />
+                    {{ tile.label }}
+                </span>
+                <span
+                    class="text-primary-900 mt-0.5 block text-base leading-snug font-bold"
+                >
+                    {{ tile.value }}
+                </span>
+            </div>
         </div>
 
         <div
