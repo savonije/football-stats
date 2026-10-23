@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import { computed } from 'vue';
+    import { useElementSize } from '@vueuse/core';
+    import { computed, useTemplateRef } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     interface DataPoint {
@@ -7,59 +8,77 @@
         opponent: string;
     }
 
-    const props = defineProps<{
+    const { data } = defineProps<{
         data: DataPoint[];
     }>();
 
     const { t } = useI18n();
 
-    const COL_WIDTH = 90;
-    const H = 230;
-    const PAD_L = 30;
-    const PAD_R = 30;
+    const MIN_COL_WIDTH = 60;
+    const PAD_X = 32;
     const PAD_T = 30;
-    const PAD_B = 20;
+    const PAD_B = 12;
 
-    const chartH = H - PAD_T - PAD_B;
+    const { width: containerWidth, height: containerHeight } = useElementSize(
+        useTemplateRef('container'),
+    );
 
-    const svgWidth = computed(() => {
-        const n = props.data.length;
-        return PAD_L + PAD_R + Math.max(n - 1, 1) * COL_WIDTH;
+    // Grows with the card when the grid row is stretched by a taller
+    // neighbour (the admin-only info card), so no white strip is left below.
+    const H = computed(() => containerHeight.value);
+    const chartH = computed(() => H.value - PAD_T - PAD_B);
+
+    // Stretch to the card, but never squeeze matches closer than
+    // MIN_COL_WIDTH — past that the container scrolls instead.
+    const svgWidth = computed(() =>
+        Math.max(
+            containerWidth.value,
+            PAD_X * 2 + Math.max(data.length - 1, 1) * MIN_COL_WIDTH,
+        ),
+    );
+
+    const maxGoals = computed(() => Math.max(...data.map((d) => d.goals), 1));
+
+    const points = computed(() => {
+        const n = data.length;
+        const innerW = svgWidth.value - PAD_X * 2;
+        return data.map((d, i) => ({
+            ...d,
+            x: PAD_X + (n === 1 ? innerW / 2 : (i * innerW) / (n - 1)),
+            y: PAD_T + chartH.value - (d.goals / maxGoals.value) * chartH.value,
+        }));
     });
 
-    const maxGoals = computed(() =>
-        Math.max(...props.data.map((d) => d.goals), 1),
-    );
-
-    const points = computed(() =>
-        props.data.map((d, i) => {
-            const n = props.data.length;
-            const innerW = svgWidth.value - PAD_L - PAD_R;
-            const x = PAD_L + (n === 1 ? innerW / 2 : i * COL_WIDTH);
-            const y = PAD_T + chartH - (d.goals / maxGoals.value) * chartH;
-            return { x, y, goals: d.goals, opponent: d.opponent };
-        }),
-    );
-
+    // The line runs flat out to both edges so the fill bleeds to the card's
+    // sides, while the dots themselves stay inset by PAD_X.
     const polylinePoints = computed(() =>
-        points.value.map((p) => `${p.x},${p.y}`).join(' '),
+        [
+            `0,${points.value[0].y}`,
+            ...points.value.map((p) => `${p.x},${p.y}`),
+            `${svgWidth.value},${points.value.at(-1)!.y}`,
+        ].join(' '),
     );
 
-    const areaPoints = computed(() => {
-        if (points.value.length === 0) return '';
-        const bottom = PAD_T + chartH;
-        return `${points.value[0].x},${bottom} ${polylinePoints.value} ${points.value[points.value.length - 1].x},${bottom}`;
-    });
+    const areaPoints = computed(
+        () =>
+            `0,${H.value} ${polylinePoints.value} ${svgWidth.value},${H.value}`,
+    );
 </script>
 
 <template>
-    <div v-if="data.length === 0" class="py-6 text-center text-gray-400">
+    <div v-if="data.length === 0" class="p-6 text-center text-gray-400">
         {{ t('player.noMatchData') }}
     </div>
 
-    <div v-else class="mt-2 overflow-x-auto [direction:rtl]">
+    <div
+        v-else
+        ref="container"
+        class="relative min-h-45 flex-1 overflow-x-auto [direction:rtl]"
+    >
+        <!-- Absolute so the svg never props the container open itself:
+             its height follows the container, not the other way round. -->
         <svg
-            class="[direction:ltr]"
+            class="absolute inset-y-0 right-0 [direction:ltr]"
             :width="svgWidth"
             :height="H"
             :viewBox="`0 0 ${svgWidth} ${H}`"

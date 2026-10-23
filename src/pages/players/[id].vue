@@ -52,7 +52,7 @@
         <InfoCard :player="player" :loading="loading" />
 
         <GoalsTimelineCard
-            class="lg:col-span-2"
+            class="lg:col-span-2 lg:first:col-span-3"
             :player-id="playerId"
             :loading="loading"
         />

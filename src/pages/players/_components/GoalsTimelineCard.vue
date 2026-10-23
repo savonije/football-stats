@@ -36,12 +36,15 @@
 </script>
 
 <template>
-    <UCard>
+    <UCard
+        class="flex flex-col"
+        :ui="{ body: 'flex flex-1 flex-col p-0 sm:p-0' }"
+    >
         <template #header>
             <h2>{{ $t('player.goalsTimeline') }}</h2>
         </template>
 
-        <USkeleton v-if="loading" class="h-40 w-full" />
+        <USkeleton v-if="loading" class="m-4 h-40 sm:m-6" />
         <GoalsChart v-else :data="goalsChartData" />
     </UCard>
 </template>
