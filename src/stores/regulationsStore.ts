@@ -4,7 +4,8 @@ import { defineStore } from 'pinia';
 import { db } from '@/firebase';
 import { useStoreAuth } from '@/stores/authStore';
 
-const regulationsRef = () => doc(db, 'general', 'regulations');
+const regulationsRef = (seasonId: string) =>
+    doc(db, `seasons/${seasonId}/general/regulations`);
 
 let _unsubscribeRegulations: (() => void) | null = null;
 
@@ -22,10 +23,11 @@ export const useRegulationsStore = defineStore('regulationsStore', {
     }),
 
     actions: {
-        fetchRegulations() {
+        fetchRegulations(seasonId: string) {
             _unsubscribeRegulations?.();
+            this.regulationsLoaded = false;
             _unsubscribeRegulations = onSnapshot(
-                regulationsRef(),
+                regulationsRef(seasonId),
                 (snap) => {
                     const data = snap.data({ serverTimestamps: 'estimate' });
                     this.content = data?.content ?? '';
@@ -40,9 +42,9 @@ export const useRegulationsStore = defineStore('regulationsStore', {
             );
         },
 
-        async updateRegulations(content: string) {
+        async updateRegulations(seasonId: string, content: string) {
             const { user } = useStoreAuth();
-            await setDoc(regulationsRef(), {
+            await setDoc(regulationsRef(seasonId), {
                 content,
                 updatedAt: serverTimestamp(),
                 updatedBy: { id: user?.id ?? null, email: user?.email ?? null },

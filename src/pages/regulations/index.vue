@@ -3,7 +3,7 @@
     import type { EditorHandler } from '@nuxt/ui/runtime/types/editor.js';
     import { TableKit } from '@tiptap/extension-table';
     import dayjs from 'dayjs';
-    import { onMounted, ref } from 'vue';
+    import { onMounted, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import HiddenPageAlert from '@/components/ui/HiddenPageAlert.vue';
@@ -11,19 +11,31 @@
     import { useAppToast } from '@/composables/useAppToast';
     import { useIsAdmin } from '@/composables/useIsAdmin';
     import { useRegulationsStore } from '@/stores/regulationsStore';
+    import { useSeasonStore } from '@/stores/seasonStore';
     import { useSettingsStore } from '@/stores/settingsStore';
 
     const { t } = useI18n();
     const toast = useAppToast();
     const isAdmin = useIsAdmin();
     const regulationsStore = useRegulationsStore();
+    const seasonStore = useSeasonStore();
     const settingsStore = useSettingsStore();
 
     const draft = ref('');
     const editing = ref(false);
     const saving = ref(false);
 
-    onMounted(() => regulationsStore.fetchRegulations());
+    onMounted(() =>
+        regulationsStore.fetchRegulations(seasonStore.currentSeason),
+    );
+
+    watch(
+        () => seasonStore.currentSeason,
+        (seasonId) => {
+            editing.value = false;
+            regulationsStore.fetchRegulations(seasonId);
+        },
+    );
 
     type Chain = ReturnType<Parameters<EditorHandler['execute']>[0]['chain']>;
 
@@ -162,7 +174,10 @@
     const save = async () => {
         saving.value = true;
         try {
-            await regulationsStore.updateRegulations(draft.value);
+            await regulationsStore.updateRegulations(
+                seasonStore.currentSeason,
+                draft.value,
+            );
             toast.success(t('common.changesSaved'));
             editing.value = false;
         } catch (err) {
