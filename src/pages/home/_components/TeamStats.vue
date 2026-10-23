@@ -8,7 +8,7 @@
     const matchStore = useMatchStore();
 
     const stats = computed(() => {
-        const played = matchStore.matches.filter(
+        const played = matchStore.periodMatches.filter(
             (match) => match.ended && match.result,
         );
 

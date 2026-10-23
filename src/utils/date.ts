@@ -1,4 +1,7 @@
 import { CalendarDate } from '@internationalized/date';
+import dayjs from 'dayjs';
+
+import type { SeasonPeriod } from '@/types';
 
 export const toCalendarDate = (date: Date | null | undefined) =>
     date
@@ -15,3 +18,8 @@ export const hasKickoffTime = (date: Date) =>
 
 export const fromCalendarDate = (value: CalendarDate | null | undefined) =>
     value ? new Date(value.year, value.month - 1, value.day) : null;
+
+export const isInPeriod = (date: Date, period: SeasonPeriod) => {
+    const day = dayjs(date).format('YYYY-MM-DD');
+    return day >= period.start && day <= period.end;
+};

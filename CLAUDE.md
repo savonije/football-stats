@@ -74,7 +74,7 @@ Vue 3 SPA (Composition API + `<script setup>`) for tracking football match stats
 ### Firestore data model
 
 ```
-seasons/{seasonId}                         # { active, teamname?, trainingDays?: number[], halfDurationMinutes? }
+seasons/{seasonId}                         # { active, teamname?, trainingDays?: number[], halfDurationMinutes?, periods?: { start, end }[] }
 players/{playerId}                         # { ..., seasons: { [seasonId]: { active, guestPlayer } } }
 seasons/{seasonId}/matches/{matchId}
 seasons/{seasonId}/matches/{matchId}/appearances/{appearanceId}
@@ -86,6 +86,8 @@ general/regulations                        # { content, updatedAt, updatedBy: { 
 Matches imported by the KNVB sync ("Wedstrijdschema synchroniseren") carry a `knvbCode` (Sportlink `wedstrijdcode`) and a real kickoff in `date`; hand-entered matches sit at midnight, which `hasKickoffTime()` in `src/utils/date.ts` reads as "no kickoff". The sync calls Sportlink Club.Dataservice (`data.sportlink.com`, open CORS) straight from the browser via `src/services/knvbService.ts`, resolves the teamcode from the season `teamname`, and only ever adds matches — the matching and mismatch warnings live in the pure `reconcileKnvbMatches()` in `src/utils/knvb.ts`. It is hidden while `sportlinkClientId` is empty.
 
 Season-level settings (team name, half duration, training days) live on the season doc, so per-season behaviour is configurable rather than hardcoded — read them via `seasonStore` getters (`currentTeamName`, `currentHalfDuration`), which fall back to `src/constants`. Document shapes are typed in `src/types/index.ts` (`Season` lives in `seasonStore.ts`).
+
+Periods (`periods`, `YYYY-MM-DD` ranges, both ends inclusive, sorted by start) split a season; a match belongs to a period by its date, nothing is stored on the match. The header's period select sets `seasonStore.currentPeriod` (1-based, 0 = whole season, reset on season switch), and stats views read `matchStore.periodMatches`/`periodAppearances` instead of the raw arrays. Schedules (next match, live match, washing) deliberately stay unfiltered.
 
 Seasons are dynamic Firestore documents, not a constant. `seasonStore` fetches the season list and tracks `currentSeason`, persisted to `localStorage` (`selectedSeason`) and reconciled on startup against the `active` season doc (falling back to the newest by id). Match/appearance queries are scoped by passing `seasonStore.currentSeason` into store actions — components read it and `watch(() => seasonStore.currentSeason)` to refetch when the user switches seasons.
 

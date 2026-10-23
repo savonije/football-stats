@@ -1,8 +1,10 @@
 <script setup lang="ts">
-    import { ref, reactive, computed, watch } from 'vue';
+    import { parseDate, type CalendarDate } from '@internationalized/date';
+    import { ref, reactive, computed, shallowRef, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+    import DatePicker from '@/components/ui/DatePicker.vue';
 
     import { useAppToast } from '@/composables/useAppToast';
     import {
@@ -26,6 +28,19 @@
         halfDurationMinutes: DEFAULT_HALF_DURATION_MINUTES,
     });
 
+    type PeriodRow = { start?: CalendarDate; end?: CalendarDate };
+    const periods = shallowRef<PeriodRow[]>([]);
+
+    const setPeriod = (
+        index: number,
+        key: keyof PeriodRow,
+        value: CalendarDate | undefined,
+    ) => {
+        periods.value = periods.value.map((row, i) =>
+            i === index ? { ...row, [key]: value } : row,
+        );
+    };
+
     const newSeason = ref('');
     const addLoading = ref(false);
     const saving = ref(false);
@@ -40,6 +55,10 @@
         form.halfDurationMinutes =
             selectedSeason.value?.halfDurationMinutes ??
             DEFAULT_HALF_DURATION_MINUTES;
+        periods.value = (selectedSeason.value?.periods ?? []).map((p) => ({
+            start: parseDate(p.start),
+            end: parseDate(p.end),
+        }));
     };
 
     const saveSettings = async () => {
@@ -62,11 +81,31 @@
             return;
         }
 
+        const sorted = [...periods.value].sort((a, b) =>
+            a.start && b.start ? a.start.compare(b.start) : 0,
+        );
+        if (
+            sorted.some(
+                (p, i) =>
+                    !p.start ||
+                    !p.end ||
+                    p.start.compare(p.end) > 0 ||
+                    (i > 0 && p.start.compare(sorted[i - 1].end!) <= 0),
+            )
+        ) {
+            toast.warn(t('seasons.messages.invalidPeriods'));
+            return;
+        }
+
         saving.value = true;
         try {
             await seasonStore.updateSeasonSettings(selectedId.value, {
                 teamname: form.teamname,
                 halfDurationMinutes: halfDuration,
+                periods: sorted.map((p) => ({
+                    start: p.start!.toString(),
+                    end: p.end!.toString(),
+                })),
             });
             toast.success(t('seasons.messages.settingsSaved'));
             model.value = false;
@@ -226,6 +265,58 @@
                                     t('seasons.halfDurationPlaceholder')
                                 "
                                 @keyup.enter="saveSettings"
+                            />
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <span class="text-sm font-medium">
+                                {{ t('seasons.periods') }}
+                            </span>
+                            <div
+                                v-for="(period, index) in periods"
+                                :key="index"
+                                class="flex items-center gap-2"
+                                data-testid="period-row"
+                            >
+                                <span
+                                    class="w-6 shrink-0 text-sm text-gray-500"
+                                >
+                                    {{ index + 1 }}
+                                </span>
+                                <DatePicker
+                                    :model-value="period.start"
+                                    :placeholder="t('seasons.periodStart')"
+                                    @update:model-value="
+                                        setPeriod(index, 'start', $event)
+                                    "
+                                />
+                                <DatePicker
+                                    :model-value="period.end"
+                                    :placeholder="t('seasons.periodEnd')"
+                                    @update:model-value="
+                                        setPeriod(index, 'end', $event)
+                                    "
+                                />
+                                <UButton
+                                    color="neutral"
+                                    icon="i-lucide-trash-2"
+                                    variant="ghost"
+                                    :aria-label="t('seasons.removePeriod')"
+                                    @click="
+                                        periods = periods.filter(
+                                            (_, i) => i !== index,
+                                        )
+                                    "
+                                />
+                            </div>
+                            <UButton
+                                class="self-start"
+                                color="neutral"
+                                icon="i-lucide-plus"
+                                :label="t('seasons.addPeriod')"
+                                size="sm"
+                                variant="subtle"
+                                @click="periods = [...periods, {}]"
                             />
                         </div>
                     </div>

@@ -6,6 +6,7 @@
     import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
 
     import { CLUBNAME } from '@/constants';
+    import { useSeasonStore } from '@/stores/seasonStore';
     import type { Match } from '@/types';
     import { hasKickoffTime } from '@/utils/date';
 
@@ -13,6 +14,7 @@
     const emit = defineEmits<{ addPlayers: [] }>();
 
     const { t } = useI18n();
+    const seasonStore = useSeasonStore();
 
     const dateLabel = computed(() => {
         const date = match.date.toDate();
@@ -20,6 +22,10 @@
             hasKickoffTime(date) ? 'D MMMM YYYY, HH:mm' : 'D MMMM YYYY',
         );
     });
+
+    const periodNumber = computed(() =>
+        seasonStore.periodNumberOf(match.date.toDate()),
+    );
 
     const fieldLabel = (field: string) =>
         /^veld/i.test(field)
@@ -29,6 +35,12 @@
     const meta = computed(() =>
         [
             { icon: 'i-lucide-calendar', label: dateLabel.value },
+            {
+                icon: 'i-lucide-flag',
+                label:
+                    periodNumber.value &&
+                    t('seasons.periodLabel', { n: periodNumber.value }),
+            },
             {
                 icon: 'i-lucide-map-pin',
                 label: match.location,

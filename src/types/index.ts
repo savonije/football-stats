@@ -67,6 +67,11 @@ export interface Training {
     absentPlayerIds?: string[];
 }
 
+export interface SeasonPeriod {
+    start: string;
+    end: string;
+}
+
 export interface PlayerSeasonInfo {
     active: boolean;
     guestPlayer: boolean;

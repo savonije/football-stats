@@ -6,7 +6,9 @@
     import StatProgressBar from '@/pages/players/_components/StatProgressBar.vue';
 
     import { usePlayerAppearances } from '@/composables/usePlayerAppearances';
+    import { useSeasonStore } from '@/stores/seasonStore';
     import { useTrainingStore } from '@/stores/trainingStore';
+    import { isInPeriod } from '@/utils/date';
     import { attendancePercentage } from '@/utils/training';
 
     const { playerId, loading } = defineProps<{
@@ -16,6 +18,7 @@
 
     const { t } = useI18n();
     const trainingStore = useTrainingStore();
+    const seasonStore = useSeasonStore();
 
     const { endedMatchIds, playerAppearances } = usePlayerAppearances(
         () => playerId,
@@ -35,8 +38,17 @@
             : 0,
     );
 
+    const periodTrainings = computed(() => {
+        const period = seasonStore.selectedPeriod;
+        return period
+            ? trainingStore.trainings.filter((training) =>
+                  isInPeriod(training.date.toDate(), period),
+              )
+            : trainingStore.trainings;
+    });
+
     const trainingAttendance = computed(() =>
-        attendancePercentage(playerId, trainingStore.trainings),
+        attendancePercentage(playerId, periodTrainings.value),
     );
 
     const tiles = computed(() => [

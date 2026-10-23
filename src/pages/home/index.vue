@@ -17,7 +17,7 @@
 
     const recentMatchData = computed(() => {
         const count = isMobile.value ? 5 : 10;
-        return [...matchStore.matches]
+        return [...matchStore.periodMatches]
             .filter((match) => match.ended && match.result)
             .sort((a, b) => {
                 const aTime = a.date?.toMillis?.() ?? 0;
