@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue';
+    import { computed, ref, onMounted } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useRouter } from 'vue-router';
 
@@ -13,6 +13,14 @@
     const router = useRouter();
 
     const navDrawer = ref<InstanceType<typeof NavDrawer>>();
+
+    const periodItems = computed(() => [
+        { label: t('seasons.wholeSeason'), value: 0 },
+        ...seasonStore.currentPeriods.map((_, index) => ({
+            label: t('seasons.periodLabel', { n: index + 1 }),
+            value: index + 1,
+        })),
+    ]);
 
     const switchSeason = (seasonId: string) => {
         seasonStore.setSeason(seasonId);
@@ -58,16 +66,29 @@
                             }}</span>
                         </h1>
                     </Router-Link>
-                    <USelect
+                    <div
                         v-if="seasonStore.seasonsLoaded"
-                        class="mt-1 text-xs!"
-                        label-key="id"
-                        :items="seasonStore.seasons"
-                        :model-value="seasonStore.currentSeason"
-                        size="sm"
-                        value-key="id"
-                        @update:model-value="switchSeason"
-                    />
+                        class="mt-1 flex gap-2"
+                    >
+                        <USelect
+                            class="text-xs!"
+                            label-key="id"
+                            :items="seasonStore.seasons"
+                            :model-value="seasonStore.currentSeason"
+                            size="sm"
+                            value-key="id"
+                            @update:model-value="switchSeason"
+                        />
+                        <USelect
+                            v-if="seasonStore.currentPeriods.length"
+                            v-model="seasonStore.currentPeriod"
+                            class="text-xs!"
+                            :items="periodItems"
+                            size="sm"
+                            :aria-label="t('seasons.period')"
+                            data-testid="period-select"
+                        />
+                    </div>
                     <span v-else class="text-xs text-white/70">{{
                         seasonStore.currentSeason
                     }}</span>

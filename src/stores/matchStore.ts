@@ -15,7 +15,9 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
+import { useSeasonStore } from '@/stores/seasonStore';
 import type { Appearance, Match, MatchGoal, MatchVenue } from '@/types';
+import { isInPeriod } from '@/utils/date';
 
 const resultField = (side: MatchGoal['side']) =>
     side === 'for' ? ('goalsFor' as const) : ('goalsAgainst' as const);
@@ -382,6 +384,19 @@ export const useMatchStore = defineStore('matchStore', {
     },
 
     getters: {
+        periodMatches(state): Match[] {
+            const period = useSeasonStore().selectedPeriod;
+            return period
+                ? state.matches.filter((m) =>
+                      isInPeriod(m.date.toDate(), period),
+                  )
+                : state.matches;
+        },
+        periodAppearances(state): Appearance[] {
+            if (!useSeasonStore().selectedPeriod) return state.appearances;
+            const ids = new Set(this.periodMatches.map((m) => m.id));
+            return state.appearances.filter((a) => ids.has(a.matchId));
+        },
         presentPlayersWithNames: (state) => {
             const playerStore = usePlayerStore();
             return state.appearances

@@ -10,6 +10,8 @@ import { defineStore } from 'pinia';
 
 import { DEFAULT_HALF_DURATION_MINUTES } from '@/constants';
 import { db } from '@/firebase';
+import type { SeasonPeriod } from '@/types';
+import { isInPeriod } from '@/utils/date';
 
 const STORAGE_KEY = 'selectedSeason';
 
@@ -19,15 +21,19 @@ export interface Season {
     teamname?: string;
     trainingDays?: number[];
     halfDurationMinutes?: number;
+    periods?: SeasonPeriod[];
 }
 
 export const useSeasonStore = defineStore('seasonStore', {
     state: (): {
         currentSeason: string;
+        /** 1-based index into the season's periods; 0 is the whole season. */
+        currentPeriod: number;
         seasons: Season[];
         seasonsLoaded: boolean;
     } => ({
         currentSeason: localStorage.getItem(STORAGE_KEY) ?? '',
+        currentPeriod: 0,
         seasons: [],
         seasonsLoaded: false,
     }),
@@ -54,6 +60,22 @@ export const useSeasonStore = defineStore('seasonStore', {
             );
             return season?.trainingDays ?? [];
         },
+        currentPeriods(state): SeasonPeriod[] {
+            const season = state.seasons.find(
+                (s) => s.id === state.currentSeason,
+            );
+            return season?.periods ?? [];
+        },
+        selectedPeriod(): SeasonPeriod | undefined {
+            return this.currentPeriods[this.currentPeriod - 1];
+        },
+        /** 1-based period number a date falls in, 0 when it falls in none. */
+        periodNumberOf(): (date: Date) => number {
+            return (date) =>
+                this.currentPeriods.findIndex((period) =>
+                    isInPeriod(date, period),
+                ) + 1;
+        },
         isCurrentSeasonActive(state): boolean {
             return state.seasons.some(
                 (season) => season.active && season.id === state.currentSeason,
@@ -74,6 +96,7 @@ export const useSeasonStore = defineStore('seasonStore', {
                     teamname: d.data().teamname,
                     trainingDays: d.data().trainingDays ?? [],
                     halfDurationMinutes: d.data().halfDurationMinutes,
+                    periods: d.data().periods ?? [],
                 }))
                 .sort((a, b) => b.id.localeCompare(a.id));
             this.seasonsLoaded = true;
@@ -93,6 +116,7 @@ export const useSeasonStore = defineStore('seasonStore', {
 
         setSeason(seasonId: string) {
             this.currentSeason = seasonId;
+            this.currentPeriod = 0;
             localStorage.setItem(STORAGE_KEY, seasonId);
         },
 
@@ -116,12 +140,20 @@ export const useSeasonStore = defineStore('seasonStore', {
 
         async updateSeasonSettings(
             id: string,
-            settings: { teamname: string; halfDurationMinutes: number },
+            settings: {
+                teamname: string;
+                halfDurationMinutes: number;
+                periods: SeasonPeriod[];
+            },
         ) {
             await updateDoc(doc(db, 'seasons', id), {
                 teamname: settings.teamname.trim(),
                 halfDurationMinutes: settings.halfDurationMinutes,
+                periods: [...settings.periods].sort((a, b) =>
+                    a.start.localeCompare(b.start),
+                ),
             });
+            this.currentPeriod = 0;
             await this.fetchSeasons();
         },
 

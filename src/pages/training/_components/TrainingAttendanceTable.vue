@@ -1,13 +1,14 @@
 <script setup lang="ts">
     import type { TableColumn, TableRow } from '@nuxt/ui/components/Table.vue';
     import dayjs from 'dayjs';
-    import { computed, ref } from 'vue';
+    import { computed, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import router from '@/router';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useTrainingStore } from '@/stores/trainingStore';
+    import { isInPeriod } from '@/utils/date';
     import { isGuestInSeason } from '@/utils/playerSeason';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
     import {
@@ -23,14 +24,37 @@
 
     const { t } = useI18n();
 
-    const period = ref<AttendancePeriod>('total');
+    const period = ref<AttendancePeriod | 'seasonPeriod'>('total');
     const anchor = ref<Date>(new Date());
 
-    const periodOptions = computed(() =>
-        (['week', 'month', 'total'] as const).map((value) => ({
+    const defaultPeriodNumber = () =>
+        seasonStore.periodNumberOf(new Date()) || 1;
+    const seasonPeriodNumber = ref(defaultPeriodNumber());
+
+    const periodOptions = computed(() => [
+        ...(['week', 'month', 'total'] as const).map((value) => ({
             label: t(`training.period.${value}`),
             value,
         })),
+        ...(seasonStore.currentPeriods.length
+            ? [{ label: t('seasons.period'), value: 'seasonPeriod' as const }]
+            : []),
+    ]);
+
+    const seasonPeriodItems = computed(() =>
+        seasonStore.currentPeriods.map((_, index) => ({
+            label: t('seasons.periodLabel', { n: index + 1 }),
+            value: index + 1,
+        })),
+    );
+
+    watch(
+        () => seasonStore.currentPeriods,
+        (periods) => {
+            seasonPeriodNumber.value = defaultPeriodNumber();
+            if (!periods.length && period.value === 'seasonPeriod')
+                period.value = 'total';
+        },
     );
 
     const periodLabel = computed(() => {
@@ -44,12 +68,12 @@
 
     const isCurrentPeriod = computed(
         () =>
-            period.value !== 'total' &&
+            (period.value === 'week' || period.value === 'month') &&
             dayjs(anchor.value).isSame(dayjs(), period.value),
     );
 
     const step = (amount: number) => {
-        if (period.value === 'total') return;
+        if (period.value !== 'week' && period.value !== 'month') return;
         if (amount > 0 && isCurrentPeriod.value) return;
 
         anchor.value = dayjs(anchor.value)
@@ -60,15 +84,27 @@
 
     const goToToday = () => (anchor.value = new Date());
 
-    const held = computed(() =>
-        heldTrainings(
+    const held = computed(() => {
+        if (period.value === 'seasonPeriod') {
+            const seasonPeriod =
+                seasonStore.currentPeriods[seasonPeriodNumber.value - 1];
+            return heldTrainings(
+                trainingStore.trainings.filter(
+                    (training) =>
+                        !!seasonPeriod &&
+                        isInPeriod(training.date.toDate(), seasonPeriod),
+                ),
+            );
+        }
+
+        return heldTrainings(
             trainingsInPeriod(
                 trainingStore.trainings,
                 period.value,
                 anchor.value,
             ),
-        ),
-    );
+        );
+    });
 
     const rows = computed(() =>
         playerStore
@@ -122,7 +158,15 @@
             variant="pill"
         />
 
-        <div v-if="period !== 'total'" class="flex items-center gap-1">
+        <USelect
+            v-if="period === 'seasonPeriod'"
+            v-model="seasonPeriodNumber"
+            :items="seasonPeriodItems"
+            size="sm"
+            :aria-label="t('seasons.period')"
+        />
+
+        <div v-else-if="period !== 'total'" class="flex items-center gap-1">
             <UButton
                 class="rounded-full"
                 color="neutral"

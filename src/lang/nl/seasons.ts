@@ -11,6 +11,14 @@ export default {
     halfDuration: 'Speelduur per helft (min)',
     halfDurationPlaceholder: 'Bijv. 20',
     newSeasonPlaceholder: 'JJJJ-JJJJ',
+    period: 'Periode',
+    periods: 'Periodes',
+    periodLabel: 'Periode {n}',
+    wholeSeason: 'Hele seizoen',
+    addPeriod: 'Periode toevoegen',
+    removePeriod: 'Periode verwijderen',
+    periodStart: 'Van',
+    periodEnd: 'Tot en met',
     messages: {
         seasonAdded: 'Seizoen toegevoegd',
         saveError: 'Opslaan is mislukt',
@@ -19,6 +27,8 @@ export default {
         seasonExists: 'Dit seizoen bestaat al',
         activeChanged: 'Actief seizoen gewijzigd',
         settingsSaved: 'Instellingen opgeslagen',
+        invalidPeriods:
+            'Vul bij elke periode een begin- en einddatum in, met het begin vóór het einde',
         invalidFormat:
             'Gebruik het formaat JJJJ-JJJJ met twee opeenvolgende jaren',
     },

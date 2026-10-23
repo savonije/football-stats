@@ -19,13 +19,17 @@
     const { t } = useI18n();
 
     const playerTotalStats = computed(() => {
-        if (!playerStore.playersLoaded || !matchStore.appearancesLoaded)
+        if (
+            !playerStore.playersLoaded ||
+            !matchStore.matchesLoaded ||
+            !matchStore.appearancesLoaded
+        )
             return [];
 
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
             .map((player) => {
-                const appearances = matchStore.appearances.filter(
+                const appearances = matchStore.periodAppearances.filter(
                     (a) => a.playerId === player.id,
                 );
 
@@ -95,12 +99,14 @@
 
     onMounted(() => {
         playerStore.fetchPlayers();
+        matchStore.fetchMatches(seasonStore.currentSeason);
         matchStore.fetchAppearances(seasonStore.currentSeason);
     });
 
     watch(
         () => seasonStore.currentSeason,
         (seasonId) => {
+            matchStore.fetchMatches(seasonId);
             matchStore.fetchAppearances(seasonId);
         },
     );
@@ -116,7 +122,11 @@
         class="rounded-2xl shadow-lg"
         :columns="columns"
         :data="playerTotalStats"
-        :loading="!playerStore.playersLoaded || !matchStore.appearancesLoaded"
+        :loading="
+            !playerStore.playersLoaded ||
+            !matchStore.matchesLoaded ||
+            !matchStore.appearancesLoaded
+        "
         :meta="meta"
         :ui="TABLE_UI"
         @select="onSelect"

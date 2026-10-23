@@ -37,7 +37,7 @@
     const filteredCount = computed(
         () =>
             table.value?.tableApi?.getFilteredRowModel().rows.length ??
-            matchStore.matches.length,
+            matchStore.periodMatches.length,
     );
 
     const washerName = (match: Match) =>
@@ -100,6 +100,21 @@
                   },
               ]
             : []),
+        ...(seasonStore.currentPeriods.length
+            ? [
+                  {
+                      id: 'period',
+                      header: t('seasons.period'),
+                      enableGlobalFilter: false,
+                      meta: {
+                          class: {
+                              td: 'hidden sm:table-cell',
+                              th: 'hidden sm:table-cell',
+                          },
+                      },
+                  },
+              ]
+            : []),
         {
             id: 'result',
             header: t('common.result'),
@@ -133,7 +148,7 @@
         pagination.value = { ...pagination.value, pageIndex: page - 1 };
     };
 
-    watch(globalFilter, () => goToPage(1));
+    watch([globalFilter, () => seasonStore.currentPeriod], () => goToPage(1));
 
     const onSelect = (_event: Event, row: TableRow<Match>) => {
         router.push({ name: 'matchDetail', params: { id: row.original.id } });
@@ -161,7 +176,7 @@
             />
 
             <UBadge v-if="matchStore.matchesLoaded" class="h-7 shrink-0">
-                {{ filteredCount }} / {{ matchStore.matches.length }}
+                {{ filteredCount }} / {{ matchStore.periodMatches.length }}
                 {{ t('match.game', 2) }}
             </UBadge>
         </div>
@@ -182,7 +197,7 @@
             v-model:sorting="sorting"
             class="rounded-2xl shadow-lg"
             :columns="columns"
-            :data="matchStore.matches"
+            :data="matchStore.periodMatches"
             :global-filter-options="{ globalFilterFn: 'includesString' }"
             :pagination-options="{
                 getPaginationRowModel: getPaginationRowModel(),
@@ -196,6 +211,24 @@
 
             <template #homeOrAway-cell="{ row }">
                 {{ row.original.home ? t('common.home') : t('common.away') }}
+            </template>
+
+            <template #period-cell="{ row }">
+                <UBadge
+                    v-if="
+                        seasonStore.periodNumberOf(row.original.date.toDate())
+                    "
+                    color="neutral"
+                    variant="subtle"
+                >
+                    {{
+                        t('seasons.periodLabel', {
+                            n: seasonStore.periodNumberOf(
+                                row.original.date.toDate(),
+                            ),
+                        })
+                    }}
+                </UBadge>
             </template>
 
             <template #washer-cell="{ row }">

@@ -17,7 +17,7 @@
         playerStore
             .playersInSeason(seasonStore.currentSeason)
             .map((player) => {
-                const appearances = matchStore.appearances.filter(
+                const appearances = matchStore.periodAppearances.filter(
                     (a) => a.playerId === player.id && a.present,
                 );
 
@@ -56,12 +56,14 @@
 
     onMounted(() => {
         playerStore.fetchPlayers();
+        matchStore.fetchMatches(seasonStore.currentSeason);
         matchStore.fetchAppearances(seasonStore.currentSeason);
     });
 
     watch(
         () => seasonStore.currentSeason,
         (seasonId) => {
+            matchStore.fetchMatches(seasonId);
             matchStore.fetchAppearances(seasonId);
         },
     );
