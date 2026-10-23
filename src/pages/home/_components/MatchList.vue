@@ -158,7 +158,7 @@
 </script>
 
 <template>
-    <div class="mb-6 flex flex-wrap items-center gap-3">
+    <div class="mb-3 flex flex-wrap items-center gap-3">
         <h1 class="mr-auto mb-0">{{ t('match.game', 2) }}</h1>
 
         <UButton
