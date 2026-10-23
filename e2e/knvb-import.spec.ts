@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import dayjs from 'dayjs';
 
 import {
+    acceptConfirm,
     createMatch,
     deleteMatch,
     login,
@@ -148,6 +149,94 @@ test.describe('KNVB import', () => {
         const again = await openImport(page);
         await expect(again.getByTestId('knvb-updated')).toBeHidden();
         await expect(again.getByTestId('knvb-new-matches')).toBeHidden();
+    });
+
+    test('scores an imported match on both sides', async ({ page }) => {
+        const teamName = await page.locator('h1 span').last().innerText();
+        test.skip(!teamName.trim(), 'The staging season has no team name.');
+
+        const opponent = uniqueLabel('E2E knvb score');
+
+        previousClientId = await setClientId(page, 'e2e-client');
+        await mockSportlink(page, teamName, [
+            {
+                code: Date.now(),
+                date: dayjs().add(180, 'day').hour(10).minute(30).second(0),
+                opponent,
+            },
+        ]);
+
+        const dialog = await openImport(page);
+        await dialog.getByRole('button', { name: 'Toevoegen' }).click();
+        await expect(dialog).toBeHidden();
+
+        await page.getByPlaceholder('Zoek tegenstander').fill(opponent);
+        await page.getByRole('cell', { name: opponent, exact: true }).click();
+        await expect(page).toHaveURL(/\/match\/.+/);
+        matchUrls.push(page.url());
+
+        await page.getByRole('button', { name: 'Start', exact: true }).click();
+        await page
+            .getByRole('button', { name: 'Doelpunt tegen toevoegen' })
+            .click();
+        await expect(page.getByTestId('score-against')).toHaveText('1');
+
+        // A second tab reads from the server, not the local write cache.
+        const other = await page.context().newPage();
+        await other.goto('/');
+        await other.getByPlaceholder('Zoek tegenstander').fill(opponent);
+        await expect(
+            other.locator('tbody tr').filter({ hasText: opponent }),
+        ).toContainText('0-1');
+        await other.close();
+    });
+
+    test('ends a goalless imported match at 0-0', async ({ page }) => {
+        const teamName = await page.locator('h1 span').last().innerText();
+        test.skip(!teamName.trim(), 'The staging season has no team name.');
+
+        const opponent = uniqueLabel('E2E knvb nul');
+
+        previousClientId = await setClientId(page, 'e2e-client');
+        await mockSportlink(page, teamName, [
+            {
+                code: Date.now(),
+                date: dayjs().add(180, 'day').hour(10).minute(30).second(0),
+                opponent,
+            },
+        ]);
+
+        const dialog = await openImport(page);
+        await dialog.getByRole('button', { name: 'Toevoegen' }).click();
+        await expect(dialog).toBeHidden();
+
+        await page.getByPlaceholder('Zoek tegenstander').fill(opponent);
+        await page.getByRole('cell', { name: opponent, exact: true }).click();
+        await expect(page).toHaveURL(/\/match\/.+/);
+        matchUrls.push(page.url());
+
+        await page.getByRole('button', { name: 'Start', exact: true }).click();
+        await page
+            .getByRole('button', { name: 'Eerste helft beëindigen' })
+            .click();
+        await acceptConfirm(page, 'Eerste helft beëindigen');
+        await page
+            .getByRole('button', { name: 'Tweede helft starten' })
+            .click();
+        await page
+            .getByRole('button', { name: 'Wedstrijd beëindigen' })
+            .click();
+        await acceptConfirm(page, 'Wedstrijd beëindigen');
+        await expect(page.getByText('Wedstrijd beëindigd')).toBeVisible();
+
+        // A second tab reads from the server, not the local write cache.
+        const other = await page.context().newPage();
+        await other.goto('/');
+        await other.getByPlaceholder('Zoek tegenstander').fill(opponent);
+        await expect(
+            other.locator('tbody tr').filter({ hasText: opponent }),
+        ).toContainText('0-0');
+        await other.close();
     });
 
     test('hides the sync without a client_id', async ({ page }) => {

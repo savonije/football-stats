@@ -206,7 +206,11 @@ export const useMatchStore = defineStore('matchStore', {
 
             // Pausing on the final whistle freezes the clock, so the match
             // detail can show what it finished on instead of counting forever.
+            // Incrementing by 0 fills a missing side with 0 and leaves an
+            // existing score alone, so a goalless import still ends at 0-0.
             return updateDoc(matchRef, {
+                'result.goalsFor': increment(0),
+                'result.goalsAgainst': increment(0),
                 ended: true,
                 paused: true,
                 pausedAt: Date.now(),
@@ -304,7 +308,10 @@ export const useMatchStore = defineStore('matchStore', {
         logGoal(seasonId: string, matchId: string, goal: MatchGoal) {
             return Promise.all([
                 updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
-                    [`result.${resultField(goal.side)}`]: increment(1),
+                    'result.goalsFor': increment(goal.side === 'for' ? 1 : 0),
+                    'result.goalsAgainst': increment(
+                        goal.side === 'against' ? 1 : 0,
+                    ),
                     goals: [...(this.selectedMatch?.goals ?? []), goal],
                 }),
                 goal.playerId
