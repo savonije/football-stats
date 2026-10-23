@@ -33,6 +33,7 @@
     const date = shallowRef<CalendarDate | undefined>(
         toCalendarDate(new Date()),
     );
+    const kickoff = ref('');
 
     const homeOptions = [
         { label: t('common.home'), value: true },
@@ -61,6 +62,9 @@
             toast.warn(t('common.validation.fillAll'));
             return;
         }
+
+        const [hours = 0, minutes = 0] = kickoff.value.split(':').map(Number);
+        matchDate.setHours(hours, minutes);
 
         loading.value = true;
         try {
@@ -116,9 +120,21 @@
                     />
                 </div>
 
-                <div>
-                    <label for="date">{{ t('common.date') }}</label>
-                    <DatePicker id="date" v-model="date" />
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label for="date">{{ t('common.date') }}</label>
+                        <DatePicker id="date" v-model="date" />
+                    </div>
+
+                    <div class="w-32">
+                        <label for="kickoff">{{ t('match.kickoff') }}</label>
+                        <UInput
+                            id="kickoff"
+                            v-model="kickoff"
+                            class="w-full"
+                            type="time"
+                        />
+                    </div>
                 </div>
 
                 <div>
