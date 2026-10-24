@@ -4,6 +4,7 @@
     import { useI18n } from 'vue-i18n';
 
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
+    import GoalBanner from '@/pages/matches/_components/GoalBanner.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
@@ -67,16 +68,7 @@
             : 'text-primary-900';
     };
 
-    const goalDescription = (goal: MatchGoal) => {
-        if (goal.side === 'against') return t('match.goalTypes.against');
-        if (goal.ownGoal) return t('match.goalTypes.forOwnGoal');
-
-        const player =
-            goal.playerId && playerStore.getPlayerById(goal.playerId)?.name;
-        return player
-            ? t('match.goalTypes.forBy', { player })
-            : t('match.goalTypes.for');
-    };
+    const scoredGoal = ref<MatchGoal>();
 
     watch(
         () => [match.id, match.goals?.length ?? 0] as const,
@@ -84,13 +76,15 @@
             const goal = match.goals?.at(-1);
             if (id !== previousId || count <= previousCount || !goal) return;
 
+            if (goal.side === 'for') {
+                scoredGoal.value = goal;
+                return;
+            }
+
             toast.add({
-                title:
-                    goal.side === 'for'
-                        ? t('match.goalTitleFor', { team: CLUBNAME })
-                        : t('match.goalTitleAgainst', { team: match.opponent }),
-                description: goalDescription(goal),
-                color: goal.side === 'for' ? 'primary' : 'warning',
+                title: t('match.goalTitleAgainst', { team: match.opponent }),
+                description: t('match.goalTypes.against'),
+                color: 'warning',
                 duration: 10000,
             });
         },
@@ -163,9 +157,9 @@
 </script>
 
 <template>
-    <div class="flex flex-col justify-center p-5">
+    <div class="flex flex-col justify-center overflow-hidden">
         <div
-            class="grid grid-cols-[1fr_auto_1fr] items-center justify-items-center gap-x-3 gap-y-2"
+            class="grid grid-cols-[1fr_auto_1fr] items-center justify-items-center gap-x-3 gap-y-2 p-5"
         >
             <template v-for="(side, index) in sides" :key="side.type">
                 <div
@@ -231,6 +225,8 @@
                 variant="subtle"
             />
         </div>
+
+        <GoalBanner :goal="scoredGoal" />
 
         <UModal
             v-model:open="modal"

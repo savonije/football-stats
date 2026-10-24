@@ -23,8 +23,11 @@ export default {
     firstHalf: '1e helft',
     game: 'Wedstrijd | Wedstrijden',
     goalScorer: 'Doelpuntenmaker',
+    goalBanner: {
+        goal: 'Goal!',
+        ownGoal: 'Eigen goal',
+    },
     goalTitleAgainst: 'Goal {team}...',
-    goalTitleFor: 'GOAL VOOR {team} !!',
     goalTypes: {
         for: 'Doelpunt voor Apollo! 🥳',
         forBy: 'Doelpunt voor Apollo door {player}! 🥳',

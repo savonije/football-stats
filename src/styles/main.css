@@ -101,6 +101,47 @@
 
     --animate-dots: dots 1.2s steps(4, jump-none) infinite;
 
+    --animate-marquee: marquee 18s linear infinite;
+    --animate-goal-flash: goal-flash 1s ease-in-out infinite;
+    --animate-goal-pop: goal-pop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+    --animate-goal-word:
+        goal-pop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both,
+        goal-pulse 0.45s ease-in-out 0.6s infinite alternate;
+
+    /* pair with two identical halves of content, so -50% loops seamlessly */
+    @keyframes marquee {
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    @keyframes goal-flash {
+        0%,
+        42%,
+        100% {
+            background-color: var(--color-primary-700);
+            color: #fff;
+        }
+        50%,
+        92% {
+            background-color: #fff;
+            color: var(--color-primary-700);
+        }
+    }
+
+    @keyframes goal-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.3) skewX(-12deg);
+        }
+    }
+
+    @keyframes goal-pulse {
+        to {
+            transform: scale(1.1);
+        }
+    }
+
     /* reveals "..." one dot at a time: clip 3/3, 2/3, 1/3, none */
     @keyframes dots {
         from {
