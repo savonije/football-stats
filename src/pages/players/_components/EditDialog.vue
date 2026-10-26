@@ -43,7 +43,13 @@
         player.value = {
             ...player.value,
             ...editForm.value,
-            seasons: { ...player.value.seasons, [seasonId]: seasonInfo },
+            seasons: {
+                ...player.value.seasons,
+                [seasonId]: {
+                    ...player.value.seasons?.[seasonId],
+                    ...seasonInfo,
+                },
+            },
         } as Player;
 
         closeDialog();

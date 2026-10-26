@@ -74,6 +74,16 @@
                   },
               ]
             : []),
+        ...(settingsStore.drivingEnabled || storeAuth.user?.id
+            ? [
+                  {
+                      to: { name: 'driving' },
+                      icon: 'i-lucide-car',
+                      iconClass: 'bg-[image:var(--gradient-accent-red)]',
+                      label: t('driving.title'),
+                  },
+              ]
+            : []),
         {
             to: { name: 'training' },
             icon: 'i-lucide-calendar',

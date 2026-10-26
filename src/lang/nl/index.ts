@@ -1,5 +1,6 @@
 import auth from '@/lang/nl/auth';
 import common from '@/lang/nl/common';
+import driving from '@/lang/nl/driving';
 import errors from '@/lang/nl/errors';
 import knvbImport from '@/lang/nl/knvbImport';
 import match from '@/lang/nl/match';
@@ -13,6 +14,7 @@ import washing from '@/lang/nl/washing';
 export default {
     auth,
     common,
+    driving,
     errors,
     knvbImport,
     match,

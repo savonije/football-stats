@@ -21,6 +21,7 @@ export interface Match {
     result?: MatchResult;
     goals?: MatchGoal[];
     washing?: string;
+    driving?: MatchDriving;
     paused: boolean;
     startTime?: number;
     pausedAt?: number;
@@ -31,6 +32,20 @@ export interface Match {
     location?: string;
     field?: string;
     dressingRoom?: string;
+}
+
+/**
+ * Manual changes to a match's rijschema. `extraCars` holds one entry per extra
+ * car: the parent picked for it, or null to fill it from the rotation.
+ * `drivers` is the plan written down once the match has passed.
+ * `alwaysDrives` holds the vaste rijders the match was planned with, written
+ * when they change so the change only reaches matches added afterwards.
+ */
+export interface MatchDriving {
+    excluded?: string[];
+    extraCars?: (string | null)[];
+    drivers?: string[];
+    alwaysDrives?: string[];
 }
 
 /** Venue details synced from the KNVB, empty until Sportlink fills them in. */
@@ -75,6 +90,7 @@ export interface SeasonPeriod {
 export interface PlayerSeasonInfo {
     active: boolean;
     guestPlayer: boolean;
+    alwaysDrives?: boolean;
 }
 
 export interface Player {

@@ -15,6 +15,7 @@
     const sportlinkClientId = ref('');
     const regulationsEnabled = ref(false);
     const washingEnabled = ref(true);
+    const drivingEnabled = ref(false);
     const loading = ref(false);
 
     const closeDialog = () => (model.value = false);
@@ -26,6 +27,7 @@
                 sportlinkClientId: sportlinkClientId.value,
                 regulationsEnabled: regulationsEnabled.value,
                 washingEnabled: washingEnabled.value,
+                drivingEnabled: drivingEnabled.value,
             });
             toast.success(t('common.changesSaved'));
             closeDialog();
@@ -42,6 +44,7 @@
         sportlinkClientId.value = settingsStore.sportlinkClientId;
         regulationsEnabled.value = settingsStore.regulationsEnabled;
         washingEnabled.value = settingsStore.washingEnabled;
+        drivingEnabled.value = settingsStore.drivingEnabled;
     });
 </script>
 
@@ -76,6 +79,12 @@
                 v-model="washingEnabled"
                 class="mt-4"
                 :label="t('settings.washingEnabled')"
+            />
+
+            <USwitch
+                v-model="drivingEnabled"
+                class="mt-4"
+                :label="t('settings.drivingEnabled')"
             />
         </template>
 
