@@ -45,7 +45,7 @@
 
     const periodOptions = computed(() =>
         (['upcoming', 'past', 'all'] as const).map((value) => ({
-            label: t(`washing.period.${value}`),
+            label: t(`common.period.${value}`),
             value,
         })),
     );
@@ -138,7 +138,7 @@
             <div class="flex w-full flex-wrap items-end gap-3 sm:w-auto">
                 <UFormField
                     class="w-full sm:w-auto"
-                    :label="t('washing.period.label')"
+                    :label="t('common.period.label')"
                 >
                     <USelect
                         v-model="schedulePeriod"

@@ -41,6 +41,12 @@ export default {
     topscorers: 'Topscoorders',
     toplist: 'Toplijst',
     yes: 'Ja',
+    period: {
+        label: 'Periode',
+        upcoming: 'Aankomend',
+        past: 'Afgelopen',
+        all: 'Alles',
+    },
     validation: {
         warning: 'Waarschuwing',
         fillAll: 'Vul alle verplichte velden in',

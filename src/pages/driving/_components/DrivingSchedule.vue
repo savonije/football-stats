@@ -19,7 +19,7 @@
 
     const periodOptions = computed(() =>
         (['upcoming', 'past', 'all'] as const).map((value) => ({
-            label: t(`washing.period.${value}`),
+            label: t(`common.period.${value}`),
             value,
         })),
     );
