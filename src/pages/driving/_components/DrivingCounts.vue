@@ -8,7 +8,7 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { DriveCount } from '@/utils/driving';
-    import { playerSeasonInfo } from '@/utils/playerSeason';
+    import { isAlwaysDriverInSeason } from '@/utils/playerSeason';
     import { TABLE_UI } from '@/utils/table';
 
     const { counts, loading } = defineProps<{
@@ -30,9 +30,10 @@
                 name: player.name,
                 driven: counts.get(player.id)?.driven ?? 0,
                 planned: counts.get(player.id)?.planned ?? 0,
-                alwaysDrives:
-                    playerSeasonInfo(player, seasonStore.currentSeason)
-                        ?.alwaysDrives === true,
+                alwaysDrives: isAlwaysDriverInSeason(
+                    player,
+                    seasonStore.currentSeason,
+                ),
             }))
             .sort(
                 (a, b) =>

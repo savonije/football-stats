@@ -3,9 +3,7 @@
     import { useI18n } from 'vue-i18n';
 
     import DrivingMatchCard from '@/pages/driving/_components/DrivingMatchCard.vue';
-    import ExtraCarDialog from '@/pages/driving/_components/ExtraCarDialog.vue';
 
-    import { useMatchStore } from '@/stores/matchStore';
     import type { DrivingPlan } from '@/utils/driving';
 
     const { loading, plans } = defineProps<{
@@ -13,7 +11,6 @@
         plans: DrivingPlan[];
     }>();
 
-    const matchStore = useMatchStore();
     const { t } = useI18n();
 
     type SchedulePeriod = 'upcoming' | 'past' | 'all';
@@ -27,34 +24,13 @@
         })),
     );
 
-    const rows = computed(() =>
-        plans
-            .filter((plan) =>
-                period.value === 'all'
-                    ? true
-                    : plan.past === (period.value === 'past'),
-            )
-            .flatMap((plan) => {
-                const match = matchStore.matches.find(
-                    (m) => m.id === plan.matchId,
-                );
-                return match ? [{ match, plan }] : [];
-            })
-            .sort((a, b) => {
-                const diff = a.match.date.seconds - b.match.date.seconds;
-                return period.value === 'upcoming' ? diff : -diff;
-            }),
-    );
-
-    const extraCarFor = ref<string | null>(null);
-    const extraCarRow = computed(() =>
-        rows.value.find((row) => row.match.id === extraCarFor.value),
-    );
-    const extraCarOpen = computed({
-        get: () => !!extraCarRow.value,
-        set: (open) => {
-            if (!open) extraCarFor.value = null;
-        },
+    const rows = computed(() => {
+        const list = plans.filter(
+            (plan) =>
+                period.value === 'all' ||
+                plan.past === (period.value === 'past'),
+        );
+        return period.value === 'upcoming' ? list : [...list].reverse();
     });
 </script>
 
@@ -93,19 +69,10 @@
 
         <div v-else class="flex flex-col gap-4">
             <DrivingMatchCard
-                v-for="row in rows"
-                :key="row.match.id"
-                :match="row.match"
-                :plan="row.plan"
-                @add-car="extraCarFor = row.match.id"
+                v-for="plan in rows"
+                :key="plan.match.id"
+                :plan="plan"
             />
         </div>
-
-        <ExtraCarDialog
-            v-if="extraCarRow"
-            v-model:open="extraCarOpen"
-            :match="extraCarRow.match"
-            :plan="extraCarRow.plan"
-        />
     </div>
 </template>

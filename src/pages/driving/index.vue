@@ -12,7 +12,6 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useSettingsStore } from '@/stores/settingsStore';
     import { planDriving } from '@/utils/driving';
-    import { playerSeasonInfo } from '@/utils/playerSeason';
 
     const playerStore = usePlayerStore();
     const matchStore = useMatchStore();
@@ -28,45 +27,25 @@
             !matchStore.appearancesLoaded,
     );
 
-    const plan = computed(() => {
-        const squads = new Map<string, string[]>();
-        for (const appearance of matchStore.appearances) {
-            if (!appearance.present) continue;
-            squads.set(appearance.matchId, [
-                ...(squads.get(appearance.matchId) ?? []),
-                appearance.playerId,
-            ]);
-        }
-
-        return planDriving(
-            matchStore.matches
-                .filter((match) => !match.home && match.date)
-                .map((match) => ({
-                    id: match.id,
-                    date: match.date.toDate(),
-                    squad: squads.get(match.id) ?? [],
-                    driving: match.driving,
-                })),
-            playerStore.players.map((player) => ({
-                id: player.id,
-                name: player.name,
-                alwaysDrives:
-                    playerSeasonInfo(player, seasonStore.currentSeason)
-                        ?.alwaysDrives === true,
-            })),
-        );
-    });
+    const plan = computed(() =>
+        planDriving(
+            matchStore.matches,
+            matchStore.appearances,
+            playerStore.players,
+            seasonStore.currentSeason,
+        ),
+    );
 
     watch(
         [plan, loading, canEdit],
         () => {
             if (loading.value || !canEdit.value) return;
 
-            for (const { matchId, saved, drivers } of plan.value.plans) {
+            for (const { match, saved, drivers } of plan.value.plans) {
                 if (saved) continue;
                 matchStore.updateMatchDriving(
                     seasonStore.currentSeason,
-                    matchId,
+                    match.id,
                     { drivers },
                 );
             }

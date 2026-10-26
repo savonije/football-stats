@@ -1,24 +1,11 @@
 import dayjs from 'dayjs';
 
 import { PLAYERS_PER_CAR } from '@/constants';
-import type { MatchDriving } from '@/types';
-
-export interface DrivingPlayer {
-    id: string;
-    name: string;
-    alwaysDrives: boolean;
-}
-
-export interface DrivingMatch {
-    id: string;
-    date: Date;
-    /** Ids of the players going to the match. */
-    squad: string[];
-    driving?: MatchDriving;
-}
+import type { Appearance, Match, Player } from '@/types';
+import { isAlwaysDriverInSeason } from '@/utils/playerSeason';
 
 export interface DrivingPlan {
-    matchId: string;
+    match: Match;
     past: boolean;
     squadSize: number;
     needed: number;
@@ -35,22 +22,30 @@ export interface DriveCount {
 }
 
 /**
- * Stored drivers are the plan. An upcoming match with a squad but no drivers
- * yet gets a proposal, in date order: vaste rijders first, then whoever has
- * driven least. A passed match that was never planned is left out.
+ * Stored drivers are the plan. An upcoming away match with a squad but no
+ * drivers yet gets a proposal, in date order: vaste rijders first, then
+ * whoever has driven least. A passed match that was never planned is left out.
  */
 export const planDriving = (
-    matches: DrivingMatch[],
-    players: DrivingPlayer[],
+    matches: Match[],
+    appearances: Appearance[],
+    players: Player[],
+    seasonId: string,
     now = new Date(),
 ) => {
+    const awayMatches = matches.filter((match) => !match.home && match.date);
     const playersById = new Map(players.map((p) => [p.id, p]));
     const counts = new Map<string, DriveCount>(
         players.map((p) => [p.id, { driven: 0, planned: 0 }]),
     );
 
-    const isPast = (match: DrivingMatch) =>
-        dayjs(match.date).isBefore(now, 'day');
+    const isPast = (match: Match) =>
+        dayjs(match.date.toDate()).isBefore(now, 'day');
+
+    const squadOf = (match: Match) =>
+        appearances
+            .filter((a) => a.present && a.matchId === match.id)
+            .map((a) => a.playerId);
 
     const count = (drivers: string[], past: boolean) => {
         for (const id of drivers) {
@@ -64,8 +59,8 @@ export const planDriving = (
         return c ? c.driven + c.planned : 0;
     };
 
-    const candidates = (match: DrivingMatch, drivers: string[]) =>
-        match.squad
+    const candidates = (match: Match, squad: string[], drivers: string[]) =>
+        squad
             .filter(
                 (id) =>
                     !drivers.includes(id) &&
@@ -74,39 +69,41 @@ export const planDriving = (
             .flatMap((id) => playersById.get(id) ?? [])
             .sort(
                 (a, b) =>
-                    Number(b.alwaysDrives) - Number(a.alwaysDrives) ||
+                    Number(isAlwaysDriverInSeason(b, seasonId)) -
+                        Number(isAlwaysDriverInSeason(a, seasonId)) ||
                     total(a.id) - total(b.id) ||
                     a.name.localeCompare(b.name),
             )
             .map((p) => p.id);
 
-    for (const match of matches) {
+    for (const match of awayMatches) {
         if (match.driving?.drivers) count(match.driving.drivers, isPast(match));
     }
 
-    const plans = [...matches]
-        .sort((a, b) => a.date.getTime() - b.date.getTime())
+    const plans = awayMatches
+        .sort((a, b) => a.date.toMillis() - b.date.toMillis())
         .flatMap((match): DrivingPlan[] => {
             const past = isPast(match);
-            const needed = Math.ceil(match.squad.length / PLAYERS_PER_CAR);
+            const squad = squadOf(match);
+            const needed = Math.ceil(squad.length / PLAYERS_PER_CAR);
             const saved = !!match.driving?.drivers;
 
-            if (!saved && (past || !match.squad.length)) return [];
+            if (!saved && (past || !squad.length)) return [];
 
             const drivers =
                 match.driving?.drivers ??
-                candidates(match, []).slice(0, needed);
+                candidates(match, squad, []).slice(0, needed);
             if (!saved) count(drivers, past);
 
             return [
                 {
-                    matchId: match.id,
+                    match,
                     past,
-                    squadSize: match.squad.length,
+                    squadSize: squad.length,
                     needed,
                     drivers,
                     saved,
-                    next: candidates(match, drivers)[0] ?? null,
+                    next: candidates(match, squad, drivers)[0] ?? null,
                 },
             ];
         });

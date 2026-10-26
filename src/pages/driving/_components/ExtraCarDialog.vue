@@ -8,14 +8,10 @@
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import type { Match } from '@/types';
     import type { DrivingPlan } from '@/utils/driving';
 
     const open = defineModel<boolean>('open');
-    const { match, plan } = defineProps<{
-        match: Match;
-        plan: DrivingPlan;
-    }>();
+    const { plan } = defineProps<{ plan: DrivingPlan }>();
 
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
@@ -64,16 +60,6 @@
         if (value) mode.value = 'pick';
     });
 
-    watch(
-        open,
-        (isOpen) => {
-            if (!isOpen) return;
-            mode.value = 'auto';
-            pick.value = undefined;
-        },
-        { immediate: true },
-    );
-
     const save = async () => {
         const playerId = mode.value === 'pick' ? pick.value : plan.next;
         if (!playerId) return;
@@ -82,10 +68,10 @@
         try {
             await matchStore.updateMatchDriving(
                 seasonStore.currentSeason,
-                match.id,
+                plan.match.id,
                 {
                     drivers: [...plan.drivers, playerId],
-                    excluded: (match.driving?.excluded ?? []).filter(
+                    excluded: (plan.match.driving?.excluded ?? []).filter(
                         (id) => id !== playerId,
                     ),
                 },
@@ -101,7 +87,7 @@
 <template>
     <UModal
         v-model:open="open"
-        :description="match.opponent"
+        :description="plan.match.opponent"
         :title="t('driving.addExtraCar.title')"
         :ui="{ content: 'w-md' }"
     >
@@ -116,7 +102,6 @@
                 :placeholder="t('driving.addExtraCar.pickPlaceholder')"
                 size="lg"
                 value-key="value"
-                data-testid="extra-car-parent"
             />
         </template>
 

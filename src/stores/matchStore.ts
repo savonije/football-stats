@@ -215,15 +215,7 @@ export const useMatchStore = defineStore('matchStore', {
             driving: MatchDriving,
         ) {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
-            return updateDoc(
-                matchRef,
-                Object.fromEntries(
-                    Object.entries(driving).map(([key, value]) => [
-                        `driving.${key}`,
-                        value,
-                    ]),
-                ),
-            );
+            return setDoc(matchRef, { driving }, { merge: true });
         },
 
         endMatch(seasonId: string, matchId: string) {

@@ -1,24 +1,21 @@
 <script setup lang="ts">
     import dayjs from 'dayjs';
-    import { computed } from 'vue';
+    import { computed, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
+
+    import ExtraCarDialog from '@/pages/driving/_components/ExtraCarDialog.vue';
 
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
-    import type { Match, MatchDriving } from '@/types';
+    import type { MatchDriving } from '@/types';
     import { hasKickoffTime } from '@/utils/date';
     import type { DrivingPlan } from '@/utils/driving';
-    import { playerSeasonInfo } from '@/utils/playerSeason';
+    import { isAlwaysDriverInSeason } from '@/utils/playerSeason';
 
-    const { match, plan } = defineProps<{
-        match: Match;
-        plan: DrivingPlan;
-    }>();
-
-    const emit = defineEmits<{ addCar: [] }>();
+    const { plan } = defineProps<{ plan: DrivingPlan }>();
 
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
@@ -27,9 +24,10 @@
     const toast = useAppToast();
     const { t } = useI18n();
 
-    const date = computed(() => match.date.toDate());
+    const addingCar = ref(false);
+    const date = computed(() => plan.match.date.toDate());
     const editable = computed(() => canEdit.value && !plan.past);
-    const excluded = computed(() => match.driving?.excluded ?? []);
+    const excluded = computed(() => plan.match.driving?.excluded ?? []);
 
     // A squad that grew shows the missing cars as empty places; drivers past
     // what the squad needs are extra cars.
@@ -50,8 +48,7 @@
         const player = playerStore.getPlayerById(playerId);
         return (
             !!player &&
-            playerSeasonInfo(player, seasonStore.currentSeason)
-                ?.alwaysDrives === true
+            isAlwaysDriverInSeason(player, seasonStore.currentSeason)
         );
     };
 
@@ -64,7 +61,7 @@
     const save = async (driving: MatchDriving) => {
         await matchStore.updateMatchDriving(
             seasonStore.currentSeason,
-            match.id,
+            plan.match.id,
             driving,
         );
         toast.success(t('common.changesSaved'));
@@ -92,7 +89,6 @@
 <template>
     <article
         class="shadow-card flex flex-col gap-4 rounded-xl bg-white p-4 sm:p-5"
-        data-testid="driving-match"
     >
         <div class="flex items-center gap-4">
             <div
@@ -110,7 +106,7 @@
 
             <div class="min-w-0 flex-1">
                 <p class="text-primary-900 mb-0 truncate text-lg font-bold">
-                    {{ match.opponent }}
+                    {{ plan.match.opponent }}
                 </p>
                 <p class="mb-0 text-sm text-gray-600">
                     {{ date.toLocaleDateString('nl-NL', { weekday: 'long' }) }}
@@ -122,14 +118,14 @@
         </div>
 
         <p
-            v-if="match.location"
+            v-if="plan.match.location"
             class="text-primary-700 mb-0 flex items-start gap-2 text-sm font-semibold"
         >
             <UIcon
                 class="text-primary-400 mt-0.5 size-4 shrink-0"
                 name="i-lucide-map-pin"
             />
-            {{ match.location }}
+            {{ plan.match.location }}
         </p>
 
         <div class="flex flex-wrap items-center gap-2">
@@ -139,7 +135,7 @@
                 :label="t('driving.players', plan.squadSize)"
                 variant="subtle"
             />
-            <UBadge icon="i-lucide-car" data-testid="driving-cars">
+            <UBadge icon="i-lucide-car">
                 {{ t('driving.cars', cars.length) }}
                 <template v-if="cars.length > plan.needed">
                     {{
@@ -165,7 +161,6 @@
                           ? 'border-primary-300 bg-white'
                           : 'border-primary-200 bg-primary-50',
                 ]"
-                data-testid="driving-car"
             >
                 <span
                     class="flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold"
@@ -179,10 +174,7 @@
                 </span>
 
                 <div v-if="car.playerId" class="min-w-0 flex-1">
-                    <p
-                        class="text-primary-950 mb-0 truncate font-bold"
-                        data-testid="driver-name"
-                    >
+                    <p class="text-primary-950 mb-0 truncate font-bold">
                         {{ nameOf(car.playerId) }}
                     </p>
                     <p
@@ -255,7 +247,13 @@
             :label="t('driving.extraCar')"
             size="lg"
             variant="soft"
-            @click="emit('addCar')"
+            @click="addingCar = true"
+        />
+
+        <ExtraCarDialog
+            v-if="addingCar"
+            v-model:open="addingCar"
+            :plan="plan"
         />
     </article>
 </template>
