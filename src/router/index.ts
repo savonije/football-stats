@@ -24,7 +24,8 @@ declare module 'vue-router' {
 }
 
 const requireSetting =
-    (key: 'washingEnabled' | 'regulationsEnabled') => async () => {
+    (key: 'washingEnabled' | 'drivingEnabled' | 'regulationsEnabled') =>
+    async () => {
         const settingsStore = useSettingsStore();
         await Promise.all([
             auth.authStateReady(),
@@ -102,6 +103,17 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: 'Wasschema',
             heading: { labelKey: 'washing.title' },
+            breadcrumb: homeCrumb,
+        },
+    },
+    {
+        path: '/driving',
+        name: 'driving',
+        component: () => import('@/pages/driving/index.vue'),
+        beforeEnter: requireSetting('drivingEnabled'),
+        meta: {
+            title: 'Rijschema',
+            heading: { labelKey: 'driving.title' },
             breadcrumb: homeCrumb,
         },
     },

@@ -54,7 +54,18 @@ export const usePlayerStore = defineStore('playerStore', {
             info: PlayerSeasonInfo,
         ) {
             return updateDoc(doc(db, 'players', playerId), {
-                [`seasons.${seasonId}`]: info,
+                [`seasons.${seasonId}.active`]: info.active,
+                [`seasons.${seasonId}.guestPlayer`]: info.guestPlayer,
+            });
+        },
+
+        setAlwaysDrives(
+            playerId: string,
+            seasonId: string,
+            alwaysDrives: boolean,
+        ) {
+            return updateDoc(doc(db, 'players', playerId), {
+                [`seasons.${seasonId}.alwaysDrives`]: alwaysDrives,
             });
         },
 

@@ -1,8 +1,10 @@
 import {
     addDoc,
     collection,
+    doc,
     serverTimestamp,
     Timestamp,
+    writeBatch,
 } from 'firebase/firestore';
 
 import { db } from '@/firebase';
@@ -32,9 +34,10 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
     const playerIds = match.playerIds || [];
 
     if (playerIds.length) {
+        const batch = writeBatch(db);
         const appearancesCollection = collection(matchRef, 'appearances');
         for (const playerId of playerIds) {
-            await addDoc(appearancesCollection, {
+            batch.set(doc(appearancesCollection), {
                 playerId,
                 present: true,
                 isGoalkeeper: false,
@@ -42,6 +45,7 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
                 seasonId,
             });
         }
+        await batch.commit();
     }
 
     return matchRef;

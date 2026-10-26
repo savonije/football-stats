@@ -12,11 +12,13 @@ export const useSettingsStore = defineStore('settingsStore', {
         sportlinkClientId: string;
         regulationsEnabled: boolean;
         washingEnabled: boolean;
+        drivingEnabled: boolean;
         settingsLoaded: boolean;
     } => ({
         sportlinkClientId: '',
         regulationsEnabled: false,
         washingEnabled: true,
+        drivingEnabled: false,
         settingsLoaded: false,
     }),
 
@@ -31,6 +33,7 @@ export const useSettingsStore = defineStore('settingsStore', {
                     this.regulationsEnabled =
                         snap.data()?.regulationsEnabled ?? false;
                     this.washingEnabled = snap.data()?.washingEnabled ?? true;
+                    this.drivingEnabled = snap.data()?.drivingEnabled ?? false;
                     this.settingsLoaded = true;
                 },
                 (err) => {
@@ -44,6 +47,7 @@ export const useSettingsStore = defineStore('settingsStore', {
             sportlinkClientId: string;
             regulationsEnabled: boolean;
             washingEnabled: boolean;
+            drivingEnabled: boolean;
         }) {
             await setDoc(
                 settingsRef(),
@@ -51,6 +55,7 @@ export const useSettingsStore = defineStore('settingsStore', {
                     sportlinkClientId: settings.sportlinkClientId.trim(),
                     regulationsEnabled: settings.regulationsEnabled,
                     washingEnabled: settings.washingEnabled,
+                    drivingEnabled: settings.drivingEnabled,
                 },
                 { merge: true },
             );

@@ -21,6 +21,7 @@ export interface Match {
     result?: MatchResult;
     goals?: MatchGoal[];
     washing?: string;
+    driving?: MatchDriving;
     paused: boolean;
     startTime?: number;
     pausedAt?: number;
@@ -31,6 +32,16 @@ export interface Match {
     location?: string;
     field?: string;
     dressingRoom?: string;
+}
+
+/**
+ * A match's rijschema: one player id per car (the driver is that player's
+ * parent), and the parents who said they can't drive this match.
+ */
+export interface MatchDriving {
+    drivers?: string[];
+    excluded?: string[];
+    meetingTime?: string;
 }
 
 /** Venue details synced from the KNVB, empty until Sportlink fills them in. */
@@ -75,6 +86,7 @@ export interface SeasonPeriod {
 export interface PlayerSeasonInfo {
     active: boolean;
     guestPlayer: boolean;
+    alwaysDrives?: boolean;
 }
 
 export interface Player {

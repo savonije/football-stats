@@ -16,7 +16,13 @@ import { defineStore } from 'pinia';
 import { db } from '@/firebase';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useSeasonStore } from '@/stores/seasonStore';
-import type { Appearance, Match, MatchGoal, MatchVenue } from '@/types';
+import type {
+    Appearance,
+    Match,
+    MatchDriving,
+    MatchGoal,
+    MatchVenue,
+} from '@/types';
 import { isInPeriod } from '@/utils/date';
 
 const resultField = (side: MatchGoal['side']) =>
@@ -201,6 +207,15 @@ export const useMatchStore = defineStore('matchStore', {
         ) {
             const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
             return updateDoc(matchRef, { washing: washing || null });
+        },
+
+        updateMatchDriving(
+            seasonId: string,
+            matchId: string,
+            driving: MatchDriving,
+        ) {
+            const matchRef = doc(db, `seasons/${seasonId}/matches/${matchId}`);
+            return setDoc(matchRef, { driving }, { merge: true });
         },
 
         endMatch(seasonId: string, matchId: string) {

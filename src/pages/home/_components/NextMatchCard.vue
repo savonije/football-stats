@@ -44,6 +44,18 @@
         return player?.name ?? t('washing.notAssigned');
     });
 
+    const driverNames = computed(() =>
+        (nextMatch.value?.driving?.drivers ?? [])
+            .map((id) => playerStore.getPlayerById(id)?.name ?? '?')
+            .join(', '),
+    );
+
+    const meetingTime = computed(() =>
+        settingsStore.drivingEnabled && !nextMatch.value?.home
+            ? nextMatch.value?.driving?.meetingTime
+            : undefined,
+    );
+
     const kickoff = computed(() =>
         date.value && hasKickoffTime(date.value)
             ? dayjs(date.value).format('HH:mm')
@@ -120,7 +132,10 @@
                 </p>
                 <p class="mb-0 text-sm text-gray-600">
                     {{ formatDate({ weekday: 'long' }) }}
-                    <template v-if="kickoff">· {{ kickoff }}</template>
+                    <template v-if="meetingTime">
+                        · {{ t('driving.meetAt', { time: meetingTime }) }}
+                    </template>
+                    <template v-else-if="kickoff">· {{ kickoff }}</template>
                 </p>
             </div>
 
@@ -171,6 +186,18 @@
                 {{ t('washing.washer') }}
             </span>
             <span class="text-primary-900 font-bold">{{ washerName }}</span>
+        </div>
+
+        <div
+            v-if="settingsStore.drivingEnabled && !nextMatch.home"
+            class="border-primary-100 mt-3 flex items-start justify-between gap-4 border-t pt-3 text-sm"
+        >
+            <span class="shrink-0 font-semibold text-gray-600">
+                {{ t('driving.drivers') }}
+            </span>
+            <span class="text-primary-900 text-right font-bold">
+                {{ driverNames || t('driving.notPlanned') }}
+            </span>
         </div>
     </RouterLink>
 </template>

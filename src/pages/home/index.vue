@@ -41,7 +41,7 @@
 
         <TeamStats />
 
-        <div class="flex flex-col gap-5 lg:flex-row">
+        <div class="contents lg:flex lg:gap-5">
             <section
                 v-if="!matchStore.matchesLoaded || recentMatchData.length > 0"
                 class="shadow-card flex-1 rounded-xl bg-white p-5"
@@ -54,7 +54,7 @@
                 <MatchResultsChart v-else :data="recentMatchData" />
             </section>
 
-            <NextMatchCard class="lg:w-80 lg:shrink-0" />
+            <NextMatchCard class="max-lg:order-first lg:w-80 lg:shrink-0" />
         </div>
 
         <section>
