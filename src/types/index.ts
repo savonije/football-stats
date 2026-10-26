@@ -41,6 +41,7 @@ export interface Match {
 export interface MatchDriving {
     drivers?: string[];
     excluded?: string[];
+    meetingTime?: string;
 }
 
 /** Venue details synced from the KNVB, empty until Sportlink fills them in. */

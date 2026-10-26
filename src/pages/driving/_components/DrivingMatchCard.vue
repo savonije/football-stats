@@ -1,5 +1,4 @@
 <script setup lang="ts">
-    import dayjs from 'dayjs';
     import { computed, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
@@ -7,11 +6,11 @@
 
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
+    import { CLUBNAME } from '@/constants';
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { MatchDriving } from '@/types';
-    import { hasKickoffTime } from '@/utils/date';
     import type { DrivingPlan } from '@/utils/driving';
     import { isAlwaysDriverInSeason } from '@/utils/playerSeason';
 
@@ -28,6 +27,7 @@
     const date = computed(() => plan.match.date.toDate());
     const editable = computed(() => canEdit.value && !plan.past);
     const excluded = computed(() => plan.match.driving?.excluded ?? []);
+    const meetingTime = computed(() => plan.match.driving?.meetingTime ?? '');
 
     // A squad that grew shows the missing cars as empty places; drivers past
     // what the squad needs are extra cars.
@@ -82,6 +82,9 @@
         });
     };
 
+    const saveMeetingTime = (event: Event) =>
+        save({ meetingTime: (event.target as HTMLInputElement).value });
+
     const restore = (playerId: string) =>
         save({ excluded: excluded.value.filter((id) => id !== playerId) });
 </script>
@@ -108,25 +111,38 @@
                 <p class="text-primary-900 mb-0 truncate text-lg font-bold">
                     {{ plan.match.opponent }}
                 </p>
-                <p class="mb-0 text-sm text-gray-600">
-                    {{ date.toLocaleDateString('nl-NL', { weekday: 'long' }) }}
-                    <template v-if="hasKickoffTime(date)">
-                        · {{ dayjs(date).format('HH:mm') }}
-                    </template>
+                <p
+                    v-if="plan.match.location"
+                    class="text-primary-700 mb-0 flex items-start gap-1.5 text-sm font-semibold"
+                >
+                    <UIcon
+                        class="text-primary-400 mt-0.5 size-4 shrink-0"
+                        name="i-lucide-map-pin"
+                    />
+                    {{ plan.match.location }}
                 </p>
             </div>
         </div>
 
-        <p
-            v-if="plan.match.location"
-            class="text-primary-700 mb-0 flex items-start gap-2 text-sm font-semibold"
+        <div
+            v-if="editable || meetingTime"
+            class="text-primary-700 flex items-center gap-2 text-sm font-semibold"
         >
             <UIcon
-                class="text-primary-400 mt-0.5 size-4 shrink-0"
-                name="i-lucide-map-pin"
+                class="text-primary-400 size-4 shrink-0"
+                name="i-lucide-clock"
             />
-            {{ plan.match.location }}
-        </p>
+            <span>{{ t('driving.meetingTime', { club: CLUBNAME }) }}</span>
+            <UInput
+                v-if="editable"
+                :aria-label="t('driving.meetingTime', { club: CLUBNAME })"
+                :model-value="meetingTime"
+                size="sm"
+                type="time"
+                @change="saveMeetingTime"
+            />
+            <span v-else class="text-primary-900">{{ meetingTime }}</span>
+        </div>
 
         <div class="flex flex-wrap items-center gap-2">
             <UBadge

@@ -5,6 +5,7 @@ export default {
     overview: 'Rijoverzicht',
     parentOf: 'Ouder van',
     drivers: 'Wie rijdt?',
+    meetingTime: 'Verzameltijd op {club}',
     notPlanned: 'Nog niet ingepland',
     driven: 'Gereden',
     planned: 'Ingepland',
