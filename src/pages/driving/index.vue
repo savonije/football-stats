@@ -37,9 +37,10 @@
     );
 
     watch(
-        [plan, loading, canEdit],
+        [plan, loading, canEdit, () => settingsStore.drivingEnabled],
         () => {
             if (loading.value || !canEdit.value) return;
+            if (!settingsStore.drivingEnabled) return;
 
             for (const { match, saved, drivers } of plan.value.plans) {
                 if (saved) continue;
