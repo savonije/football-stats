@@ -50,6 +50,12 @@
             .join(', '),
     );
 
+    const meetingTime = computed(() =>
+        settingsStore.drivingEnabled && !nextMatch.value?.home
+            ? nextMatch.value?.driving?.meetingTime
+            : undefined,
+    );
+
     const kickoff = computed(() =>
         date.value && hasKickoffTime(date.value)
             ? dayjs(date.value).format('HH:mm')
@@ -126,7 +132,10 @@
                 </p>
                 <p class="mb-0 text-sm text-gray-600">
                     {{ formatDate({ weekday: 'long' }) }}
-                    <template v-if="kickoff">· {{ kickoff }}</template>
+                    <template v-if="meetingTime">
+                        · {{ t('driving.meetAt', { time: meetingTime }) }}
+                    </template>
+                    <template v-else-if="kickoff">· {{ kickoff }}</template>
                 </p>
             </div>
 
