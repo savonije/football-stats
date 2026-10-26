@@ -4,6 +4,8 @@ export default {
     schedule: 'Schema per uitwedstrijd',
     overview: 'Rijoverzicht',
     parentOf: 'Ouder van',
+    drivers: 'Wie rijdt?',
+    notPlanned: 'Nog niet ingepland',
     driven: 'Gereden',
     planned: 'Ingepland',
     alwaysDrives: 'Vaste rijder',

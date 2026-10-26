@@ -44,6 +44,12 @@
         return player?.name ?? t('washing.notAssigned');
     });
 
+    const driverNames = computed(() =>
+        (nextMatch.value?.driving?.drivers ?? [])
+            .map((id) => playerStore.getPlayerById(id)?.name ?? '?')
+            .join(', '),
+    );
+
     const kickoff = computed(() =>
         date.value && hasKickoffTime(date.value)
             ? dayjs(date.value).format('HH:mm')
@@ -171,6 +177,18 @@
                 {{ t('washing.washer') }}
             </span>
             <span class="text-primary-900 font-bold">{{ washerName }}</span>
+        </div>
+
+        <div
+            v-if="settingsStore.drivingEnabled && !nextMatch.home"
+            class="border-primary-100 mt-3 flex items-start justify-between gap-4 border-t pt-3 text-sm"
+        >
+            <span class="shrink-0 font-semibold text-gray-600">
+                {{ t('driving.drivers') }}
+            </span>
+            <span class="text-primary-900 text-right font-bold">
+                {{ driverNames || t('driving.notPlanned') }}
+            </span>
         </div>
     </RouterLink>
 </template>
