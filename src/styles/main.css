@@ -205,8 +205,10 @@ body {
     @apply mx-auto w-full max-w-[1440px] px-6 lg:px-10;
 }
 
-label {
-    @apply mb-0 block text-sm font-bold;
+@layer base {
+    label {
+        @apply mb-0 block text-sm font-bold;
+    }
 }
 
 /* fade-in one by one: pair with an animate-* class and a --i index style */
