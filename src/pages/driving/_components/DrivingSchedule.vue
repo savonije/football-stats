@@ -13,9 +13,7 @@
 
     const { t } = useI18n();
 
-    type SchedulePeriod = 'upcoming' | 'past' | 'all';
-
-    const period = ref<SchedulePeriod>('upcoming');
+    const period = ref<'upcoming' | 'past' | 'all'>('upcoming');
 
     const periodOptions = computed(() =>
         (['upcoming', 'past', 'all'] as const).map((value) => ({

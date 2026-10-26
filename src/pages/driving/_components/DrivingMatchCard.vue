@@ -151,16 +151,10 @@
                 :label="t('driving.players', plan.squadSize)"
                 variant="subtle"
             />
-            <UBadge icon="i-lucide-car">
-                {{ t('driving.cars', cars.length) }}
-                <template v-if="cars.length > plan.needed">
-                    {{
-                        t('driving.extraCount', {
-                            count: cars.length - plan.needed,
-                        })
-                    }}
-                </template>
-            </UBadge>
+            <UBadge
+                icon="i-lucide-car"
+                :label="t('driving.cars', cars.length)"
+            />
         </div>
 
         <ul
@@ -209,26 +203,23 @@
                 </span>
 
                 <UButton
-                    v-if="editable && car.extra"
-                    :aria-label="t('driving.removeExtraCar')"
-                    color="neutral"
-                    icon="i-lucide-x"
-                    size="lg"
-                    variant="ghost"
-                    @click="removeCar(index)"
-                />
-                <UButton
-                    v-else-if="editable && car.playerId"
+                    v-if="editable && car.playerId"
                     :aria-label="
-                        t('driving.cannotDriveLabel', {
-                            name: nameOf(car.playerId),
-                        })
+                        car.extra
+                            ? t('driving.removeExtraCar')
+                            : t('driving.cannotDriveLabel', {
+                                  name: nameOf(car.playerId),
+                              })
                     "
                     color="neutral"
                     icon="i-lucide-x"
                     size="lg"
                     variant="ghost"
-                    @click="cannotDrive(index, car.playerId)"
+                    @click="
+                        car.extra
+                            ? removeCar(index)
+                            : cannotDrive(index, car.playerId)
+                    "
                 />
             </li>
         </ul>

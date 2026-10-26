@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { computed, ref, watch } from 'vue';
+    import { computed, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
@@ -19,8 +19,7 @@
     const toast = useAppToast();
     const { t } = useI18n();
 
-    const mode = ref<'auto' | 'pick'>('auto');
-    const pick = ref<string | undefined>();
+    const pick = ref<string | null>(null);
     const loading = ref(false);
 
     const nextName = computed(() => {
@@ -29,21 +28,6 @@
             ? t('driving.addExtraCar.nextParent', { name: next.name })
             : t('driving.addExtraCar.nobody');
     });
-
-    const modeOptions = computed(() => [
-        {
-            label: t('driving.addExtraCar.auto'),
-            description: t('driving.addExtraCar.autoHelp', {
-                name: nextName.value,
-            }),
-            value: 'auto',
-        },
-        {
-            label: t('driving.addExtraCar.pick'),
-            description: t('driving.addExtraCar.pickHelp'),
-            value: 'pick',
-        },
-    ]);
 
     const parentOptions = computed(() => {
         const driving = new Set(plan.drivers);
@@ -56,12 +40,8 @@
             }));
     });
 
-    watch(pick, (value) => {
-        if (value) mode.value = 'pick';
-    });
-
     const save = async () => {
-        const playerId = mode.value === 'pick' ? pick.value : plan.next;
+        const playerId = pick.value ?? plan.next;
         if (!playerId) return;
 
         loading.value = true;
@@ -92,16 +72,26 @@
         :ui="{ content: 'w-md' }"
     >
         <template #body>
-            <URadioGroup v-model="mode" :items="modeOptions" variant="card" />
-
             <USelectMenu
                 v-model="pick"
-                class="mt-3 w-full"
-                :aria-label="t('driving.addExtraCar.pick')"
+                class="w-full"
+                :aria-label="t('driving.addExtraCar.title')"
+                clear
                 :items="parentOptions"
                 :placeholder="t('driving.addExtraCar.pickPlaceholder')"
                 size="lg"
                 value-key="value"
+            />
+
+            <UAlert
+                v-if="!pick"
+                class="mt-3"
+                color="info"
+                :description="
+                    t('driving.addExtraCar.autoHelp', { name: nextName })
+                "
+                icon="i-lucide-info"
+                variant="subtle"
             />
         </template>
 
@@ -109,7 +99,7 @@
             <DialogFooter
                 :confirm-label="t('common.add')"
                 confirm-icon="i-lucide-plus"
-                :disabled="mode === 'pick' ? !pick : !plan.next"
+                :disabled="!pick && !plan.next"
                 :loading="loading"
                 @cancel="open = false"
                 @confirm="save"

@@ -20,16 +20,12 @@ export default {
     removeExtraCar: 'Extra auto verwijderen',
     players: '{count} speler | {count} spelers',
     cars: '{count} auto | {count} auto’s',
-    extraCount: '({count} extra)',
     noMatches: 'Geen uitwedstrijden in deze periode',
     addExtraCar: {
         title: 'Extra auto toevoegen',
-        auto: 'Automatisch indelen',
-        autoHelp: 'Wie het minst gereden heeft: {name}',
+        autoHelp: 'Automatische suggestie: {name}',
         nextParent: 'ouder van {name}',
         nobody: 'niemand beschikbaar',
-        pick: 'Zelf kiezen',
-        pickHelp: 'Bijvoorbeeld een ouder die zich aanbiedt',
         pickPlaceholder: 'Kies een ouder',
     },
 };
