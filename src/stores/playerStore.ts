@@ -6,13 +6,12 @@ import {
     onSnapshot,
     setDoc,
     updateDoc,
-    writeBatch,
 } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import type { Player, PlayerSeasonInfo } from '@/types';
-import { isActiveInSeason, playerSeasonInfo } from '@/utils/playerSeason';
+import { isActiveInSeason } from '@/utils/playerSeason';
 
 export const usePlayerStore = defineStore('playerStore', {
     state: (): {
@@ -60,35 +59,14 @@ export const usePlayerStore = defineStore('playerStore', {
             });
         },
 
-        /**
-         * Matches planned so far first record the vaste rijders they were
-         * planned with, so the change only applies to matches added later.
-         */
         setAlwaysDrives(
             playerId: string,
             seasonId: string,
             alwaysDrives: boolean,
-            plannedMatchIds: string[],
         ) {
-            const current = this.players
-                .filter(
-                    (player) =>
-                        playerSeasonInfo(player, seasonId)?.alwaysDrives,
-                )
-                .map((player) => player.id);
-
-            const batch = writeBatch(db);
-            for (const matchId of plannedMatchIds) {
-                batch.update(
-                    doc(db, `seasons/${seasonId}/matches/${matchId}`),
-                    { 'driving.alwaysDrives': current },
-                );
-            }
-            batch.update(doc(db, 'players', playerId), {
+            return updateDoc(doc(db, 'players', playerId), {
                 [`seasons.${seasonId}.alwaysDrives`]: alwaysDrives,
             });
-
-            return batch.commit();
         },
 
         deletePlayer(playerId: string) {

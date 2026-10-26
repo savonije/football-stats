@@ -5,7 +5,6 @@
 
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
-    import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { DriveCount } from '@/utils/driving';
@@ -17,7 +16,6 @@
         loading: boolean;
     }>();
 
-    const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
     const canEdit = useCanEdit();
@@ -57,9 +55,6 @@
             playerId,
             seasonStore.currentSeason,
             alwaysDrives,
-            matchStore.matches
-                .filter((match) => !match.home && !match.driving?.alwaysDrives)
-                .map((match) => match.id),
         );
         toast.success(t('common.changesSaved'));
     };

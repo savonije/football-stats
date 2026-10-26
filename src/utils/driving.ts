@@ -12,15 +12,9 @@ export interface DrivingPlayer {
 export interface DrivingMatch {
     id: string;
     date: Date;
+    /** Ids of the players going to the match. */
     squad: string[];
     driving?: MatchDriving;
-}
-
-export interface Car {
-    playerId: string | null;
-    extraIndex: number | null;
-    picked: boolean;
-    alwaysDrives: boolean;
 }
 
 export interface DrivingPlan {
@@ -28,7 +22,10 @@ export interface DrivingPlan {
     past: boolean;
     squadSize: number;
     needed: number;
-    cars: Car[];
+    drivers: string[];
+    /** False while `drivers` is a proposal that still has to be written. */
+    saved: boolean;
+    /** Who the rotation would add next. */
     next: string | null;
 }
 
@@ -37,6 +34,11 @@ export interface DriveCount {
     planned: number;
 }
 
+/**
+ * Stored drivers are the plan. An upcoming match with a squad but no drivers
+ * yet gets a proposal, in date order: vaste rijders first, then whoever has
+ * driven least. A passed match that was never planned is left out.
+ */
 export const planDriving = (
     matches: DrivingMatch[],
     players: DrivingPlayer[],
@@ -47,90 +49,66 @@ export const planDriving = (
         players.map((p) => [p.id, { driven: 0, planned: 0 }]),
     );
 
-    const total = (id: string) => {
-        const count = counts.get(id);
-        return count ? count.driven + count.planned : 0;
+    const isPast = (match: DrivingMatch) =>
+        dayjs(match.date).isBefore(now, 'day');
+
+    const count = (drivers: string[], past: boolean) => {
+        for (const id of drivers) {
+            const total = counts.get(id);
+            if (total) total[past ? 'driven' : 'planned'] += 1;
+        }
     };
 
-    const byLeastDriven = (a: DrivingPlayer, b: DrivingPlayer) =>
-        total(a.id) - total(b.id) || a.name.localeCompare(b.name);
+    const total = (id: string) => {
+        const c = counts.get(id);
+        return c ? c.driven + c.planned : 0;
+    };
+
+    const candidates = (match: DrivingMatch, drivers: string[]) =>
+        match.squad
+            .filter(
+                (id) =>
+                    !drivers.includes(id) &&
+                    !match.driving?.excluded?.includes(id),
+            )
+            .flatMap((id) => playersById.get(id) ?? [])
+            .sort(
+                (a, b) =>
+                    Number(b.alwaysDrives) - Number(a.alwaysDrives) ||
+                    total(a.id) - total(b.id) ||
+                    a.name.localeCompare(b.name),
+            )
+            .map((p) => p.id);
+
+    for (const match of matches) {
+        if (match.driving?.drivers) count(match.driving.drivers, isPast(match));
+    }
 
     const plans = [...matches]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
-        .map((match): DrivingPlan => {
-            const past = dayjs(match.date).isBefore(now, 'day');
+        .flatMap((match): DrivingPlan[] => {
+            const past = isPast(match);
             const needed = Math.ceil(match.squad.length / PLAYERS_PER_CAR);
-            const {
-                excluded = [],
-                extraCars = [],
-                drivers,
-                alwaysDrives,
-            } = match.driving ?? {};
+            const saved = !!match.driving?.drivers;
 
-            const isAlwaysDriver = (id: string | null) =>
-                !!id &&
-                (alwaysDrives?.includes(id) ??
-                    playersById.get(id)?.alwaysDrives ??
-                    false);
+            if (!saved && (past || !match.squad.length)) return [];
 
-            let cars: Car[];
-            let next: string | null = null;
+            const drivers =
+                match.driving?.drivers ??
+                candidates(match, []).slice(0, needed);
+            if (!saved) count(drivers, past);
 
-            if (past && drivers) {
-                cars = drivers.map((playerId) => ({
-                    playerId,
-                    extraIndex: null,
-                    picked: false,
-                    alwaysDrives: false,
-                }));
-            } else {
-                const queue = match.squad
-                    .filter(
-                        (id) =>
-                            !excluded.includes(id) && !extraCars.includes(id),
-                    )
-                    .flatMap((id) => playersById.get(id) ?? [])
-                    .sort(
-                        (a, b) =>
-                            Number(isAlwaysDriver(b.id)) -
-                                Number(isAlwaysDriver(a.id)) ||
-                            byLeastDriven(a, b),
-                    )
-                    .map((p) => p.id);
-
-                cars = [
-                    ...Array.from({ length: needed }, () => {
-                        const playerId = queue.shift() ?? null;
-                        return {
-                            playerId,
-                            extraIndex: null,
-                            picked: false,
-                            alwaysDrives: isAlwaysDriver(playerId),
-                        };
-                    }),
-                    ...extraCars.map((id, extraIndex) => ({
-                        playerId: id ?? queue.shift() ?? null,
-                        extraIndex,
-                        picked: id !== null,
-                        alwaysDrives: false,
-                    })),
-                ];
-                next = queue[0] ?? null;
-            }
-
-            for (const { playerId } of cars) {
-                const count = playerId ? counts.get(playerId) : undefined;
-                if (count) count[past ? 'driven' : 'planned'] += 1;
-            }
-
-            return {
-                matchId: match.id,
-                past,
-                squadSize: match.squad.length,
-                needed,
-                cars,
-                next,
-            };
+            return [
+                {
+                    matchId: match.id,
+                    past,
+                    squadSize: match.squad.length,
+                    needed,
+                    drivers,
+                    saved,
+                    next: candidates(match, drivers)[0] ?? null,
+                },
+            ];
         });
 
     return { plans, counts };

@@ -50,7 +50,7 @@
     ]);
 
     const parentOptions = computed(() => {
-        const driving = new Set(plan.cars.map((car) => car.playerId));
+        const driving = new Set(plan.drivers);
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
             .filter((player) => !driving.has(player.id))
@@ -75,8 +75,8 @@
     );
 
     const save = async () => {
-        const playerId = mode.value === 'pick' ? (pick.value ?? null) : null;
-        if (mode.value === 'pick' && !playerId) return;
+        const playerId = mode.value === 'pick' ? pick.value : plan.next;
+        if (!playerId) return;
 
         loading.value = true;
         try {
@@ -84,7 +84,7 @@
                 seasonStore.currentSeason,
                 match.id,
                 {
-                    extraCars: [...(match.driving?.extraCars ?? []), playerId],
+                    drivers: [...plan.drivers, playerId],
                     excluded: (match.driving?.excluded ?? []).filter(
                         (id) => id !== playerId,
                     ),
@@ -124,7 +124,7 @@
             <DialogFooter
                 :confirm-label="t('common.add')"
                 confirm-icon="i-lucide-plus"
-                :disabled="mode === 'pick' && !pick"
+                :disabled="mode === 'pick' ? !pick : !plan.next"
                 :loading="loading"
                 @cancel="open = false"
                 @confirm="save"

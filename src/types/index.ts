@@ -35,17 +35,12 @@ export interface Match {
 }
 
 /**
- * Manual changes to a match's rijschema. `extraCars` holds one entry per extra
- * car: the parent picked for it, or null to fill it from the rotation.
- * `drivers` is the plan written down once the match has passed.
- * `alwaysDrives` holds the vaste rijders the match was planned with, written
- * when they change so the change only reaches matches added afterwards.
+ * A match's rijschema: one player id per car (the driver is that player's
+ * parent), and the parents who said they can't drive this match.
  */
 export interface MatchDriving {
-    excluded?: string[];
-    extraCars?: (string | null)[];
     drivers?: string[];
-    alwaysDrives?: string[];
+    excluded?: string[];
 }
 
 /** Venue details synced from the KNVB, empty until Sportlink fills them in. */

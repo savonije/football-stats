@@ -57,21 +57,17 @@
         );
     });
 
-    // Write a passed match's drivers down once, so a later change to its
-    // squad or the vaste rijders doesn't rewrite who drove.
     watch(
         [plan, loading, canEdit],
         () => {
             if (loading.value || !canEdit.value) return;
 
-            for (const { matchId, past, cars } of plan.value.plans) {
-                const match = matchStore.matches.find((m) => m.id === matchId);
-                if (!past || match?.driving?.drivers) continue;
-
+            for (const { matchId, saved, drivers } of plan.value.plans) {
+                if (saved) continue;
                 matchStore.updateMatchDriving(
                     seasonStore.currentSeason,
                     matchId,
-                    { drivers: cars.flatMap((car) => car.playerId ?? []) },
+                    { drivers },
                 );
             }
         },

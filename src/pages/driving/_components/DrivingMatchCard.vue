@@ -10,7 +10,8 @@
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Match, MatchDriving } from '@/types';
     import { hasKickoffTime } from '@/utils/date';
-    import type { Car, DrivingPlan } from '@/utils/driving';
+    import type { DrivingPlan } from '@/utils/driving';
+    import { playerSeasonInfo } from '@/utils/playerSeason';
 
     const { match, plan } = defineProps<{
         match: Match;
@@ -29,15 +30,34 @@
     const date = computed(() => match.date.toDate());
     const editable = computed(() => canEdit.value && !plan.past);
     const excluded = computed(() => match.driving?.excluded ?? []);
-    const extraCars = computed(() => match.driving?.extraCars ?? []);
+
+    // A squad that grew shows the missing cars as empty places; drivers past
+    // what the squad needs are extra cars.
+    const cars = computed(() =>
+        Array.from(
+            { length: Math.max(plan.needed, plan.drivers.length) },
+            (_, index) => ({
+                playerId: plan.drivers[index] ?? null,
+                extra: index >= plan.needed,
+            }),
+        ),
+    );
 
     const nameOf = (playerId: string) =>
         playerStore.getPlayerById(playerId)?.name ?? '?';
 
-    const carLabel = (car: Car) => {
-        if (car.picked) return t('driving.pickedExtraCar');
-        if (car.extraIndex !== null) return t('driving.extraCar');
-        if (car.alwaysDrives) return t('driving.alwaysDrives');
+    const isAlwaysDriver = (playerId: string) => {
+        const player = playerStore.getPlayerById(playerId);
+        return (
+            !!player &&
+            playerSeasonInfo(player, seasonStore.currentSeason)
+                ?.alwaysDrives === true
+        );
+    };
+
+    const carLabel = (playerId: string, extra: boolean) => {
+        if (extra) return t('driving.extraCar');
+        if (isAlwaysDriver(playerId)) return t('driving.alwaysDrives');
         return t(plan.past ? 'driving.driven' : 'driving.planned');
     };
 
@@ -50,14 +70,20 @@
         toast.success(t('common.changesSaved'));
     };
 
-    const removeCar = (car: Car) =>
-        car.extraIndex === null
-            ? save({ excluded: [...excluded.value, car.playerId as string] })
-            : save({
-                  extraCars: extraCars.value.filter(
-                      (_, index) => index !== car.extraIndex,
-                  ),
-              });
+    const removeCar = (index: number) =>
+        save({ drivers: plan.drivers.filter((_, i) => i !== index) });
+
+    // The next parent in the rotation takes over the car; with nobody left
+    // the place stays empty.
+    const cannotDrive = (index: number, playerId: string) => {
+        const { next } = plan;
+        return save({
+            drivers: next
+                ? plan.drivers.map((id, i) => (i === index ? next : id))
+                : plan.drivers.filter((_, i) => i !== index),
+            excluded: [...excluded.value, playerId],
+        });
+    };
 
     const restore = (playerId: string) =>
         save({ excluded: excluded.value.filter((id) => id !== playerId) });
@@ -114,11 +140,11 @@
                 variant="subtle"
             />
             <UBadge icon="i-lucide-car" data-testid="driving-cars">
-                {{ t('driving.cars', plan.cars.length) }}
-                <template v-if="plan.cars.length > plan.needed">
+                {{ t('driving.cars', cars.length) }}
+                <template v-if="cars.length > plan.needed">
                     {{
                         t('driving.extraCount', {
-                            count: plan.cars.length - plan.needed,
+                            count: cars.length - plan.needed,
                         })
                     }}
                 </template>
@@ -129,15 +155,15 @@
             class="m-0 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-2 lg:grid-cols-3"
         >
             <li
-                v-for="(car, index) in plan.cars"
+                v-for="(car, index) in cars"
                 :key="index"
                 class="flex min-h-14 items-center gap-3 rounded-xl border py-1 pr-1 pl-3"
                 :class="[
                     !car.playerId
                         ? 'border-dashed border-amber-600 bg-amber-50 text-amber-800'
-                        : car.extraIndex === null
-                          ? 'border-primary-200 bg-primary-50'
-                          : 'border-primary-300 bg-white',
+                        : car.extra
+                          ? 'border-primary-300 bg-white'
+                          : 'border-primary-200 bg-primary-50',
                 ]"
                 data-testid="driving-car"
             >
@@ -163,16 +189,11 @@
                         class="text-primary-600 mb-0 flex items-center gap-1 text-xs"
                     >
                         <UIcon
-                            v-if="car.picked"
-                            class="text-teal-700"
-                            name="i-lucide-pin"
-                        />
-                        <UIcon
-                            v-else-if="car.alwaysDrives"
+                            v-if="!car.extra && isAlwaysDriver(car.playerId)"
                             class="text-amber-700"
                             name="i-lucide-star"
                         />
-                        {{ carLabel(car) }}
+                        {{ carLabel(car.playerId, car.extra) }}
                     </p>
                 </div>
                 <span v-else class="flex-1 text-sm font-semibold">
@@ -180,19 +201,26 @@
                 </span>
 
                 <UButton
-                    v-if="editable && (car.playerId || car.extraIndex !== null)"
+                    v-if="editable && car.extra"
+                    :aria-label="t('driving.removeExtraCar')"
+                    color="neutral"
+                    icon="i-lucide-x"
+                    size="lg"
+                    variant="ghost"
+                    @click="removeCar(index)"
+                />
+                <UButton
+                    v-else-if="editable && car.playerId"
                     :aria-label="
-                        car.extraIndex === null
-                            ? t('driving.cannotDriveLabel', {
-                                  name: nameOf(car.playerId as string),
-                              })
-                            : t('driving.removeExtraCar')
+                        t('driving.cannotDriveLabel', {
+                            name: nameOf(car.playerId),
+                        })
                     "
                     color="neutral"
                     icon="i-lucide-x"
                     size="lg"
                     variant="ghost"
-                    @click="removeCar(car)"
+                    @click="cannotDrive(index, car.playerId)"
                 />
             </li>
         </ul>
