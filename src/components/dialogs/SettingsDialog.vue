@@ -37,8 +37,8 @@
         }
     };
 
-    watch(model, (visible) => {
-        if (!visible) return;
+    watch([model, () => settingsStore.settingsLoaded], ([visible, loaded]) => {
+        if (!visible || !loaded) return;
         sportlinkClientId.value = settingsStore.sportlinkClientId;
         regulationsEnabled.value = settingsStore.regulationsEnabled;
         washingEnabled.value = settingsStore.washingEnabled;
@@ -83,6 +83,7 @@
             <DialogFooter
                 :confirm-label="$t('common.save')"
                 confirm-icon="i-lucide-check"
+                :disabled="!settingsStore.settingsLoaded"
                 :loading="loading"
                 @cancel="closeDialog"
                 @confirm="save"

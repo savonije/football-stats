@@ -47,9 +47,12 @@ const setClientId = async (page: Page, clientId: string) => {
 
     const dialog = page.getByRole('dialog', { name: 'Instellingen' });
     const input = dialog.getByLabel('Sportlink client_id');
+    const save = dialog.getByRole('button', { name: 'Opslaan' });
+
+    await expect(save).toBeEnabled();
     const previous = await input.inputValue();
     await input.fill(clientId);
-    await dialog.getByRole('button', { name: 'Opslaan' }).click();
+    await save.click();
     await expect(dialog).toBeHidden();
 
     return previous;
