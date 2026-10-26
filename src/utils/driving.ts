@@ -12,14 +12,12 @@ export interface DrivingPlayer {
 export interface DrivingMatch {
     id: string;
     date: Date;
-    /** Ids of the players going to the match. */
     squad: string[];
     driving?: MatchDriving;
 }
 
 export interface Car {
     playerId: string | null;
-    /** Index into `driving.extraCars`, null for a car the squad needs. */
     extraIndex: number | null;
     picked: boolean;
     alwaysDrives: boolean;
@@ -31,7 +29,6 @@ export interface DrivingPlan {
     squadSize: number;
     needed: number;
     cars: Car[];
-    /** Who an automatically filled extra car would go to. */
     next: string | null;
 }
 
@@ -40,12 +37,6 @@ export interface DriveCount {
     planned: number;
 }
 
-/**
- * Walks the matches in date order and fills each one's cars: picked parents
- * first, then vaste rijders, then whoever has driven least so far. A match
- * with `driving.alwaysDrives` uses those vaste rijders instead of the current
- * ones, and a past match with `driving.drivers` keeps those drivers.
- */
 export const planDriving = (
     matches: DrivingMatch[],
     players: DrivingPlayer[],
