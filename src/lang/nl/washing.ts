@@ -1,5 +1,6 @@
 export default {
     title: 'Wasschema',
+    intro: 'Na elke wedstrijd neemt één ouder de wedstrijdkleding mee naar huis om te wassen. Zoek de naam van je kind op om te zien wanneer jij aan de beurt bent.',
     washing: 'Wasbeurt | Wasbeurten',
     washer: 'Wie wast?',
     responsible: 'Verantwoordelijke was',

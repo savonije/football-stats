@@ -62,7 +62,10 @@
 </script>
 
 <template>
-    <div class="mb-3 flex items-center justify-end">
+    <div class="mb-6 flex items-start justify-between gap-4">
+        <p class="text-primary-800 mb-0 max-w-2xl">
+            {{ $t('training.intro') }}
+        </p>
         <TrainingActionsMenu :month="viewMonth" />
     </div>
 

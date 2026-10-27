@@ -1,5 +1,6 @@
 export default {
     title: 'Trainingen',
+    intro: 'Hier zie je alle trainingen van dit seizoen. Open een training om te zien wie er aanwezig was. Gaat een training niet door, dan staat hij hier als afgelast.',
     training: 'Training | Trainingen',
     generate: 'Bulk genereren',
     generateForMonth: 'Trainingen voor een maand genereren',

@@ -43,6 +43,10 @@
     />
 
     <template v-else>
+        <p class="text-primary-800 mb-6 max-w-2xl">
+            {{ $t('washing.intro') }}
+        </p>
+
         <WashingSchedule :loading="loading" />
 
         <WashingCounts v-if="isAdmin" :loading="loading" />

@@ -1,6 +1,6 @@
 export default {
     title: 'Rijschema',
-    intro: 'Voor elke uitwedstrijd rijdt één ouder per speler. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Minder plek in een auto? Voeg een extra auto toe. | Voor elke uitwedstrijd rijdt één ouder per {count} spelers. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Minder plek in een auto? Voeg een extra auto toe.',
+    intro: 'Voor elke uitwedstrijd rijdt één ouder per speler. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Kun je een keer niet rijden? Geef het op tijd door, dan schuift de volgende ouder door. | Voor elke uitwedstrijd rijdt één ouder per {count} spelers. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Kun je een keer niet rijden? Geef het op tijd door, dan schuift de volgende ouder door.',
     schedule: 'Schema per uitwedstrijd',
     overview: 'Rijoverzicht',
     parentOf: 'Ouder van',
