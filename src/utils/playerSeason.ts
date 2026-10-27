@@ -26,3 +26,6 @@ export function isGuestInSeason(player: Player, seasonId: string): boolean {
 
 export const isAlwaysDriverInSeason = (player: Player, seasonId: string) =>
     playerSeasonInfo(player, seasonId)?.alwaysDrives === true;
+
+export const isNeverDriverInSeason = (player: Player, seasonId: string) =>
+    playerSeasonInfo(player, seasonId)?.neverDrives === true;

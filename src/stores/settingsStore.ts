@@ -1,6 +1,7 @@
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
+import { PLAYERS_PER_CAR } from '@/constants';
 import { db } from '@/firebase';
 
 const settingsRef = () => doc(db, 'settings', 'app');
@@ -13,12 +14,14 @@ export const useSettingsStore = defineStore('settingsStore', {
         regulationsEnabled: boolean;
         washingEnabled: boolean;
         drivingEnabled: boolean;
+        playersPerCar: number;
         settingsLoaded: boolean;
     } => ({
         sportlinkClientId: '',
         regulationsEnabled: false,
         washingEnabled: true,
         drivingEnabled: false,
+        playersPerCar: PLAYERS_PER_CAR,
         settingsLoaded: false,
     }),
 
@@ -34,6 +37,8 @@ export const useSettingsStore = defineStore('settingsStore', {
                         snap.data()?.regulationsEnabled ?? false;
                     this.washingEnabled = snap.data()?.washingEnabled ?? true;
                     this.drivingEnabled = snap.data()?.drivingEnabled ?? false;
+                    this.playersPerCar =
+                        snap.data()?.playersPerCar ?? PLAYERS_PER_CAR;
                     this.settingsLoaded = true;
                 },
                 (err) => {
@@ -59,6 +64,10 @@ export const useSettingsStore = defineStore('settingsStore', {
                 },
                 { merge: true },
             );
+        },
+
+        async setPlayersPerCar(playersPerCar: number) {
+            await setDoc(settingsRef(), { playersPerCar }, { merge: true });
         },
     },
 });

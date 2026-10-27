@@ -1,5 +1,6 @@
 export default {
     add: 'Toevoegen',
+    adminOnly: 'Alleen zichtbaar voor beheerders.',
     attendancePercentage: 'Wedstrijdsopkomst (%)',
     away: 'Uit',
     cancel: 'Annuleren',

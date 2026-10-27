@@ -1,6 +1,6 @@
 export default {
     title: 'Rijschema',
-    intro: 'Voor elke uitwedstrijd rijdt één ouder per drie spelers. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Minder plek in een auto? Voeg een extra auto toe.',
+    intro: 'Voor elke uitwedstrijd rijdt één ouder per speler. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Minder plek in een auto? Voeg een extra auto toe. | Voor elke uitwedstrijd rijdt één ouder per {count} spelers. Vaste rijders gaan voor, daarna wie het minst gereden heeft. Minder plek in een auto? Voeg een extra auto toe.',
     schedule: 'Schema per uitwedstrijd',
     overview: 'Rijoverzicht',
     parentOf: 'Ouder van',
@@ -12,6 +12,8 @@ export default {
     planned: 'Ingepland',
     alwaysDrives: 'Vaste rijder',
     alwaysDrivesLabel: 'Ouder van {name} is vaste rijder',
+    neverDrives: 'Rijdt niet',
+    neverDrivesLabel: 'Ouder van {name} rijdt niet',
     extraCar: 'Extra auto',
     driverNeeded: 'Rijder nodig',
     cannotDrive: 'Kan niet:',
@@ -21,6 +23,7 @@ export default {
     players: '{count} speler | {count} spelers',
     cars: '{count} auto | {count} auto’s',
     noMatches: 'Geen uitwedstrijden in deze periode',
+    playersPerCar: 'Spelers per auto',
     addExtraCar: {
         title: 'Extra auto toevoegen',
         autoHelp: 'Automatische suggestie: {name}',

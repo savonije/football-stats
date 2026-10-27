@@ -8,7 +8,10 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { DriveCount } from '@/utils/driving';
-    import { isAlwaysDriverInSeason } from '@/utils/playerSeason';
+    import {
+        isAlwaysDriverInSeason,
+        isNeverDriverInSeason,
+    } from '@/utils/playerSeason';
     import { TABLE_UI } from '@/utils/table';
 
     const { counts, loading } = defineProps<{
@@ -34,6 +37,10 @@
                     player,
                     seasonStore.currentSeason,
                 ),
+                neverDrives: isNeverDriverInSeason(
+                    player,
+                    seasonStore.currentSeason,
+                ),
             }))
             .sort(
                 (a, b) =>
@@ -49,13 +56,17 @@
         { accessorKey: 'driven', header: t('driving.driven') },
         { accessorKey: 'planned', header: t('driving.planned') },
         { accessorKey: 'alwaysDrives', header: t('driving.alwaysDrives') },
+        { accessorKey: 'neverDrives', header: t('driving.neverDrives') },
     ]);
 
-    const setAlwaysDrives = async (playerId: string, alwaysDrives: boolean) => {
-        await playerStore.setAlwaysDrives(
+    const setDrives = async (
+        playerId: string,
+        drives: { alwaysDrives: boolean; neverDrives: boolean },
+    ) => {
+        await playerStore.setDrives(
             playerId,
             seasonStore.currentSeason,
-            alwaysDrives,
+            drives,
         );
         toast.success(t('common.changesSaved'));
     };
@@ -63,7 +74,11 @@
 
 <template>
     <div class="mb-8">
-        <h2 class="mb-3 text-xl font-semibold">{{ t('driving.overview') }}</h2>
+        <h2 class="mb-1 text-xl font-semibold">{{ t('driving.overview') }}</h2>
+        <p class="text-primary-600 mb-3 flex items-center gap-1.5 text-sm">
+            <UIcon class="size-4 shrink-0" name="i-lucide-eye-off" />
+            {{ t('common.adminOnly') }}
+        </p>
 
         <UTable
             class="rounded-2xl shadow-lg"
@@ -83,7 +98,29 @@
                     :model-value="row.original.alwaysDrives"
                     size="lg"
                     @update:model-value="
-                        setAlwaysDrives(row.original.id, $event)
+                        setDrives(row.original.id, {
+                            alwaysDrives: $event,
+                            neverDrives: false,
+                        })
+                    "
+                />
+            </template>
+
+            <template #neverDrives-cell="{ row }">
+                <USwitch
+                    :aria-label="
+                        t('driving.neverDrivesLabel', {
+                            name: row.original.name,
+                        })
+                    "
+                    :disabled="!canEdit"
+                    :model-value="row.original.neverDrives"
+                    size="lg"
+                    @update:model-value="
+                        setDrives(row.original.id, {
+                            alwaysDrives: false,
+                            neverDrives: $event,
+                        })
                     "
                 />
             </template>

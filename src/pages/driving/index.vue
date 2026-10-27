@@ -2,6 +2,7 @@
     import { computed, onMounted, watch } from 'vue';
 
     import HiddenPageAlert from '@/components/ui/HiddenPageAlert.vue';
+    import DrivingActionsMenu from '@/pages/driving/_components/DrivingActionsMenu.vue';
     import DrivingCounts from '@/pages/driving/_components/DrivingCounts.vue';
     import DrivingSchedule from '@/pages/driving/_components/DrivingSchedule.vue';
 
@@ -33,6 +34,7 @@
             matchStore.appearances,
             playerStore.players,
             seasonStore.currentSeason,
+            settingsStore.playersPerCar,
         ),
     );
 
@@ -77,9 +79,12 @@
     />
 
     <template v-else>
-        <p class="text-primary-800 mb-6 max-w-2xl">
-            {{ $t('driving.intro') }}
-        </p>
+        <div class="mb-6 flex items-start justify-between gap-4">
+            <p class="text-primary-800 mb-0 max-w-2xl">
+                {{ $t('driving.intro', settingsStore.playersPerCar) }}
+            </p>
+            <DrivingActionsMenu />
+        </div>
 
         <DrivingSchedule :loading="loading" :plans="plan.plans" />
 

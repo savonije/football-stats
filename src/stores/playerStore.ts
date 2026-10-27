@@ -59,13 +59,17 @@ export const usePlayerStore = defineStore('playerStore', {
             });
         },
 
-        setAlwaysDrives(
+        setDrives(
             playerId: string,
             seasonId: string,
-            alwaysDrives: boolean,
+            {
+                alwaysDrives,
+                neverDrives,
+            }: { alwaysDrives: boolean; neverDrives: boolean },
         ) {
             return updateDoc(doc(db, 'players', playerId), {
                 [`seasons.${seasonId}.alwaysDrives`]: alwaysDrives,
+                [`seasons.${seasonId}.neverDrives`]: neverDrives,
             });
         },
 

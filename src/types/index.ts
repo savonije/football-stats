@@ -87,6 +87,7 @@ export interface PlayerSeasonInfo {
     active: boolean;
     guestPlayer: boolean;
     alwaysDrives?: boolean;
+    neverDrives?: boolean;
 }
 
 export interface Player {

@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 
-import { PLAYERS_PER_CAR } from '@/constants';
 import type { Appearance, Match, Player } from '@/types';
-import { isAlwaysDriverInSeason } from '@/utils/playerSeason';
+import {
+    isAlwaysDriverInSeason,
+    isNeverDriverInSeason,
+} from '@/utils/playerSeason';
 
 export interface DrivingPlan {
     match: Match;
@@ -31,6 +33,7 @@ export const planDriving = (
     appearances: Appearance[],
     players: Player[],
     seasonId: string,
+    playersPerCar: number,
     now = new Date(),
 ) => {
     const awayMatches = matches.filter((match) => !match.home && match.date);
@@ -67,6 +70,7 @@ export const planDriving = (
                     !match.driving?.excluded?.includes(id),
             )
             .flatMap((id) => playersById.get(id) ?? [])
+            .filter((p) => !isNeverDriverInSeason(p, seasonId))
             .sort(
                 (a, b) =>
                     Number(isAlwaysDriverInSeason(b, seasonId)) -
@@ -85,7 +89,7 @@ export const planDriving = (
         .flatMap((match): DrivingPlan[] => {
             const past = isPast(match);
             const squad = squadOf(match);
-            const needed = Math.ceil(squad.length / PLAYERS_PER_CAR);
+            const needed = Math.ceil(squad.length / playersPerCar);
             const saved = !!match.driving?.drivers;
 
             if (!saved && (past || !squad.length)) return [];

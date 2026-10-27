@@ -9,6 +9,7 @@
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { DrivingPlan } from '@/utils/driving';
+    import { isNeverDriverInSeason } from '@/utils/playerSeason';
 
     const open = defineModel<boolean>('open');
     const { plan } = defineProps<{ plan: DrivingPlan }>();
@@ -33,7 +34,11 @@
         const driving = new Set(plan.drivers);
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
-            .filter((player) => !driving.has(player.id))
+            .filter(
+                (player) =>
+                    !driving.has(player.id) &&
+                    !isNeverDriverInSeason(player, seasonStore.currentSeason),
+            )
             .map((player) => ({
                 label: `${t('driving.parentOf')} ${player.name}`,
                 value: player.id,
