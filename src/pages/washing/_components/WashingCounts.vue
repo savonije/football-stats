@@ -4,6 +4,8 @@
     import { useI18n } from 'vue-i18n';
     import { useRouter } from 'vue-router';
 
+    import AdminOnlyNote from '@/components/ui/AdminOnlyNote.vue';
+
     import { useMatchStore } from '@/stores/matchStore';
     import { usePlayerStore } from '@/stores/playerStore';
     import { TABLE_UI, sortableHeader } from '@/utils/table';
@@ -53,7 +55,8 @@
 
 <template>
     <div class="mb-8">
-        <h2 class="mb-3 text-xl font-semibold">{{ t('washing.overview') }}</h2>
+        <h2 class="mb-1 text-xl font-semibold">{{ t('washing.overview') }}</h2>
+        <AdminOnlyNote class="mb-3" />
 
         <UTable
             v-model:sorting="countSorting"

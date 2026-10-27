@@ -3,6 +3,7 @@
     import dayjs from 'dayjs';
     import { computed, onMounted, watch } from 'vue';
 
+    import AdminOnlyNote from '@/components/ui/AdminOnlyNote.vue';
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import TrainingActionsMenu from '@/pages/training/_components/TrainingActionsMenu.vue';
     import TrainingAttendanceTable from '@/pages/training/_components/TrainingAttendanceTable.vue';
@@ -77,10 +78,11 @@
     <section v-if="isAdmin" class="mt-20" aria-labelledby="attendance-overview">
         <h2
             id="attendance-overview"
-            class="text-primary-900 mb-3 text-lg font-bold"
+            class="text-primary-900 mb-1 text-lg font-bold"
         >
             {{ $t('training.attendanceOverview') }}
         </h2>
+        <AdminOnlyNote class="mb-3" />
         <TrainingAttendanceTable />
     </section>
 </template>

@@ -3,6 +3,8 @@
     import { computed } from 'vue';
     import { useI18n } from 'vue-i18n';
 
+    import AdminOnlyNote from '@/components/ui/AdminOnlyNote.vue';
+
     import { useAppToast } from '@/composables/useAppToast';
     import { useCanEdit } from '@/composables/useCanEdit';
     import { usePlayerStore } from '@/stores/playerStore';
@@ -75,10 +77,7 @@
 <template>
     <div class="mb-8">
         <h2 class="mb-1 text-xl font-semibold">{{ t('driving.overview') }}</h2>
-        <p class="text-primary-600 mb-3 flex items-center gap-1.5 text-sm">
-            <UIcon class="size-4 shrink-0" name="i-lucide-eye-off" />
-            {{ t('common.adminOnly') }}
-        </p>
+        <AdminOnlyNote class="mb-3" />
 
         <UTable
             class="rounded-2xl shadow-lg"

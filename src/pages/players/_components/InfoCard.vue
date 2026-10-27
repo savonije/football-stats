@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { computed } from 'vue';
 
+    import AdminOnlyNote from '@/components/ui/AdminOnlyNote.vue';
     import InfoRow from '@/pages/players/_components/InfoRow.vue';
 
     import { useIsAdmin } from '@/composables/useIsAdmin';
@@ -25,6 +26,7 @@
     <UCard v-if="isAdmin">
         <template #header>
             <h2>{{ $t('player.playerInfo') }}</h2>
+            <AdminOnlyNote class="mt-1" />
         </template>
 
         <USkeleton v-if="loading" class="h-30 w-full" />
