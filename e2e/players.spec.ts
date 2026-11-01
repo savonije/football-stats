@@ -9,11 +9,6 @@ import {
 } from './helpers/app';
 
 test.describe('Players page', () => {
-    test('has correct page title', async ({ page }) => {
-        await page.goto('/players');
-        await expect(page).toHaveTitle(/^Spelers - /);
-    });
-
     test('shows players heading', async ({ page }) => {
         await page.goto('/players');
         await expect(

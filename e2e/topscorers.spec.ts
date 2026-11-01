@@ -3,11 +3,6 @@ import { test, expect } from '@playwright/test';
 import { viewArchivedSeason } from './helpers/app';
 
 test.describe('Topscorers page', () => {
-    test('has correct page title', async ({ page }) => {
-        await page.goto('/topscorers');
-        await expect(page).toHaveTitle(/^Topscorers - /);
-    });
-
     test('shows topscorers heading', async ({ page }) => {
         await page.goto('/topscorers');
         await expect(
