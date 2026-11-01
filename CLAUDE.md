@@ -15,11 +15,12 @@ vp check             # fmt + lint + type check — the validation loop, --fix to
 vp fmt               # format (oxfmt); vp lint --fix lints (oxlint)
 npm run type-check   # vue-tsc --build type checking
 npm run test         # Playwright end-to-end tests (vp run test)
+npm run test:unit    # Vitest unit tests (vp test run), CI runs these in the check job
 npm run knip         # find unused files, exports and dependencies
 ```
 
 `vp <name>` runs a Vite+ built-in, `vp run <name>` runs a `package.json` script —
-`vp test` is the Vitest built-in (no unit tests here), `vp run test` is Playwright.
+`vp test` is the Vitest built-in, `vp run test` is Playwright.
 
 The Node version is pinned in `.nvmrc` (read by `nvm use` and the CI `setup-node`)
 and in `engines.node` in `package.json`, which is what `vp` resolves — vp checks

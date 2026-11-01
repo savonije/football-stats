@@ -19,6 +19,7 @@
         "preview": "vp preview",
         "type-check": "vue-tsc --build",
         "test": "playwright test",
+        "test:unit": "vp test run",
         "prepare": "vp config"
     },
     "dependencies": {
