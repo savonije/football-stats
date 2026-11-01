@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { until } from '@vueuse/core';
     import dayjs from 'dayjs';
     import { ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
@@ -12,9 +13,11 @@
         fetchSeasonMatches,
     } from '@/services/knvbService';
     import { addMatch } from '@/services/matchService';
+    import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
     import { useSettingsStore } from '@/stores/settingsStore';
     import { reconcileKnvbMatches, type KnvbMatch } from '@/utils/knvb';
+    import { isGuestInSeason } from '@/utils/playerSeason';
 
     const model = defineModel<boolean>('visible');
 
@@ -22,6 +25,7 @@
     const toast = useAppToast();
     const seasonStore = useSeasonStore();
     const settingsStore = useSettingsStore();
+    const playerStore = usePlayerStore();
 
     const fetching = ref(false);
     const saving = ref(false);
@@ -36,6 +40,7 @@
         error.value = '';
         toAdd.value = [];
         updated.value = [];
+        if (!playerStore.playersLoaded) playerStore.fetchPlayers();
         try {
             const [knvbMatches, existing] = await Promise.all([
                 fetchKnvbMatches(
@@ -43,6 +48,7 @@
                     seasonStore.currentTeamName,
                 ),
                 fetchSeasonMatches(seasonStore.currentSeason),
+                until(() => playerStore.playersLoaded).toBe(true),
             ]);
             if (!knvbMatches) {
                 error.value = t('knvbImport.teamNotFound', {
@@ -74,6 +80,10 @@
 
     const importMatches = async () => {
         const seasonId = seasonStore.currentSeason;
+        const playerIds = playerStore
+            .playersInSeason(seasonId)
+            .filter((player) => !isGuestInSeason(player, seasonId))
+            .map((player) => player.id);
 
         saving.value = true;
         try {
@@ -84,6 +94,7 @@
                     home: match.home,
                     knvbCode: match.code,
                     venue: match.venue,
+                    playerIds,
                 });
             }
             toast.success(
