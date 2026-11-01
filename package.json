@@ -9,11 +9,12 @@
     "scripts": {
         "build-only": "vp build",
         "build": "run-p type-check \"build-only {@}\" --",
-        "build:e2e": "vp build --mode staging",
+        "build:e2e": "vp build --mode emulator",
         "check": "vp check",
         "dev": "vp dev",
         "fmt": "vp fmt",
         "fmt:check": "vp fmt --check",
+        "emulators": "firebase emulators:start --only auth,firestore --project demo-football-stats",
         "knip": "knip",
         "lint": "vp lint --fix",
         "preview": "vp preview",
@@ -40,6 +41,7 @@
         "@types/node": "^26.6.6",
         "@vitejs/plugin-vue": "^6.0.10",
         "@vue/tsconfig": "^0.9.1",
+        "firebase-tools": "^15.34.2",
         "knip": "^6.43.0",
         "npm-run-all2": "^9.0.3",
         "tailwindcss": "^4.1.13",
@@ -52,7 +54,8 @@
     },
     "overrides": {
         "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-        "@grpc/grpc-js": "^1.14.0"
+        "@grpc/grpc-js": "^1.14.0",
+        "superstatic": "^11.1.0"
     },
     "devEngines": {
         "packageManager": {
@@ -66,6 +69,7 @@
         "vue-demi": false,
         "esbuild": false,
         "protobufjs": false,
+        "re2": false,
         "fsevents": false
     }
 }

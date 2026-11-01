@@ -1,17 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-import { skipWithoutFirebaseConfig } from './helpers/app';
+import { viewArchivedSeason } from './helpers/app';
 
 test.describe('Home page', () => {
-    test.beforeEach(() => {
-        skipWithoutFirebaseConfig();
-    });
-
-    test('has correct page title', async ({ page }) => {
-        await page.goto('/');
-        await expect(page).toHaveTitle(/^Home - /);
-    });
-
     test('shows matches section heading', async ({ page }) => {
         await page.goto('/');
         await expect(
@@ -27,15 +18,16 @@ test.describe('Home page', () => {
         ).toBeVisible();
     });
 
-    test('shows recent results card or empty matches state', async ({
-        page,
-    }) => {
+    test("lists the archived season's results", async ({ page }) => {
+        await viewArchivedSeason(page);
         await page.goto('/');
-        const card = page.getByText('Recente resultaten');
-        const emptyMatches = page.getByText('Geen wedstrijden');
 
-        await expect(card.or(emptyMatches).first()).toBeVisible({
-            timeout: 5000,
-        });
+        await expect(page.getByText('Recente resultaten')).toBeVisible();
+        await expect(
+            page.locator('tbody tr').filter({ hasText: 'Oude Rivaal' }),
+        ).toContainText('3-1');
+        await expect(
+            page.locator('tbody tr').filter({ hasText: 'Verre Rivaal' }),
+        ).toContainText('0-2');
     });
 });

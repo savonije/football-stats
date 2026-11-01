@@ -2,13 +2,9 @@ import { expect, test } from '@playwright/test';
 
 import {
     acceptConfirm,
-    becomesVisible,
     createMatch,
     deleteMatch,
     login,
-    skipWithoutFirebaseConfig,
-    skipWithoutCredentials,
-    skipWithoutEditableSeason,
     uniqueLabel,
 } from './helpers/app';
 
@@ -16,10 +12,7 @@ test.describe('Match players', () => {
     let matchUrl = '';
 
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
-        skipWithoutCredentials();
         await login(page);
-        await skipWithoutEditableSeason(page);
     });
 
     test.afterEach(async ({ page }) => {
@@ -57,12 +50,7 @@ test.describe('Match players', () => {
         matchUrl = await createMatch(page, uniqueLabel('E2E squad'));
 
         const squad = page.getByTestId('appearance');
-        const hasSquad = await becomesVisible(squad.first(), 15_000);
-
-        test.skip(
-            !hasSquad,
-            'The active staging season has no players, so a match has no squad.',
-        );
+        await expect(squad.first()).toBeVisible({ timeout: 15_000 });
 
         const squadSize = await squad.count();
         const playerName = (

@@ -1,26 +1,21 @@
 import { defineConfig, devices } from '@playwright/test';
 import { loadEnv } from 'vite-plus';
 
-try {
-    process.loadEnvFile('.env.e2e');
-} catch {
-    // Absent locally is fine: the write specs skip, and CI passes secrets.
-}
-
+// The same env the e2e build is made from, so specs can read VITE_CLUBNAME.
 for (const [name, value] of Object.entries(
-    loadEnv('staging', process.cwd(), ''),
+    loadEnv('emulator', process.cwd(), ''),
 )) {
     process.env[name] ??= value;
 }
 
-// Not 4173: a hand-started `npm run preview` there is built from
-// .env.production, and reusing it would point the write specs at production.
+// Not 4173, so a hand-started `npm run preview` is never reused by accident.
 const PORT = 4174;
 
 export default defineConfig({
     testDir: './e2e',
+    globalSetup: './e2e/global-setup.ts',
     fullyParallel: true,
-    timeout: 90_000,
+    timeout: 60_000,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
@@ -33,12 +28,31 @@ export default defineConfig({
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
+            testIgnore: 'settings.spec.ts',
+        },
+        {
+            // Switches off features the other specs need, so it waits for them.
+            name: 'settings',
+            use: { ...devices['Desktop Chrome'] },
+            testMatch: 'settings.spec.ts',
+            dependencies: ['chromium'],
         },
     ],
-    webServer: {
-        command: `npm run build:e2e && npm run preview -- --port ${PORT} --strictPort`,
-        url: `http://localhost:${PORT}`,
-        reuseExistingServer: !process.env.CI,
-        timeout: 180_000,
-    },
+    webServer: [
+        {
+            command: 'npm run emulators',
+            // The CLI starts Auth after Firestore, so this waits for both.
+            url: 'http://127.0.0.1:9099',
+            reuseExistingServer: !process.env.CI,
+            timeout: 120_000,
+            // A hard kill stops the CLI but orphans the Java Firestore process.
+            gracefulShutdown: { signal: 'SIGINT', timeout: 10_000 },
+        },
+        {
+            command: `npm run build:e2e && npm run preview -- --port ${PORT} --strictPort`,
+            url: `http://localhost:${PORT}`,
+            reuseExistingServer: !process.env.CI,
+            timeout: 180_000,
+        },
+    ],
 });

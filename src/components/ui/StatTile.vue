@@ -10,6 +10,7 @@
 <template>
     <div
         class="shadow-card flex flex-col justify-center gap-1 rounded-xl bg-white p-5"
+        data-testid="stat-tile"
     >
         <USkeleton v-if="loading" class="my-1 h-11 w-14" />
         <template v-else>

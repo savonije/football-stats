@@ -89,14 +89,16 @@ npx playwright test e2e/home.spec.ts       # a single file
 npx playwright test -g "shows top scorers" # by test title
 ```
 
-The read-only specs run as-is. The specs that sign in and write (`match-lifecycle`, `match-players`, `training`, `knvb-import`) create data, drive it through the UI and delete it again, so they need a **staging** Firebase project — never production:
+The tests run against the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite), which Playwright starts and seeds itself, so they need no Firebase project, no credentials and no `.env`. Each run starts from an empty database with one seeded season, six players and a test user. Nothing is written to staging or production.
 
-1. Point `.env` at a staging project (`npm run test` builds with `--mode staging`, ignoring `.env.production`).
-2. Add an email/password user in that project only: Firebase Console → **Authentication → Users**.
-3. `cp .env.e2e.example .env.e2e` and fill in `E2E_EMAIL` / `E2E_PASSWORD`, plus `E2E_PROJECT_ID` if your staging project isn't this repo's default. Playwright loads the file automatically.
-4. Give staging an active season (`active: true`) with players in it — the edit UI is hidden otherwise.
+The Firestore emulator is a Java program, so install **Java 21+** once:
 
-Until that is done the write specs skip rather than fail. For CI, add the same variables to your repository secrets (see `.github/workflows/playwright.yml`).
+```sh
+brew install openjdk@21
+echo 'export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"' >> ~/.zshrc
+```
+
+To skip the emulator startup on every run, keep `npm run emulators` running in a second terminal; Playwright reuses it.
 
 ---
 
@@ -147,7 +149,7 @@ This writes two files. `firebase.json` holds the hosting config (it serves `dist
 }
 ```
 
-Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A bare `firebase deploy` targets `default`, so point that at the project you actually want to publish to and use a named alias (`firebase deploy -P prod`) for the others. `.firebaserc` is gitignored, so each clone sets its own. Note the e2e tests don't read it: they pick their project from `.env` (see above).
+Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A bare `firebase deploy` targets `default`, so point that at the project you actually want to publish to and use a named alias (`firebase deploy -P prod`) for the others. `.firebaserc` is gitignored, so each clone sets its own. The e2e tests don't read it: they run against the local emulators (see above).
 
 ### 4. Deploy
 
@@ -155,6 +157,8 @@ Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A ba
 npm run build
 firebase deploy
 ```
+
+This deploys Hosting and the Firestore security rules in `firestore.rules`. Change rules in that file, not in the Firebase console, or the next deploy overwrites the console version.
 
 ---
 

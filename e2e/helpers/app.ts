@@ -1,95 +1,103 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+    expect,
+    test,
+    type Browser,
+    type Locator,
+    type Page,
+} from '@playwright/test';
+import { initializeApp } from 'firebase/app';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 
-const STAGING_PROJECT_ID =
-    process.env.E2E_PROJECT_ID || 'football-ryan-staging';
+// Created by global-setup.ts in the Auth emulator, so it exists nowhere else.
+export const E2E_EMAIL = 'coach@example.test';
+export const E2E_PASSWORD = 'e2e-password';
 
-const email = process.env.E2E_EMAIL ?? '';
-const password = process.env.E2E_PASSWORD ?? '';
+/**
+ * Seeded by global-setup.ts as an inactive season with two finished matches:
+ * Oude Rivaal 3-1 (home, March 2026; Anna 2, Bram 1) and Verre Rivaal 0-2
+ * (away, April 2026), played by Anna, Bram and Cees, with Cees in goal. Nothing
+ * can edit an inactive season, so read-only specs can assert exact figures.
+ */
+export const ARCHIVED_SEASON = '2025-2026';
 
-const requiredFirebaseEnv = [
-    'VITE_FIREBASE_APIKEY',
-    'VITE_FIREBASE_APP_ID',
-    'VITE_FIREBASE_AUTH_DOMAIN',
-    'VITE_FIREBASE_MESSAGE_SENDER_ID',
-    'VITE_FIREBASE_PROJECT_ID',
-    'VITE_FIREBASE_STORAGE_BUCKET',
-    'VITE_CLUBNAME',
-];
-
-const missingFirebaseEnv = requiredFirebaseEnv.filter((name) => {
-    const value = process.env[name];
-    return value === undefined || value === '';
-});
-
-export const skipWithoutFirebaseConfig = () =>
-    test.skip(
-        missingFirebaseEnv.length > 0,
-        `Set ${missingFirebaseEnv.join(', ')} to run specs that boot the app.`,
+/** Makes `page` open on the archived season, as a stored selection would. */
+export const viewArchivedSeason = (page: Page) =>
+    page.addInitScript(
+        (id) => localStorage.setItem('selectedSeason', id),
+        ARCHIVED_SEASON,
     );
 
-export const skipWithoutCredentials = () =>
-    test.skip(
-        !email || !password,
-        'Set E2E_EMAIL and E2E_PASSWORD (staging test user) to run the write specs.',
+/** A signed-out browser of its own: whatever it renders came from the server. */
+export const visitorPage = async (browser: Browser) => {
+    const context = await browser.newContext({
+        baseURL: test.info().project.use.baseURL,
+    });
+    return context.newPage();
+};
+
+/**
+ * Picks `YYYY-MM-DD` in a DatePicker whose calendar opens on today's month,
+ * which is every empty one and every one that defaults to today.
+ */
+export const pickDate = async (page: Page, trigger: Locator, date: string) => {
+    // UCalendar labels itself "Evenementdatum, <month>".
+    const calendar = page.getByLabel(/^Evenementdatum/);
+
+    // The previous picker's calendar lingers while it animates closed.
+    await expect(calendar).toHaveCount(0);
+    await trigger.click();
+
+    const [year = 0, month = 0] = date.split('-').map(Number);
+    const now = new Date();
+    const steps = (year - now.getFullYear()) * 12 + month - 1 - now.getMonth();
+    const turn = calendar.getByRole('button', {
+        name: steps < 0 ? 'Vorige maand' : 'Volgende maand',
+        exact: true,
+    });
+    for (let i = 0; i < Math.abs(steps); i++) await turn.click();
+
+    await calendar
+        .locator(`[data-value="${date}"]:not([data-outside-view])`)
+        .click();
+};
+
+/** A Node-side Firebase client on the emulators, as the e2e build connects. */
+export const emulatorClient = (name: string) => {
+    const app = initializeApp(
+        { projectId: 'demo-football-stats', apiKey: 'demo' },
+        name,
     );
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    connectFirestoreEmulator(db, '127.0.0.1', 8180);
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+        disableWarnings: true,
+    });
+
+    return { app, db, auth };
+};
 
 export const uniqueLabel = (prefix: string) =>
     `${prefix} ${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`;
 
-export const becomesVisible = (locator: Locator, timeout = 10_000) =>
+const becomesVisible = (locator: Locator, timeout = 10_000) =>
     locator.waitFor({ state: 'visible', timeout }).then(
         () => true,
         () => false,
     );
 
-const observeFirestoreProjects = (page: Page) => {
-    const projects = new Set<string>();
-
-    page.on('request', (request) => {
-        const url = request.url();
-        if (!url.includes('firestore.googleapis.com')) return;
-
-        const [, project] = /projects(?:\/|%2F)([^/%?&]+)/.exec(url) ?? [];
-        if (project) projects.add(project);
-    });
-
-    return projects;
-};
-
 export const login = async (page: Page) => {
-    const projects = observeFirestoreProjects(page);
-
-    // Assert the project before signing in: a build made from .env.production
-    // must never reach a write step.
-    await page.goto('/');
-    await expect
-        .poll(() => [...projects], { timeout: 20_000 })
-        .toEqual([STAGING_PROJECT_ID]);
-
     await page.goto('/login');
-    await page.getByTestId('input-email').fill(email);
-    await page.getByTestId('input-password').fill(password);
+    await page.getByTestId('input-email').fill(E2E_EMAIL);
+    await page.getByTestId('input-password').fill(E2E_PASSWORD);
     await page.getByTestId('btn-submit').click();
 
     await expect(page).toHaveURL('/', { timeout: 20_000 });
 };
 
-const openMenu = (page: Page) =>
+export const openMenu = (page: Page) =>
     page.getByRole('button', { name: 'Menu' }).click();
-
-/** Call right after login(), which leaves the browser on the home page. */
-export const skipWithoutEditableSeason = async (page: Page) => {
-    await openMenu(page);
-
-    const editable = await becomesVisible(
-        page.getByRole('button', { name: 'Wedstrijd toevoegen' }),
-    );
-
-    test.skip(
-        !editable,
-        'No active season for this user in staging, so nothing is editable.',
-    );
-};
 
 export const acceptConfirm = async (page: Page, acceptLabel: string) => {
     const confirmation = page.getByRole('alertdialog');
@@ -105,10 +113,15 @@ const openMatch = async (page: Page, opponent: string) => {
     return page.url();
 };
 
+/** `date` is `YYYY-MM-DD`; the dialog defaults to a home match today. */
 export const createMatch = async (
     page: Page,
     opponent: string,
-    { withSquad = true } = {},
+    {
+        withSquad = true,
+        date,
+        away = false,
+    }: { withSquad?: boolean; date?: string; away?: boolean } = {},
 ) => {
     await page.goto('/');
     await openMenu(page);
@@ -116,6 +129,13 @@ export const createMatch = async (
 
     const dialog = page.getByRole('dialog', { name: 'Wedstrijd toevoegen' });
     await dialog.getByLabel('Tegenstander').fill(opponent);
+
+    if (date) await pickDate(page, dialog.getByTestId('date-input'), date);
+
+    if (away) {
+        await dialog.getByLabel('Uit of thuis').click();
+        await page.getByRole('option', { name: 'Uit', exact: true }).click();
+    }
 
     // The dialog preselects the whole squad, so an empty match means
     // unpicking every option again.

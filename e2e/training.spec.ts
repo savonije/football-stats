@@ -1,14 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import {
-    becomesVisible,
-    deleteTraining,
-    login,
-    skipWithoutFirebaseConfig,
-    skipWithoutCredentials,
-    unlockTraining,
-    skipWithoutEditableSeason,
-} from './helpers/app';
+import { deleteTraining, login, unlockTraining } from './helpers/app';
 
 const pad = (value: number) => value.toString().padStart(2, '0');
 
@@ -86,10 +78,7 @@ test.describe('Trainings', () => {
     let trainingUrl = '';
 
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
-        skipWithoutCredentials();
         await login(page);
-        await skipWithoutEditableSeason(page);
     });
 
     test.afterEach(async ({ page }) => {
@@ -106,10 +95,7 @@ test.describe('Trainings', () => {
         });
 
         const free = await findFreeDay(page);
-        test.skip(
-            !free,
-            'Every day of this month already has a training in staging.',
-        );
+        test.skip(!free, 'Every day of this month already has a training.');
 
         const dayCell = page.locator(`[data-date="${free!.key}"]`);
 
@@ -123,12 +109,7 @@ test.describe('Trainings', () => {
         trainingUrl = page.url();
 
         const switches = page.getByRole('switch');
-        const hasSquad = await becomesVisible(switches.first(), 15_000);
-
-        test.skip(
-            !hasSquad,
-            'The active staging season has no players to mark attendance for.',
-        );
+        await expect(switches.first()).toBeVisible({ timeout: 15_000 });
 
         const total = await switches.count();
         const playerName =
@@ -195,12 +176,7 @@ test.describe('Trainings', () => {
         await unlockTraining(page);
 
         const switches = page.getByRole('switch');
-        const hasSquad = await becomesVisible(switches.first(), 15_000);
-
-        test.skip(
-            !hasSquad,
-            'The active staging season has no players to mark attendance for.',
-        );
+        await expect(switches.first()).toBeVisible({ timeout: 15_000 });
 
         const playerName =
             (await switches.first().getAttribute('aria-label')) ?? '';
@@ -258,8 +234,6 @@ test.describe('Trainings', () => {
 
 test.describe('Training attendance table', () => {
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
-        skipWithoutCredentials();
         await login(page);
         await page.goto('/training');
         await expect(attendanceRegion(page)).toBeVisible({ timeout: 15_000 });
@@ -323,10 +297,6 @@ test.describe('Training attendance table', () => {
 
 // The only spec here that does not sign in: the table is for coaches alone.
 test.describe('Training attendance table, signed out', () => {
-    test.beforeEach(() => {
-        skipWithoutFirebaseConfig();
-    });
-
     test('stays hidden', async ({ page }) => {
         await page.goto('/training');
 

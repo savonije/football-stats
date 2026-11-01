@@ -1,24 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-import {
-    becomesVisible,
-    createMatch,
-    deleteMatch,
-    login,
-    skipWithoutCredentials,
-    skipWithoutEditableSeason,
-    skipWithoutFirebaseConfig,
-    uniqueLabel,
-} from './helpers/app';
+import { createMatch, deleteMatch, login, uniqueLabel } from './helpers/app';
 
 test.describe('Goal banner', () => {
     let matchUrl = '';
 
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
-        skipWithoutCredentials();
         await login(page);
-        await skipWithoutEditableSeason(page);
     });
 
     test.afterEach(async ({ page }) => {
@@ -33,10 +21,7 @@ test.describe('Goal banner', () => {
         matchUrl = await createMatch(page, uniqueLabel('E2E banner'));
         await page.getByRole('button', { name: 'Start', exact: true }).click();
 
-        test.skip(
-            !(await becomesVisible(page.getByTestId('appearance').first())),
-            'No players in this match, so there is no scorer to pick.',
-        );
+        await expect(page.getByTestId('appearance').first()).toBeVisible();
 
         // The strip is collapsed but still in the DOM, so open/closed is read
         // from the screen reader announcement, which is only set while open.
@@ -52,8 +37,12 @@ test.describe('Goal banner', () => {
                 .click();
 
             await expect(page.getByTestId('score-against')).toHaveText('1');
+            // Not getByText: for its first second a toast also has an
+            // aria-hidden copy in a live region, which would match as well.
             await expect(
-                page.getByText('Doelpunt gemaakt door de tegenstander'),
+                page.getByRole('listitem').filter({
+                    hasText: 'Doelpunt gemaakt door de tegenstander',
+                }),
             ).toBeVisible();
             await expect(banner).not.toContainText('Doelpunt');
         });

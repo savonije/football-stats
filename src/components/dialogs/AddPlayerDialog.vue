@@ -87,7 +87,7 @@
         await playerStore.addPlayer({
             id: crypto.randomUUID(),
             name: form.name.trim(),
-            clothingSize: form.clothingSize || undefined,
+            ...(form.clothingSize && { clothingSize: form.clothingSize }),
             hasJacket: form.hasJacket,
             hasBag: form.hasBag,
             seasons: {
