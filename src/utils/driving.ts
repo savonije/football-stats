@@ -26,7 +26,8 @@ export interface DriveCount {
 /**
  * Stored drivers are the plan. An upcoming away match with a squad but no
  * drivers yet gets a proposal, in date order: vaste rijders first, then
- * whoever has driven least. A passed match that was never planned is left out.
+ * whoever has driven least. A passed match that was never planned is left out;
+ * an upcoming one without a squad stays in with no drivers.
  */
 export const planDriving = (
     matches: Match[],
@@ -92,7 +93,7 @@ export const planDriving = (
             const needed = Math.ceil(squad.length / playersPerCar);
             const saved = !!match.driving?.drivers;
 
-            if (!saved && (past || !squad.length)) return [];
+            if (!saved && past) return [];
 
             const drivers =
                 match.driving?.drivers ??

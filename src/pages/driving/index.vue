@@ -44,8 +44,9 @@
             if (loading.value || !canEdit.value) return;
             if (!settingsStore.drivingEnabled) return;
 
-            for (const { match, saved, drivers } of plan.value.plans) {
-                if (saved) continue;
+            for (const { match, saved, drivers, squadSize } of plan.value
+                .plans) {
+                if (saved || !squadSize) continue;
                 matchStore.updateMatchDriving(
                     seasonStore.currentSeason,
                     match.id,

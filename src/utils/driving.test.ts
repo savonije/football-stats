@@ -129,17 +129,24 @@ describe('planDriving', () => {
         expect(plans[0]?.drivers).toEqual(['daan', 'eva']);
     });
 
-    it('skips home matches, unplanned past matches and empty squads', () => {
+    it('skips home matches and unplanned past matches', () => {
         const { plans } = plan(
-            [
-                match('home', 20, { home: true }),
-                match('past', 10),
-                match('empty', 27),
-            ],
+            [match('home', 20, { home: true }), match('past', 10)],
             [...squad('home', everyone), ...squad('past', everyone)],
         );
 
         expect(plans).toEqual([]);
+    });
+
+    it('keeps an upcoming match without a squad, with no drivers', () => {
+        const { plans } = plan([match('empty', 27)], []);
+
+        expect(plans[0]).toMatchObject({
+            squadSize: 0,
+            needed: 0,
+            drivers: [],
+            saved: false,
+        });
     });
 
     it('reports a saved past match as driven', () => {

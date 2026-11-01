@@ -23,6 +23,8 @@ export default {
     players: '{count} speler | {count} spelers',
     cars: '{count} auto | {count} auto’s',
     noMatches: 'Geen uitwedstrijden in deze periode',
+    noPlayers:
+        'Er zijn 0 spelers geselecteerd voor deze wedstrijd. Voeg eerst spelers toe, dan wordt het rijschema gemaakt.',
     playersPerCar: 'Spelers per auto',
     addExtraCar: {
         title: 'Extra auto toevoegen',

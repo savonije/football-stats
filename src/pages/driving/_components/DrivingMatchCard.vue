@@ -144,118 +144,132 @@
             <span v-else class="text-primary-900">{{ meetingTime }}</span>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <UBadge
-                color="neutral"
-                icon="i-lucide-users"
-                :label="t('driving.players', plan.squadSize)"
-                variant="subtle"
-            />
-            <UBadge
-                icon="i-lucide-car"
-                :label="t('driving.cars', cars.length)"
-            />
-        </div>
-
-        <ul
-            class="m-0 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-2 lg:grid-cols-3"
-        >
-            <li
-                v-for="(car, index) in cars"
-                :key="index"
-                class="flex min-h-14 items-center gap-3 rounded-xl border py-1 pr-1 pl-3"
-                :class="[
-                    !car.playerId
-                        ? 'border-dashed border-amber-600 bg-amber-50 text-amber-800'
-                        : car.extra
-                          ? 'border-primary-300 bg-white'
-                          : 'border-primary-200 bg-primary-50',
-                ]"
-            >
-                <span
-                    class="flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold"
-                    :class="
-                        car.playerId
-                            ? 'bg-primary text-white'
-                            : 'border border-dashed border-amber-600'
-                    "
-                >
-                    {{ index + 1 }}
-                </span>
-
-                <div v-if="car.playerId" class="min-w-0 flex-1">
-                    <p class="text-primary-950 mb-0 truncate font-bold">
-                        {{ nameOf(car.playerId) }}
-                    </p>
-                    <p
-                        class="text-primary-600 mb-0 flex items-center gap-1 text-xs"
-                    >
-                        <UIcon
-                            v-if="!car.extra && isAlwaysDriver(car.playerId)"
-                            class="text-amber-700"
-                            name="i-lucide-star"
-                        />
-                        {{ carLabel(car.playerId, car.extra) }}
-                    </p>
-                </div>
-                <span v-else class="flex-1 text-sm font-semibold">
-                    {{ t('driving.driverNeeded') }}
-                </span>
-
-                <UButton
-                    v-if="editable && car.playerId"
-                    :aria-label="
-                        car.extra
-                            ? t('driving.removeExtraCar')
-                            : t('driving.cannotDriveLabel', {
-                                  name: nameOf(car.playerId),
-                              })
-                    "
-                    color="neutral"
-                    icon="i-lucide-x"
-                    size="lg"
-                    variant="ghost"
-                    @click="
-                        car.extra
-                            ? removeCar(index)
-                            : cannotDrive(index, car.playerId)
-                    "
-                />
-            </li>
-        </ul>
-
-        <div
-            v-if="editable && excluded.length"
-            class="text-primary-800 flex flex-wrap items-center gap-2 text-sm"
-        >
-            <span class="font-semibold">{{ t('driving.cannotDrive') }}</span>
-            <UButton
-                v-for="playerId in excluded"
-                :key="playerId"
-                :aria-label="
-                    t('driving.restoreLabel', { name: nameOf(playerId) })
-                "
-                class="rounded-full"
-                color="neutral"
-                size="sm"
-                trailing-icon="i-lucide-undo-2"
-                variant="outline"
-                @click="restore(playerId)"
-            >
-                <span class="line-through">{{ nameOf(playerId) }}</span>
-            </UButton>
-        </div>
-
-        <UButton
-            v-if="editable"
-            block
-            class="border-primary-300 border border-dashed"
-            icon="i-lucide-plus"
-            :label="t('driving.extraCar')"
-            size="lg"
-            variant="soft"
-            @click="addingCar = true"
+        <UAlert
+            v-if="!plan.squadSize"
+            color="warning"
+            icon="i-lucide-users"
+            :title="t('driving.noPlayers')"
+            variant="subtle"
         />
+
+        <template v-else>
+            <div class="flex flex-wrap items-center gap-2">
+                <UBadge
+                    color="neutral"
+                    icon="i-lucide-users"
+                    :label="t('driving.players', plan.squadSize)"
+                    variant="subtle"
+                />
+                <UBadge
+                    icon="i-lucide-car"
+                    :label="t('driving.cars', cars.length)"
+                />
+            </div>
+
+            <ul
+                class="m-0 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-2 lg:grid-cols-3"
+            >
+                <li
+                    v-for="(car, index) in cars"
+                    :key="index"
+                    class="flex min-h-14 items-center gap-3 rounded-xl border py-1 pr-1 pl-3"
+                    :class="[
+                        !car.playerId
+                            ? 'border-dashed border-amber-600 bg-amber-50 text-amber-800'
+                            : car.extra
+                              ? 'border-primary-300 bg-white'
+                              : 'border-primary-200 bg-primary-50',
+                    ]"
+                >
+                    <span
+                        class="flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold"
+                        :class="
+                            car.playerId
+                                ? 'bg-primary text-white'
+                                : 'border border-dashed border-amber-600'
+                        "
+                    >
+                        {{ index + 1 }}
+                    </span>
+
+                    <div v-if="car.playerId" class="min-w-0 flex-1">
+                        <p class="text-primary-950 mb-0 truncate font-bold">
+                            {{ nameOf(car.playerId) }}
+                        </p>
+                        <p
+                            class="text-primary-600 mb-0 flex items-center gap-1 text-xs"
+                        >
+                            <UIcon
+                                v-if="
+                                    !car.extra && isAlwaysDriver(car.playerId)
+                                "
+                                class="text-amber-700"
+                                name="i-lucide-star"
+                            />
+                            {{ carLabel(car.playerId, car.extra) }}
+                        </p>
+                    </div>
+                    <span v-else class="flex-1 text-sm font-semibold">
+                        {{ t('driving.driverNeeded') }}
+                    </span>
+
+                    <UButton
+                        v-if="editable && car.playerId"
+                        :aria-label="
+                            car.extra
+                                ? t('driving.removeExtraCar')
+                                : t('driving.cannotDriveLabel', {
+                                      name: nameOf(car.playerId),
+                                  })
+                        "
+                        color="neutral"
+                        icon="i-lucide-x"
+                        size="lg"
+                        variant="ghost"
+                        @click="
+                            car.extra
+                                ? removeCar(index)
+                                : cannotDrive(index, car.playerId)
+                        "
+                    />
+                </li>
+            </ul>
+
+            <div
+                v-if="editable && excluded.length"
+                class="text-primary-800 flex flex-wrap items-center gap-2 text-sm"
+            >
+                <span class="font-semibold">
+                    {{ t('driving.cannotDrive') }}
+                </span>
+                <UButton
+                    v-for="playerId in excluded"
+                    :key="playerId"
+                    :aria-label="
+                        t('driving.restoreLabel', { name: nameOf(playerId) })
+                    "
+                    class="rounded-full"
+                    color="neutral"
+                    size="sm"
+                    trailing-icon="i-lucide-undo-2"
+                    variant="outline"
+                    @click="restore(playerId)"
+                >
+                    <span class="line-through">{{ nameOf(playerId) }}</span>
+                </UButton>
+            </div>
+
+            <UButton
+                v-if="editable"
+                block
+                class="border-primary-300 border border-dashed"
+                icon="i-lucide-plus"
+                :label="t('driving.extraCar')"
+                size="lg"
+                variant="soft"
+                @click="addingCar = true"
+            />
+        </template>
 
         <ExtraCarDialog
             v-if="addingCar"
