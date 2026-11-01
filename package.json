@@ -54,7 +54,8 @@
     },
     "overrides": {
         "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-        "@grpc/grpc-js": "^1.14.0"
+        "@grpc/grpc-js": "^1.14.0",
+        "superstatic": "^11.1.0"
     },
     "devEngines": {
         "packageManager": {
