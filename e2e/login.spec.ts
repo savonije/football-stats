@@ -1,7 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { skipWithoutFirebaseConfig } from './helpers/app';
-
 const submit = async (page: Page, email: string, password: string) => {
     await page.getByTestId('input-email').fill(email);
     await page.getByTestId('input-password').fill(password);
@@ -10,7 +8,6 @@ const submit = async (page: Page, email: string, password: string) => {
 
 test.describe('Login errors', () => {
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
         await page.goto('/login');
     });
 

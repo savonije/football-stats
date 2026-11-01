@@ -2,13 +2,9 @@ import { expect, test } from '@playwright/test';
 
 import {
     acceptConfirm,
-    becomesVisible,
     createMatch,
     deleteMatch,
     login,
-    skipWithoutFirebaseConfig,
-    skipWithoutCredentials,
-    skipWithoutEditableSeason,
     uniqueLabel,
 } from './helpers/app';
 
@@ -18,10 +14,7 @@ test.describe('Match timer lifecycle', () => {
     let matchUrl = '';
 
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
-        skipWithoutCredentials();
         await login(page);
-        await skipWithoutEditableSeason(page);
     });
 
     test.afterEach(async ({ page }) => {
@@ -84,7 +77,7 @@ test.describe('Match timer lifecycle', () => {
 
         await test.step('record goals and revert them', async () => {
             const squad = page.getByTestId('appearance');
-            if (!(await becomesVisible(squad.first(), 15_000))) return;
+            await expect(squad.first()).toBeVisible({ timeout: 15_000 });
 
             const timeline = page.getByTestId('goal-timeline-item');
             const scoreFor = page.getByTestId('score-for');

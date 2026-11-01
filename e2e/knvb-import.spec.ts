@@ -6,9 +6,6 @@ import {
     createMatch,
     deleteMatch,
     login,
-    skipWithoutCredentials,
-    skipWithoutEditableSeason,
-    skipWithoutFirebaseConfig,
     uniqueLabel,
 } from './helpers/app';
 
@@ -78,10 +75,7 @@ test.describe('KNVB import', () => {
     let previousClientId: string | null = null;
 
     test.beforeEach(async ({ page }) => {
-        skipWithoutFirebaseConfig();
-        skipWithoutCredentials();
         await login(page);
-        await skipWithoutEditableSeason(page);
     });
 
     test.afterEach(async ({ page }) => {
@@ -96,22 +90,30 @@ test.describe('KNVB import', () => {
         page,
     }) => {
         const teamName = await page.locator('h1 span').last().innerText();
-        test.skip(!teamName.trim(), 'The staging season has no team name.');
 
         const existing = uniqueLabel('E2E bestaand');
         const conflicting = uniqueLabel('E2E knvb anders');
         const imported = uniqueLabel('E2E knvb nieuw');
         const code = Date.now();
 
+        // Not today: other specs add matches for today in parallel, and the
+        // sync would claim whichever of them it finds first. Not in the past
+        // either, since the sync drops those.
+        const tomorrow = dayjs().add(1, 'day');
+
         previousClientId = await setClientId(page, 'e2e-client');
-        matchUrls.push(await createMatch(page, existing));
+        matchUrls.push(
+            await createMatch(page, existing, {
+                date: tomorrow.format('YYYY-MM-DD'),
+            }),
+        );
 
         await mockSportlink(page, teamName, [
             // Same day as the match just created, different opponent: the
             // sync overwrites it with the KNVB one.
             {
                 code,
-                date: dayjs().endOf('day').subtract(1, 'minute'),
+                date: tomorrow.endOf('day').subtract(1, 'minute'),
                 opponent: conflicting,
             },
             {
@@ -156,7 +158,6 @@ test.describe('KNVB import', () => {
 
     test('scores an imported match on both sides', async ({ page }) => {
         const teamName = await page.locator('h1 span').last().innerText();
-        test.skip(!teamName.trim(), 'The staging season has no team name.');
 
         const opponent = uniqueLabel('E2E knvb score');
 
@@ -196,7 +197,6 @@ test.describe('KNVB import', () => {
 
     test('ends a goalless imported match at 0-0', async ({ page }) => {
         const teamName = await page.locator('h1 span').last().innerText();
-        test.skip(!teamName.trim(), 'The staging season has no team name.');
 
         const opponent = uniqueLabel('E2E knvb nul');
 

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
@@ -14,5 +14,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// Ports match the emulators block in firebase.json.
+if (import.meta.env.VITE_FIREBASE_EMULATOR === 'true') {
+    connectFirestoreEmulator(db, '127.0.0.1', 8180);
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+        disableWarnings: true,
+    });
+}
 
 export { db, auth };

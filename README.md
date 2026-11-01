@@ -89,14 +89,16 @@ npx playwright test e2e/home.spec.ts       # a single file
 npx playwright test -g "shows top scorers" # by test title
 ```
 
-The read-only specs run as-is. The specs that sign in and write (`match-lifecycle`, `match-players`, `training`, `knvb-import`) create data, drive it through the UI and delete it again, so they need a **staging** Firebase project — never production:
+The tests run against the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite), which Playwright starts and seeds itself, so they need no Firebase project, no credentials and no `.env`. Each run starts from an empty database with one seeded season, six players and a test user. Nothing is written to staging or production.
 
-1. Point `.env` at a staging project (`npm run test` builds with `--mode staging`, ignoring `.env.production`).
-2. Add an email/password user in that project only: Firebase Console → **Authentication → Users**.
-3. `cp .env.e2e.example .env.e2e` and fill in `E2E_EMAIL` / `E2E_PASSWORD`, plus `E2E_PROJECT_ID` if your staging project isn't this repo's default. Playwright loads the file automatically.
-4. Give staging an active season (`active: true`) with players in it — the edit UI is hidden otherwise.
+The Firestore emulator is a Java program, so install **Java 21+** once:
 
-Until that is done the write specs skip rather than fail. For CI, add the same variables to your repository secrets (see `.github/workflows/playwright.yml`).
+```sh
+brew install openjdk@21
+echo 'export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"' >> ~/.zshrc
+```
+
+To skip the emulator startup on every run, keep `npm run emulators` running in a second terminal; Playwright reuses it.
 
 ---
 
