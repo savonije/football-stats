@@ -1,10 +1,8 @@
 <script setup lang="ts">
-    import { useToast } from '@nuxt/ui/composables/useToast';
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { computed, onMounted, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
-    import GoalBanner from '@/pages/matches/_components/GoalBanner.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
@@ -30,7 +28,6 @@
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
-    const toast = useToast();
     const { t } = useI18n();
 
     const modal = ref(false);
@@ -68,28 +65,6 @@
         if (!played.value) return 'text-white/25';
         return lost(side) ? 'text-primary-300' : '';
     };
-
-    const scoredGoal = ref<MatchGoal>();
-
-    watch(
-        () => [match.id, match.goals?.length ?? 0] as const,
-        ([id, count], [previousId, previousCount]) => {
-            const goal = match.goals?.at(-1);
-            if (id !== previousId || count <= previousCount || !goal) return;
-
-            if (goal.side === 'for') {
-                scoredGoal.value = goal;
-                return;
-            }
-
-            toast.add({
-                title: t('match.goalTitleAgainst', { team: match.opponent }),
-                description: t('match.goalTypes.against'),
-                color: 'warning',
-                duration: 10000,
-            });
-        },
-    );
 
     const closeModal = () => {
         modal.value = false;
@@ -218,8 +193,6 @@
                 <slot />
             </div>
         </div>
-
-        <GoalBanner class="-mx-5" :goal="scoredGoal" />
 
         <UModal
             v-model:open="modal"

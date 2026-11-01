@@ -7,6 +7,7 @@
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
     import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
+    import GoalBanner from '@/pages/matches/_components/GoalBanner.vue';
     import GoalTimeline from '@/pages/matches/_components/GoalTimeline.vue';
     import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
     import MatchHero from '@/pages/matches/_components/MatchHero.vue';
@@ -84,6 +85,8 @@
             :match="matchStore.selectedMatch"
             :season-id="seasonStore.currentSeason"
         />
+
+        <GoalBanner :match="matchStore.selectedMatch" />
 
         <GoalTimeline :match="matchStore.selectedMatch" />
 

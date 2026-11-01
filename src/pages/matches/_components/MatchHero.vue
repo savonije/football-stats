@@ -160,128 +160,149 @@
 
 <template>
     <section
-        class="shadow-hero rounded-2xl p-5 text-white [background:var(--gradient-hero)]"
+        class="shadow-hero relative overflow-hidden rounded-2xl p-5 text-white [background:var(--gradient-hero)]"
         data-testid="match-hero"
     >
-        <h1 class="sr-only">{{ title }}</h1>
+        <div
+            class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-45 mix-blend-overlay"
+            aria-hidden="true"
+        />
 
-        <div class="flex items-center justify-between gap-3">
-            <span
-                class="tracking-badge text-xxs flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono font-bold uppercase"
-                :class="badge.class"
-            >
+        <div class="relative">
+            <h1 class="sr-only">{{ title }}</h1>
+
+            <div class="flex items-center justify-between gap-3">
                 <span
-                    v-if="badge.live"
-                    class="size-1.5 rounded-full bg-white motion-safe:animate-pulse"
-                    aria-hidden="true"
-                />
-                <UIcon v-if="badge.icon" class="size-3" :name="badge.icon" />
-                {{ badge.label }}
-            </span>
-
-            <span class="text-sm font-semibold" data-testid="match-status">
-                {{ status }}
-            </span>
-        </div>
-
-        <ScoreBoard class="mt-5" :match="match">
-            <div v-if="match.ended" class="flex flex-col items-center gap-1.5">
-                <span
-                    class="tracking-badge text-xxs text-primary-100 font-mono font-bold uppercase"
+                    class="tracking-badge text-xxs flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono font-bold uppercase"
+                    :class="badge.class"
                 >
-                    {{ t('match.finalScore') }}
-                </span>
-                <span
-                    class="text-primary-100 text-xs tabular-nums"
-                    data-testid="match-final-time"
-                >
-                    {{ formatMatchTime(getFinalSeconds(match, halfDuration)) }}
-                </span>
-            </div>
-
-            <div
-                v-else-if="isHalfTime"
-                class="flex flex-col items-center gap-1"
-            >
-                <span class="text-2xl leading-none font-extrabold">
-                    {{ t('match.halfTime') }}
-                </span>
-                <span class="text-primary-100 text-xs">
-                    {{
-                        t('match.halfTimeAt', {
-                            time: formatMatchTime(seconds),
-                        })
-                    }}
-                </span>
-            </div>
-
-            <div v-else-if="started" class="flex flex-col items-center gap-1">
-                <span
-                    class="text-2xl leading-none font-extrabold tabular-nums"
-                    :class="clockClass"
-                    data-testid="match-clock"
-                >
-                    {{ formatMatchTime(seconds) }}
-                </span>
-                <span
-                    class="text-primary-100 text-xs"
-                    :class="{ 'font-bold text-red-300': overtime }"
-                >
-                    {{ clockHint }}
-                </span>
-            </div>
-
-            <div
-                v-else-if="hasKickoffTime(date)"
-                class="flex flex-col items-center gap-1"
-            >
-                <span class="text-3xl leading-none font-black tabular-nums">
-                    {{ dayjs(date).format('HH:mm') }}
-                </span>
-                <span
-                    class="tracking-badge text-xxs text-primary-100 font-mono font-bold uppercase"
-                >
-                    {{ t('match.kickoff') }}
-                </span>
-            </div>
-
-            <div v-else class="flex flex-col items-center gap-1">
-                <span
-                    class="text-2xl leading-none font-extrabold tabular-nums"
-                    data-testid="match-clock"
-                >
-                    {{ formatMatchTime(0) }}
-                </span>
-                <span class="text-primary-100 text-xs">
-                    {{ t('match.noScoreYet') }}
-                </span>
-            </div>
-        </ScoreBoard>
-
-        <div v-if="started && !match.ended" class="mt-5">
-            <div class="grid grid-cols-2 gap-1.5">
-                <div
-                    v-for="(bar, index) in bars"
-                    :key="index"
-                    class="h-2 overflow-hidden rounded-full bg-white/15"
-                >
-                    <div
-                        class="h-full rounded-full"
-                        :class="bar.class"
-                        :style="{ width: `${bar.fill * 100}%` }"
+                    <span
+                        v-if="badge.live"
+                        class="size-1.5 rounded-full bg-white motion-safe:animate-pulse"
+                        aria-hidden="true"
                     />
+                    <UIcon
+                        v-if="badge.icon"
+                        class="size-3"
+                        :name="badge.icon"
+                    />
+                    {{ badge.label }}
+                </span>
+
+                <span class="text-sm font-semibold" data-testid="match-status">
+                    {{ status }}
+                </span>
+            </div>
+
+            <ScoreBoard class="mt-5" :match="match">
+                <div
+                    v-if="match.ended"
+                    class="flex flex-col items-center gap-1.5"
+                >
+                    <span
+                        class="tracking-badge text-xxs text-primary-100 font-mono font-bold uppercase"
+                    >
+                        {{ t('match.finalScore') }}
+                    </span>
+                    <span
+                        class="text-primary-100 text-xs tabular-nums"
+                        data-testid="match-final-time"
+                    >
+                        {{
+                            formatMatchTime(
+                                getFinalSeconds(match, halfDuration),
+                            )
+                        }}
+                    </span>
+                </div>
+
+                <div
+                    v-else-if="isHalfTime"
+                    class="flex flex-col items-center gap-1"
+                >
+                    <span class="text-2xl leading-none font-extrabold">
+                        {{ t('match.halfTime') }}
+                    </span>
+                    <span class="text-primary-100 text-xs">
+                        {{
+                            t('match.halfTimeAt', {
+                                time: formatMatchTime(seconds),
+                            })
+                        }}
+                    </span>
+                </div>
+
+                <div
+                    v-else-if="started"
+                    class="flex flex-col items-center gap-1"
+                >
+                    <span
+                        class="text-2xl leading-none font-extrabold tabular-nums"
+                        :class="clockClass"
+                        data-testid="match-clock"
+                    >
+                        {{ formatMatchTime(seconds) }}
+                    </span>
+                    <span
+                        class="text-primary-100 text-xs"
+                        :class="{ 'font-bold text-red-300': overtime }"
+                    >
+                        {{ clockHint }}
+                    </span>
+                </div>
+
+                <div
+                    v-else-if="hasKickoffTime(date)"
+                    class="flex flex-col items-center gap-1"
+                >
+                    <span class="text-3xl leading-none font-black tabular-nums">
+                        {{ dayjs(date).format('HH:mm') }}
+                    </span>
+                    <span
+                        class="tracking-badge text-xxs text-primary-100 font-mono font-bold uppercase"
+                    >
+                        {{ t('match.kickoff') }}
+                    </span>
+                </div>
+
+                <div v-else class="flex flex-col items-center gap-1">
+                    <span
+                        class="text-2xl leading-none font-extrabold tabular-nums"
+                        data-testid="match-clock"
+                    >
+                        {{ formatMatchTime(0) }}
+                    </span>
+                    <span class="text-primary-100 text-xs">
+                        {{ t('match.noScoreYet') }}
+                    </span>
+                </div>
+            </ScoreBoard>
+
+            <div v-if="started && !match.ended" class="mt-5">
+                <div class="grid grid-cols-2 gap-1.5">
+                    <div
+                        v-for="(bar, index) in bars"
+                        :key="index"
+                        class="h-2 overflow-hidden rounded-full bg-white/15"
+                    >
+                        <div
+                            class="h-full rounded-full"
+                            :class="bar.class"
+                            :style="{ width: `${bar.fill * 100}%` }"
+                        />
+                    </div>
+                </div>
+
+                <div
+                    class="text-xxs text-primary-100 mt-1.5 flex justify-between font-mono"
+                >
+                    <span>0'</span>
+                    <span>{{ t('match.halfTime') }}</span>
+                    <span>{{ halfDuration * 2 }}'</span>
                 </div>
             </div>
 
-            <div
-                class="text-xxs text-primary-100 mt-1.5 flex justify-between font-mono"
-            >
-                <span>0'</span>
-                <span>{{ t('match.halfTime') }}</span>
-                <span>{{ halfDuration * 2 }}'</span>
-            </div>
+            <MatchControls :season-id="seasonId" />
         </div>
-
-        <MatchControls :season-id="seasonId" />
     </section>
 </template>
