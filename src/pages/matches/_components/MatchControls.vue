@@ -28,13 +28,10 @@
         () => !!match.value?.paused && started.value && !isHalfTime.value,
     );
 
-    const statusLabel = computed(() => {
-        if (!started.value) return t('match.readyToKickOff');
-        if (isHalfTime.value) return t('match.halfTime');
-        if (isPaused.value) return t('match.isPaused');
-
-        return t('match.running');
-    });
+    const primary =
+        'h-12 w-full justify-center rounded-xl bg-white text-base font-extrabold text-primary-900 hover:bg-primary-50';
+    const secondary =
+        'h-12 w-full justify-center rounded-xl border border-white/30 bg-white/10 text-base font-bold text-white hover:bg-white/20';
 
     const startMatch = () => {
         if (!matchId.value) return;
@@ -90,73 +87,60 @@
 <template>
     <div
         v-if="canEdit && match && !match.ended"
-        class="shadow-card mt-4 flex flex-col gap-2.5 rounded-xl bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+        class="mt-5 grid gap-2.5"
+        :class="{ 'grid-cols-2': isRunning }"
     >
-        <div class="text-primary-500 hidden text-sm font-medium sm:block">
-            <span>{{ statusLabel }}</span>
-            <span
-                v-if="isRunning && !isHalfTime"
-                class="animate-dots inline-block motion-reduce:animate-none"
-                aria-hidden="true"
-                >...</span
-            >
-        </div>
+        <UButton
+            v-if="!started"
+            :class="primary"
+            color="neutral"
+            icon="i-lucide-play"
+            :label="t('match.controls.start')"
+            @click="startMatch"
+        />
 
-        <div class="flex flex-col-reverse gap-2.5 sm:flex-row sm:items-center">
+        <UButton
+            v-if="isPaused"
+            :class="primary"
+            color="neutral"
+            icon="i-lucide-play"
+            :label="t('common.resume')"
+            @click="resumeMatch"
+        />
+
+        <UButton
+            v-if="isHalfTime"
+            :class="primary"
+            color="neutral"
+            icon="i-lucide-play"
+            :label="t('match.controls.startSecondHalf')"
+            @click="startSecondHalf"
+        />
+
+        <template v-if="isRunning">
             <UButton
-                v-if="isRunning"
-                class="w-full justify-center sm:w-auto"
+                :class="secondary"
                 color="neutral"
                 icon="i-lucide-pause"
                 :label="t('common.pause')"
-                variant="outline"
                 @click="pauseMatch"
             />
 
             <UButton
-                v-if="!started"
-                class="w-full justify-center sm:w-auto"
-                color="success"
-                icon="i-lucide-play"
-                :label="t('common.start')"
-                @click="startMatch"
-            />
-
-            <UButton
-                v-if="isPaused"
-                class="w-full justify-center sm:w-auto"
-                color="success"
-                icon="i-lucide-play"
-                :label="t('common.resume')"
-                @click="resumeMatch"
-            />
-
-            <UButton
-                v-if="isRunning && half === 1"
-                class="w-full justify-center sm:w-auto"
-                color="warning"
-                icon="i-lucide-flag"
-                :label="t('match.endFirstHalf')"
+                v-if="half === 1"
+                :class="primary"
+                color="neutral"
+                :label="t('match.controls.endFirstHalf')"
                 @click="endFirstHalf"
             />
 
             <UButton
-                v-if="isHalfTime"
-                class="w-full justify-center sm:w-auto"
-                color="success"
-                icon="i-lucide-play"
-                :label="t('match.startSecondHalf')"
-                @click="startSecondHalf"
-            />
-
-            <UButton
-                v-if="isRunning && half === 2"
-                class="w-full justify-center sm:w-auto"
+                v-else
+                class="h-12 w-full justify-center rounded-xl text-base font-extrabold"
                 color="error"
-                icon="i-lucide-flag"
-                :label="t('match.endMatch')"
+                :label="t('match.controls.endMatch')"
                 @click="endMatch"
             />
-        </div>
+        </template>
     </div>
 </template>
