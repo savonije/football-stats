@@ -55,8 +55,24 @@
         () => !!liveMatch.value?.paused && !isHalfTime.value,
     );
 
+    const badge = computed(() => {
+        if (isHalfTime.value)
+            return {
+                label: t('match.halfTime'),
+                class: 'bg-white text-primary-900',
+            };
+        if (isPaused.value)
+            return {
+                label: t('match.paused'),
+                class: 'bg-amber text-primary-950',
+                icon: 'i-lucide-pause',
+            };
+
+        return { label: t('match.live'), class: 'bg-red-600', live: true };
+    });
+
     const statusLabel = computed(() => {
-        if (isHalfTime.value) return t('match.halfTime');
+        if (isHalfTime.value) return t('match.firstHalfPlayed');
 
         return liveMatch.value?.half === 2
             ? t('match.secondHalf')
@@ -96,10 +112,10 @@
 <template>
     <div
         v-if="liveMatch"
-        class="shadow-card relative overflow-hidden rounded-2xl [background:var(--gradient-frost)]"
+        class="shadow-hero relative overflow-hidden rounded-2xl text-white [background:var(--gradient-hero)]"
     >
         <div
-            class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-18 mix-blend-multiply"
+            class="pointer-events-none absolute inset-0 bg-[image:var(--texture-noise)] opacity-45 mix-blend-overlay"
             aria-hidden="true"
         />
 
@@ -109,50 +125,39 @@
         >
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span
-                    v-if="isPaused"
-                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-amber-600 uppercase"
+                    class="tracking-badge text-xxs flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono font-bold uppercase"
+                    :class="badge.class"
                 >
-                    <UIcon name="i-lucide-pause" />
-                    {{ t('match.paused') }}
+                    <span
+                        v-if="badge.live"
+                        class="size-1.5 rounded-full bg-white motion-safe:animate-pulse"
+                        aria-hidden="true"
+                    />
+                    <UIcon
+                        v-if="badge.icon"
+                        class="size-3"
+                        :name="badge.icon"
+                    />
+                    {{ badge.label }}
                 </span>
 
-                <span
-                    v-else
-                    class="tracking-badge text-xxs flex items-center gap-1.5 font-mono font-bold text-red-600 uppercase"
-                >
-                    <span class="relative flex size-2.5">
-                        <span
-                            class="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75"
-                            aria-hidden="true"
-                        />
-                        <span
-                            class="relative inline-flex size-2.5 rounded-full bg-red-500"
-                        />
-                    </span>
-                    {{ t('match.live') }}
-                </span>
-
-                <span class="text-sm font-bold text-amber-600 tabular-nums">
+                <span class="text-sm font-bold text-amber-300 tabular-nums">
                     {{ currentMinute }}&prime;
                 </span>
 
-                <span
-                    class="tracking-badge text-xxs text-primary-500 font-mono font-bold uppercase"
-                >
+                <span class="text-primary-100 text-sm font-semibold">
                     {{ statusLabel }}
                 </span>
             </div>
 
-            <div class="mt-2 flex flex-col gap-0.5">
+            <div class="mt-3 flex flex-col gap-0.5">
                 <div
                     v-for="side in sides"
                     :key="side.type"
                     class="flex items-baseline gap-3"
-                    :class="
-                        leader && leader !== side.type
-                            ? 'text-primary-400'
-                            : 'text-primary-950'
-                    "
+                    :class="{
+                        'text-primary-300': leader && leader !== side.type,
+                    }"
                 >
                     <span
                         class="min-w-0 flex-1 truncate text-lg font-bold sm:text-xl"
@@ -174,18 +179,22 @@
 
             <div class="mt-3 flex items-center gap-3">
                 <span
-                    class="bg-primary-900/10 h-1.5 w-full overflow-hidden rounded-full"
+                    class="h-2 w-full overflow-hidden rounded-full bg-white/15"
                 >
                     <span
                         class="block h-full rounded-full"
-                        :class="overtime ? 'bg-red-500' : 'bg-amber'"
+                        :class="{
+                            'bg-red-300': overtime,
+                            'bg-amber-300': !overtime && isPaused,
+                            'bg-white': !overtime && !isPaused,
+                        }"
                         :style="{ width: `${progress * 100}%` }"
                     />
                 </span>
 
                 <span
                     v-if="minutesLeft > 0"
-                    class="text-primary-500 shrink-0 text-xs font-semibold"
+                    class="text-primary-100 shrink-0 text-xs font-semibold"
                 >
                     {{ t('match.minutesLeft', { count: minutesLeft }) }}
                 </span>
