@@ -58,6 +58,7 @@ export interface NewMatch {
     knvbCode?: number;
     venue?: MatchVenue;
     referee?: string;
+    meetingTime?: string;
 }
 
 export interface Appearance {

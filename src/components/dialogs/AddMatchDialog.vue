@@ -7,6 +7,7 @@
     import DatePicker from '@/components/ui/DatePicker.vue';
 
     import { useAppToast } from '@/composables/useAppToast';
+    import { CLUBNAME } from '@/constants';
     import { addMatch } from '@/services/matchService';
     import { usePlayerStore } from '@/stores/playerStore';
     import { useSeasonStore } from '@/stores/seasonStore';
@@ -28,6 +29,7 @@
         players: [],
         washing: '',
         referee: '',
+        meetingTime: '',
         result: { goalsFor: 0, goalsAgainst: 0 },
     });
 
@@ -139,14 +141,28 @@
                     </div>
                 </div>
 
-                <div>
-                    <label for="home">{{ t('common.homeOrAway') }}</label>
-                    <USelect
-                        id="home"
-                        v-model="form.home"
-                        class="w-full"
-                        :items="homeOptions"
-                    />
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label for="home">{{ t('common.homeOrAway') }}</label>
+                        <USelect
+                            id="home"
+                            v-model="form.home"
+                            class="w-full"
+                            :items="homeOptions"
+                        />
+                    </div>
+
+                    <div class="w-32">
+                        <label for="meetingTime">
+                            {{ t('driving.meetingTime', { club: CLUBNAME }) }}
+                        </label>
+                        <UInput
+                            id="meetingTime"
+                            v-model="form.meetingTime"
+                            class="w-full"
+                            type="time"
+                        />
+                    </div>
                 </div>
 
                 <div>

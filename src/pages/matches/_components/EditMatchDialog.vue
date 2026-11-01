@@ -37,6 +37,7 @@
     const field = ref('');
     const dressingRoom = ref('');
     const referee = ref('');
+    const meetingTime = ref('');
     const goalsFor = ref(0);
     const goalsAgainst = ref(0);
     const loading = ref(false);
@@ -72,6 +73,7 @@
                 field: field.value.trim(),
                 dressingRoom: dressingRoom.value.trim(),
                 referee: referee.value.trim(),
+                meetingTime: meetingTime.value,
                 goalsFor: goalsFor.value,
                 goalsAgainst: goalsAgainst.value,
             });
@@ -101,6 +103,7 @@
         field.value = match?.field ?? '';
         dressingRoom.value = match?.dressingRoom ?? '';
         referee.value = match?.referee ?? '';
+        meetingTime.value = match?.driving?.meetingTime ?? '';
         goalsFor.value = match?.result?.goalsFor ?? 0;
         goalsAgainst.value = match?.result?.goalsAgainst ?? 0;
     });
@@ -144,14 +147,28 @@
                     </div>
                 </div>
 
-                <div>
-                    <label for="home">{{ t('common.homeOrAway') }}</label>
-                    <USelect
-                        id="home"
-                        v-model="home"
-                        class="w-full"
-                        :items="homeOptions"
-                    />
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label for="home">{{ t('common.homeOrAway') }}</label>
+                        <USelect
+                            id="home"
+                            v-model="home"
+                            class="w-full"
+                            :items="homeOptions"
+                        />
+                    </div>
+
+                    <div class="w-32">
+                        <label for="meetingTime">
+                            {{ t('driving.meetingTime', { club: CLUBNAME }) }}
+                        </label>
+                        <UInput
+                            id="meetingTime"
+                            v-model="meetingTime"
+                            class="w-full"
+                            type="time"
+                        />
+                    </div>
                 </div>
 
                 <div>

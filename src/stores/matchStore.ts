@@ -83,11 +83,12 @@ export const useMatchStore = defineStore('matchStore', {
                 date: Date;
                 home: boolean;
                 referee: string;
+                meetingTime: string;
                 goalsFor: number;
                 goalsAgainst: number;
             },
         ) {
-            const { goalsFor, goalsAgainst, ...match } = data;
+            const { goalsFor, goalsAgainst, meetingTime, ...match } = data;
             const limit = { for: goalsFor, against: goalsAgainst };
             const seen = { for: 0, against: 0 };
             const goals: MatchGoal[] = [];
@@ -111,6 +112,7 @@ export const useMatchStore = defineStore('matchStore', {
             return Promise.all([
                 updateDoc(doc(db, `seasons/${seasonId}/matches/${matchId}`), {
                     ...match,
+                    'driving.meetingTime': meetingTime,
                     result: { goalsFor, goalsAgainst },
                     goals,
                 }),

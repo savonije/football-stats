@@ -48,20 +48,5 @@
             trailing
             variant="soft"
         />
-
-        <span v-if="row.aside" class="flex shrink-0 flex-col items-end">
-            <span
-                class="text-primary-900 font-extrabold tabular-nums"
-                :class="compact && 'text-sm leading-snug'"
-            >
-                {{ row.aside.value }}
-            </span>
-            <span
-                class="text-gray-600"
-                :class="compact ? 'text-xxs' : 'text-xs'"
-            >
-                {{ row.aside.label }}
-            </span>
-        </span>
     </div>
 </template>

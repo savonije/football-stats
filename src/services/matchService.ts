@@ -26,6 +26,9 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
             ...(match.knvbCode && { knvbCode: match.knvbCode }),
             ...match.venue,
             ...(match.referee && { referee: match.referee }),
+            ...(match.meetingTime && {
+                driving: { meetingTime: match.meetingTime },
+            }),
             createdAt: serverTimestamp(),
             ended: false,
             paused: false,

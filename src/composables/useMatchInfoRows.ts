@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { CLUBNAME } from '@/constants';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import type { Match } from '@/types';
@@ -10,7 +11,6 @@ export interface MatchInfoRow {
     label: string;
     value: string;
     href?: string;
-    aside?: { value: string; label: string };
 }
 
 /** Sportlink fills in "3" or "Veld 3" alike; both should read "Veld 3". */
@@ -48,25 +48,14 @@ export const useMatchInfoRows = (match: () => Match | null) => {
         };
     };
 
-    const drivingRow = (m: Match): MatchInfoRow | null => {
-        const driving =
-            settingsStore.drivingEnabled && !m.home ? m.driving : null;
-        if (!driving?.drivers?.length && !driving?.meetingTime) return null;
-
-        return {
-            icon: 'i-lucide-car',
-            label: t('driving.drivers'),
-            value:
-                driving.drivers?.map(playerName).join(', ') ||
-                t('driving.notPlanned'),
-            aside: driving.meetingTime
-                ? {
-                      value: driving.meetingTime,
-                      label: t('driving.meetingLabel'),
-                  }
-                : undefined,
-        };
-    };
+    const drivingRow = (m: Match): MatchInfoRow | null =>
+        settingsStore.drivingEnabled && !m.home && m.driving?.drivers?.length
+            ? {
+                  icon: 'i-lucide-car',
+                  label: t('driving.drivers'),
+                  value: m.driving.drivers.map(playerName).join(', '),
+              }
+            : null;
 
     return computed(() => {
         const m = match();
@@ -87,6 +76,13 @@ export const useMatchInfoRows = (match: () => Match | null) => {
                       icon: 'i-lucide-whistle',
                       label: t('match.referee'),
                       value: m.referee,
+                  }
+                : null,
+            m.driving?.meetingTime
+                ? {
+                      icon: 'i-lucide-clock',
+                      label: t('driving.meetingTime', { club: CLUBNAME }),
+                      value: m.driving.meetingTime,
                   }
                 : null,
             drivingRow(m),

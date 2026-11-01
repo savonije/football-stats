@@ -31,6 +31,13 @@
 
     const rows = useMatchInfoRows(() => nextMatch.value);
 
+    const isLocation = (row: { icon: string }) =>
+        row.icon === 'i-lucide-map-pin';
+    const locationRow = computed(() => rows.value.find(isLocation));
+    const otherRows = computed(() =>
+        rows.value.filter((row) => !isLocation(row)),
+    );
+
     const date = computed(() => nextMatch.value?.date.toDate());
 
     const formatDate = (options: Intl.DateTimeFormatOptions) =>
@@ -103,6 +110,16 @@
             </div>
         </div>
 
-        <MatchInfoRow v-for="row in rows" :key="row.icon" compact :row />
+        <MatchInfoRow v-if="locationRow" compact :row="locationRow" />
+
+        <div class="grid md:grid-cols-2">
+            <MatchInfoRow
+                v-for="row in otherRows"
+                :key="row.icon"
+                class="border-primary-100 md:odd:not-last:border-r md:odd:last:col-span-2"
+                compact
+                :row
+            />
+        </div>
     </RouterLink>
 </template>
