@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore';
 
 import { db } from '@/firebase';
+import { usePlayerStore } from '@/stores/playerStore';
 import type { NewMatch } from '@/types';
 
 export const addMatch = async (seasonId: string, match: NewMatch) => {
@@ -38,13 +39,17 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
     const playerIds = match.playerIds || [];
 
     if (playerIds.length) {
+        const playerStore = usePlayerStore();
         const batch = writeBatch(db);
         const appearancesCollection = collection(matchRef, 'appearances');
         for (const playerId of playerIds) {
             batch.set(doc(appearancesCollection), {
                 playerId,
                 present: true,
-                isGoalkeeper: false,
+                isGoalkeeper: playerStore.isDefaultGoalkeeper(
+                    playerId,
+                    seasonId,
+                ),
                 goals: 0,
                 seasonId,
             });

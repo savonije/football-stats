@@ -65,7 +65,10 @@
                         playerId,
                         present: true,
                         goals: 0,
-                        isGoalkeeper: false,
+                        isGoalkeeper: playerStore.isDefaultGoalkeeper(
+                            playerId,
+                            seasonId,
+                        ),
                         seasonId,
                         matchId,
                     });

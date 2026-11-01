@@ -23,7 +23,11 @@
     const CLOTHING_SIZES = ['164', '158', '152', '146', '140', '134', '128'];
 
     const editForm = ref<Partial<Player>>({});
-    const editSeason = ref({ active: true, guestPlayer: false });
+    const editSeason = ref({
+        active: true,
+        guestPlayer: false,
+        defaultGoalkeeper: false,
+    });
 
     const closeDialog = () => (visible.value = false);
 
@@ -68,6 +72,7 @@
         editSeason.value = {
             active: info?.active ?? true,
             guestPlayer: info?.guestPlayer ?? false,
+            defaultGoalkeeper: info?.defaultGoalkeeper ?? false,
         };
     });
 </script>
@@ -121,6 +126,10 @@
                     <UCheckbox
                         v-model="editSeason.guestPlayer"
                         :label="$t('player.guestPlayer')"
+                    />
+                    <UCheckbox
+                        v-model="editSeason.defaultGoalkeeper"
+                        :label="$t('player.defaultGoalkeeper')"
                     />
                 </div>
             </div>

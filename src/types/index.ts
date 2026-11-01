@@ -91,6 +91,7 @@ export interface PlayerSeasonInfo {
     guestPlayer: boolean;
     alwaysDrives?: boolean;
     neverDrives?: boolean;
+    defaultGoalkeeper?: boolean;
 }
 
 export interface Player {

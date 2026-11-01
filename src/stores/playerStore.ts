@@ -11,7 +11,10 @@ import { defineStore } from 'pinia';
 
 import { db } from '@/firebase';
 import type { Player, PlayerSeasonInfo } from '@/types';
-import { isActiveInSeason } from '@/utils/playerSeason';
+import {
+    isActiveInSeason,
+    isDefaultGoalkeeperInSeason,
+} from '@/utils/playerSeason';
 
 export const usePlayerStore = defineStore('playerStore', {
     state: (): {
@@ -56,6 +59,10 @@ export const usePlayerStore = defineStore('playerStore', {
             return updateDoc(doc(db, 'players', playerId), {
                 [`seasons.${seasonId}.active`]: info.active,
                 [`seasons.${seasonId}.guestPlayer`]: info.guestPlayer,
+                ...(info.defaultGoalkeeper !== undefined && {
+                    [`seasons.${seasonId}.defaultGoalkeeper`]:
+                        info.defaultGoalkeeper,
+                }),
             });
         },
 
@@ -85,5 +92,12 @@ export const usePlayerStore = defineStore('playerStore', {
             [...state.players]
                 .filter((player) => isActiveInSeason(player, seasonId))
                 .sort((a, b) => a.name.localeCompare(b.name)),
+        isDefaultGoalkeeper:
+            (state) => (playerId: string, seasonId: string) => {
+                const player = state.players.find((p) => p.id === playerId);
+                return (
+                    !!player && isDefaultGoalkeeperInSeason(player, seasonId)
+                );
+            },
     },
 });

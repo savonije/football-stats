@@ -7,7 +7,10 @@
     import { useIsAdmin } from '@/composables/useIsAdmin';
     import { useSeasonStore } from '@/stores/seasonStore';
     import type { Player } from '@/types';
-    import { isGuestInSeason } from '@/utils/playerSeason';
+    import {
+        isDefaultGoalkeeperInSeason,
+        isGuestInSeason,
+    } from '@/utils/playerSeason';
 
     const { player, loading } = defineProps<{
         player: Player | null;
@@ -19,6 +22,12 @@
 
     const isGuest = computed(() =>
         player ? isGuestInSeason(player, seasonStore.currentSeason) : false,
+    );
+
+    const isDefaultGoalkeeper = computed(() =>
+        player
+            ? isDefaultGoalkeeperInSeason(player, seasonStore.currentSeason)
+            : false,
     );
 </script>
 
@@ -61,6 +70,17 @@
                 :label="$t('player.guestPlayer')"
                 :value="isGuest ? $t('common.yes') : $t('common.no')"
                 :value-class="isGuest ? 'text-green-700' : 'text-red-700'"
+            />
+            <InfoRow
+                gradient="var(--gradient-accent-green)"
+                icon="i-lucide-hand"
+                :label="$t('player.defaultGoalkeeper')"
+                :value="
+                    isDefaultGoalkeeper ? $t('common.yes') : $t('common.no')
+                "
+                :value-class="
+                    isDefaultGoalkeeper ? 'text-green-700' : 'text-red-700'
+                "
             />
         </ul>
     </UCard>

@@ -4,6 +4,7 @@ export default {
     allPlayersActive: 'Alle spelers zijn al actief dit seizoen',
     existingPlayer: 'Bestaande speler',
     newPlayer: 'Nieuwe speler',
+    defaultGoalkeeper: 'Vaste keeper',
     deletePlayer: 'Speler verwijderen',
     editPlayer: 'Speler bewerken',
     guestPlayer: 'Gastspeler',
