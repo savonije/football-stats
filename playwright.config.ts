@@ -28,6 +28,14 @@ export default defineConfig({
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
+            testIgnore: 'settings.spec.ts',
+        },
+        {
+            // Switches off features the other specs need, so it waits for them.
+            name: 'settings',
+            use: { ...devices['Desktop Chrome'] },
+            testMatch: 'settings.spec.ts',
+            dependencies: ['chromium'],
         },
     ],
     webServer: [
