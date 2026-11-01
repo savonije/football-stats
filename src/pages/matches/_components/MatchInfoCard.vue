@@ -119,18 +119,10 @@
             />
         </summary>
 
-        <component
-            :is="row.href ? 'a' : 'div'"
+        <div
             v-for="row in rows"
             :key="row.icon"
-            class="border-primary-100 flex items-center gap-3.5 border-t px-4 py-3.5 text-inherit no-underline"
-            v-bind="
-                row.href && {
-                    href: row.href,
-                    target: '_blank',
-                    rel: 'noopener',
-                }
-            "
+            class="border-primary-100 flex items-center gap-3.5 border-t px-4 py-3.5"
         >
             <span
                 class="bg-primary-50 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg"
@@ -143,6 +135,18 @@
                 <span class="text-primary-900 font-bold">{{ row.value }}</span>
             </span>
 
+            <UButton
+                v-if="row.href"
+                class="shrink-0"
+                :aria-label="t('match.venue.openInMaps')"
+                :label="t('match.venue.maps')"
+                size="sm"
+                target="_blank"
+                :to="row.href"
+                trailing
+                variant="soft"
+            />
+
             <span v-if="row.aside" class="flex shrink-0 flex-col items-end">
                 <span class="text-primary-900 font-extrabold tabular-nums">
                     {{ row.aside.value }}
@@ -151,12 +155,6 @@
                     {{ row.aside.label }}
                 </span>
             </span>
-
-            <UIcon
-                v-if="row.href"
-                class="text-primary-600 size-5 shrink-0"
-                name="i-lucide-chevron-right"
-            />
-        </component>
+        </div>
     </details>
 </template>

@@ -89,5 +89,7 @@ export default {
         field: 'Veld',
         fieldAndDressingRoom: 'Veld en kleedkamer',
         location: 'Locatie',
+        maps: 'Google Maps',
+        openInMaps: 'Open in Google Maps',
     },
 };
