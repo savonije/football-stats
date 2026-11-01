@@ -176,7 +176,7 @@ So before amending, append the link to the notes file yourself, or you'll silent
 
 ```bash
 npm run build      # type-check + vp build → dist/. If this fails, STOP.
-firebase deploy    # deploys dist/ to Firebase Hosting
+firebase deploy    # deploys dist/ to Firebase Hosting and firestore.rules
 ```
 
 If `npm run build` fails **after** the tag/release were already created, don't leave prod

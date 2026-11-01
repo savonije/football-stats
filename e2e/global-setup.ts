@@ -1,44 +1,27 @@
-import { initializeApp } from 'firebase/app';
-import {
-    connectAuthEmulator,
-    createUserWithEmailAndPassword,
-    getAuth,
-} from 'firebase/auth';
-import {
-    connectFirestoreEmulator,
-    doc,
-    getFirestore,
-    terminate,
-    writeBatch,
-} from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, terminate, writeBatch } from 'firebase/firestore';
 
-import { E2E_EMAIL, E2E_PASSWORD } from './helpers/app';
+import { E2E_EMAIL, E2E_PASSWORD, emulatorClient } from './helpers/app';
 
-const PROJECT_ID = 'demo-football-stats';
-const FIRESTORE = 'http://127.0.0.1:8180';
-const AUTH = 'http://127.0.0.1:9099';
 const SEASON = '2026-2027';
-
 const PLAYERS = ['Anna', 'Bram', 'Cees', 'Daan', 'Eva', 'Fenna'];
+
+const wipe = (url: string) => fetch(url, { method: 'DELETE' });
 
 /** Wipes both emulators and seeds one editable season with a squad. */
 export default async () => {
     await Promise.all([
-        fetch(
-            `${FIRESTORE}/emulator/v1/projects/${PROJECT_ID}/databases/(default)/documents`,
-            { method: 'DELETE' },
+        wipe(
+            'http://127.0.0.1:8180/emulator/v1/projects/demo-football-stats/databases/(default)/documents',
         ),
-        fetch(`${AUTH}/emulator/v1/projects/${PROJECT_ID}/accounts`, {
-            method: 'DELETE',
-        }),
+        wipe(
+            'http://127.0.0.1:9099/emulator/v1/projects/demo-football-stats/accounts',
+        ),
     ]);
 
-    const app = initializeApp({ projectId: PROJECT_ID, apiKey: 'demo' });
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    connectFirestoreEmulator(db, '127.0.0.1', 8180);
-    connectAuthEmulator(auth, AUTH, { disableWarnings: true });
+    const { db, auth } = emulatorClient('global-setup');
 
+    // Signs the client in too, which firestore.rules requires for the seed.
     await createUserWithEmailAndPassword(auth, E2E_EMAIL, E2E_PASSWORD);
 
     const batch = writeBatch(db);

@@ -1,8 +1,27 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { initializeApp } from 'firebase/app';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 
 // Created by global-setup.ts in the Auth emulator, so it exists nowhere else.
 export const E2E_EMAIL = 'coach@example.test';
 export const E2E_PASSWORD = 'e2e-password';
+
+/** A Node-side Firebase client on the emulators, as the e2e build connects. */
+export const emulatorClient = (name: string) => {
+    const app = initializeApp(
+        { projectId: 'demo-football-stats', apiKey: 'demo' },
+        name,
+    );
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    connectFirestoreEmulator(db, '127.0.0.1', 8180);
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+        disableWarnings: true,
+    });
+
+    return { app, db, auth };
+};
 
 export const uniqueLabel = (prefix: string) =>
     `${prefix} ${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`;

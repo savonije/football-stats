@@ -149,7 +149,7 @@ This writes two files. `firebase.json` holds the hosting config (it serves `dist
 }
 ```
 
-Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A bare `firebase deploy` targets `default`, so point that at the project you actually want to publish to and use a named alias (`firebase deploy -P prod`) for the others. `.firebaserc` is gitignored, so each clone sets its own. Note the e2e tests don't read it: they pick their project from `.env` (see above).
+Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A bare `firebase deploy` targets `default`, so point that at the project you actually want to publish to and use a named alias (`firebase deploy -P prod`) for the others. `.firebaserc` is gitignored, so each clone sets its own. The e2e tests don't read it: they run against the local emulators (see above).
 
 ### 4. Deploy
 
@@ -157,6 +157,8 @@ Replace each `""` with a Firebase project ID — see `.firebaserc.example`. A ba
 npm run build
 firebase deploy
 ```
+
+This deploys Hosting and the Firestore security rules in `firestore.rules`. Change rules in that file, not in the Firebase console, or the next deploy overwrites the console version.
 
 ---
 
