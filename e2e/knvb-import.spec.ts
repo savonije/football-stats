@@ -179,7 +179,7 @@ test.describe('KNVB import', () => {
         await expect(page).toHaveURL(/\/match\/.+/);
         matchUrls.push(page.url());
 
-        await page.getByRole('button', { name: 'Start', exact: true }).click();
+        await page.getByRole('button', { name: 'Start wedstrijd' }).click();
         await page
             .getByRole('button', { name: 'Doelpunt tegen toevoegen' })
             .click();
@@ -218,17 +218,11 @@ test.describe('KNVB import', () => {
         await expect(page).toHaveURL(/\/match\/.+/);
         matchUrls.push(page.url());
 
-        await page.getByRole('button', { name: 'Start', exact: true }).click();
-        await page
-            .getByRole('button', { name: 'Eerste helft beëindigen' })
-            .click();
+        await page.getByRole('button', { name: 'Start wedstrijd' }).click();
+        await page.getByRole('button', { name: 'Einde 1e helft' }).click();
         await acceptConfirm(page, 'Eerste helft beëindigen');
-        await page
-            .getByRole('button', { name: 'Tweede helft starten' })
-            .click();
-        await page
-            .getByRole('button', { name: 'Wedstrijd beëindigen' })
-            .click();
+        await page.getByRole('button', { name: 'Start 2e helft' }).click();
+        await page.getByRole('button', { name: 'Einde wedstrijd' }).click();
         await acceptConfirm(page, 'Wedstrijd beëindigen');
         await expect(page.getByText('Wedstrijd beëindigd')).toBeVisible();
 

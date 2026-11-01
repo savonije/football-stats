@@ -7,12 +7,12 @@
     import ProgressSpinner from '@/components/ui/ProgressSpinner.vue';
     import AddMatchPlayersDialog from '@/pages/matches/_components/AddMatchPlayersDialog.vue';
     import EditAppearanceDialog from '@/pages/matches/_components/EditAppearanceDialog.vue';
+    import GoalBanner from '@/pages/matches/_components/GoalBanner.vue';
     import GoalTimeline from '@/pages/matches/_components/GoalTimeline.vue';
-    import MatchControls from '@/pages/matches/_components/MatchControls.vue';
-    import MatchHeader from '@/pages/matches/_components/MatchHeader.vue';
-    import MatchTimer from '@/pages/matches/_components/MatchTimer.vue';
+    import MatchActionsMenu from '@/pages/matches/_components/MatchActionsMenu.vue';
+    import MatchHero from '@/pages/matches/_components/MatchHero.vue';
+    import MatchInfoCard from '@/pages/matches/_components/MatchInfoCard.vue';
     import PlayerAppearanceItem from '@/pages/matches/_components/PlayerAppearanceItem.vue';
-    import ScoreBoard from '@/pages/matches/_components/ScoreBoard.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useConfirmOldMatchEdit } from '@/composables/useConfirmOldMatchEdit';
@@ -72,27 +72,23 @@
     <AppBreadcrumb :label="matchStore.selectedMatch?.opponent" />
 
     <div v-if="matchStore.selectedMatch" class="mx-auto w-200 max-w-full">
-        <MatchHeader
-            :match="matchStore.selectedMatch"
-            @add-players="addingPlayers = true"
-        />
-
-        <div
-            class="shadow-card rounded-xl bg-white sm:grid sm:grid-cols-3 sm:gap-4 sm:rounded-none sm:bg-transparent sm:shadow-none"
-        >
-            <ScoreBoard
-                class="sm:shadow-card sm:col-span-2 sm:rounded-xl sm:bg-white"
+        <div class="mb-3 flex justify-end empty:hidden">
+            <MatchActionsMenu
                 :match="matchStore.selectedMatch"
-            />
-
-            <MatchTimer
-                class="border-primary-100 sm:shadow-card border-t sm:rounded-xl sm:border-t-0 sm:bg-white"
+                @add-players="addingPlayers = true"
             />
         </div>
 
-        <MatchControls :season-id="seasonStore.currentSeason" />
+        <MatchHero
+            :match="matchStore.selectedMatch"
+            :season-id="seasonStore.currentSeason"
+        />
+
+        <GoalBanner :match="matchStore.selectedMatch" />
 
         <GoalTimeline :match="matchStore.selectedMatch" />
+
+        <MatchInfoCard :match="matchStore.selectedMatch" />
 
         <div class="mt-8 mb-4 flex items-baseline justify-between gap-3">
             <h2 class="mb-0 text-xl">
@@ -121,7 +117,7 @@
             variant="subtle"
         />
 
-        <div class="space-y-3">
+        <div class="grid gap-3 md:grid-cols-2">
             <PlayerAppearanceItem
                 v-for="appearance in matchStore.presentPlayersWithNames"
                 :key="appearance.id"

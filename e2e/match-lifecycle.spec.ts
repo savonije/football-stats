@@ -40,22 +40,22 @@ test.describe('Match timer lifecycle', () => {
         };
 
         // A second tab renders what came back from the server.
-        const serverHeading = async () => {
+        const serverInfo = async () => {
             const other = await page.context().newPage();
             await other.goto(matchUrl);
-            const heading = other.locator('h1').last().locator('..');
-            await expect(heading).toBeVisible();
-            return { other, heading };
+            const info = other.getByTestId('match-hero');
+            await expect(info).toBeVisible();
+            return { other, info };
         };
 
         await setKickoff('10:15');
-        const first = await serverHeading();
-        await expect(first.heading).toContainText(', 10:15');
+        const first = await serverInfo();
+        await expect(first.info).toContainText('10:15');
         await first.other.close();
 
         await setKickoff('');
-        const second = await serverHeading();
-        await expect(second.heading).not.toContainText(':');
+        const second = await serverInfo();
+        await expect(second.info).not.toContainText('Aftrap');
         await second.other.close();
     });
 
@@ -67,9 +67,7 @@ test.describe('Match timer lifecycle', () => {
         await expect(clock).toHaveText('0:00');
 
         await test.step('kick off the first half', async () => {
-            await page
-                .getByRole('button', { name: 'Start', exact: true })
-                .click();
+            await page.getByRole('button', { name: 'Start wedstrijd' }).click();
 
             await expect(status).toHaveText('1e helft');
             await expect(clock).not.toHaveText('0:00', { timeout: 5000 });
@@ -229,21 +227,17 @@ test.describe('Match timer lifecycle', () => {
         });
 
         await test.step('end the first half', async () => {
-            await page
-                .getByRole('button', { name: 'Eerste helft beëindigen' })
-                .click();
+            await page.getByRole('button', { name: 'Einde 1e helft' }).click();
             await acceptConfirm(page, 'Eerste helft beëindigen');
 
-            await expect(status).toHaveText('Rust');
+            await expect(status).toHaveText('1e helft gespeeld');
             await expect(
-                page.getByRole('button', { name: 'Tweede helft starten' }),
+                page.getByRole('button', { name: 'Start 2e helft' }),
             ).toBeVisible();
         });
 
         await test.step('start the second half', async () => {
-            await page
-                .getByRole('button', { name: 'Tweede helft starten' })
-                .click();
+            await page.getByRole('button', { name: 'Start 2e helft' }).click();
 
             await expect(status).toHaveText('2e helft');
             // The clock resumes at the half-duration offset, not at zero.
@@ -251,9 +245,7 @@ test.describe('Match timer lifecycle', () => {
         });
 
         await test.step('end the match', async () => {
-            await page
-                .getByRole('button', { name: 'Wedstrijd beëindigen' })
-                .click();
+            await page.getByRole('button', { name: 'Einde wedstrijd' }).click();
             await acceptConfirm(page, 'Wedstrijd beëindigen');
 
             await expect(page.getByText('Wedstrijd beëindigd')).toBeVisible();

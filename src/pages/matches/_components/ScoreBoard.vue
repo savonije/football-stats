@@ -1,10 +1,8 @@
 <script setup lang="ts">
-    import { useToast } from '@nuxt/ui/composables/useToast';
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { computed, onMounted, ref } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     import DialogFooter from '@/components/dialogs/DialogFooter.vue';
-    import GoalBanner from '@/pages/matches/_components/GoalBanner.vue';
 
     import { useCanEdit } from '@/composables/useCanEdit';
     import { useConfirmDialog } from '@/composables/useConfirmDialog';
@@ -30,7 +28,6 @@
     const matchStore = useMatchStore();
     const playerStore = usePlayerStore();
     const seasonStore = useSeasonStore();
-    const toast = useToast();
     const { t } = useI18n();
 
     const modal = ref(false);
@@ -59,36 +56,15 @@
         })),
     );
 
+    const lost = (side: Side) =>
+        match.ended &&
+        side.goals <
+            (side.type === 'for' ? goalsAgainst.value : goalsFor.value);
+
     const scoreClass = (side: Side) => {
-        if (!played.value) return 'text-primary-100';
-
-        const other = side.type === 'for' ? goalsAgainst.value : goalsFor.value;
-        return match.ended && side.goals < other
-            ? 'text-primary-300'
-            : 'text-primary-900';
+        if (!played.value) return 'text-white/25';
+        return lost(side) ? 'text-primary-300' : '';
     };
-
-    const scoredGoal = ref<MatchGoal>();
-
-    watch(
-        () => [match.id, match.goals?.length ?? 0] as const,
-        ([id, count], [previousId, previousCount]) => {
-            const goal = match.goals?.at(-1);
-            if (id !== previousId || count <= previousCount || !goal) return;
-
-            if (goal.side === 'for') {
-                scoredGoal.value = goal;
-                return;
-            }
-
-            toast.add({
-                title: t('match.goalTitleAgainst', { team: match.opponent }),
-                description: t('match.goalTypes.against'),
-                color: 'warning',
-                duration: 10000,
-            });
-        },
-    );
 
     const closeModal = () => {
         modal.value = false;
@@ -157,20 +133,23 @@
 </script>
 
 <template>
-    <div class="flex flex-col justify-center overflow-hidden">
+    <div>
         <div
-            class="grid grid-cols-[1fr_auto_1fr] items-center justify-items-center gap-x-3 gap-y-2 p-5"
+            class="grid grid-cols-[1fr_auto_1fr] items-center justify-items-center gap-x-2 gap-y-2 text-center"
         >
             <template v-for="(side, index) in sides" :key="side.type">
                 <div
-                    class="text-primary-800 row-start-1 text-center text-base leading-tight font-bold sm:text-lg"
-                    :class="index === 0 ? 'col-start-1' : 'col-start-3'"
+                    class="row-start-1 self-end text-base leading-tight font-bold"
+                    :class="[
+                        index === 0 ? 'col-start-1' : 'col-start-3',
+                        { 'text-primary-200': lost(side) },
+                    ]"
                 >
                     {{ side.name }}
                 </div>
 
                 <div
-                    class="row-start-2 text-5xl leading-none font-black tabular-nums sm:text-6xl"
+                    class="row-start-2 text-6xl leading-none font-black tabular-nums"
                     :class="[
                         index === 0 ? 'col-start-1' : 'col-start-3',
                         scoreClass(side),
@@ -186,47 +165,34 @@
                     :class="index === 0 ? 'col-start-1' : 'col-start-3'"
                 >
                     <UButton
-                        class="border-primary-100 bg-primary-50 text-primary hover:bg-primary-100 size-11 justify-center rounded-full"
+                        class="size-11 justify-center rounded-full border border-white/30 bg-white/10 text-white hover:bg-white/20"
                         :aria-label="side.removeLabel"
                         color="neutral"
                         icon="i-lucide-minus"
-                        variant="outline"
+                        variant="ghost"
                         @click="updateGoals(side.type, -1)"
                     />
 
                     <UButton
-                        class="border-primary-100 bg-primary-50 text-primary hover:bg-primary-100 size-11 justify-center rounded-full"
+                        class="size-11 justify-center rounded-full"
+                        :class="
+                            side.type === 'for'
+                                ? 'bg-amber text-primary-950 hover:bg-amber-400'
+                                : 'border border-white/30 bg-white/10 text-white hover:bg-white/20'
+                        "
                         :aria-label="side.addLabel"
                         color="neutral"
                         icon="i-lucide-plus"
-                        variant="outline"
+                        variant="ghost"
                         @click="updateGoals(side.type, 1)"
                     />
                 </div>
             </template>
 
-            <div
-                class="bg-primary-100 col-start-2 row-start-2 h-1 w-6 rounded-full"
-            />
-
-            <div
-                v-if="!played"
-                class="text-primary-400 col-span-full row-start-3 mt-2 text-sm"
-            >
-                {{ t('match.noScoreYet') }}
+            <div class="col-start-2 row-start-2 px-1">
+                <slot />
             </div>
-
-            <UBadge
-                v-else-if="match.ended"
-                class="col-span-full row-start-3 mt-2"
-                color="primary"
-                icon="i-lucide-flag"
-                :label="t('match.isEnded')"
-                variant="subtle"
-            />
         </div>
-
-        <GoalBanner :goal="scoredGoal" />
 
         <UModal
             v-model:open="modal"

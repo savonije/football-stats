@@ -19,7 +19,7 @@ test.describe('Goal banner', () => {
         test.slow();
 
         matchUrl = await createMatch(page, uniqueLabel('E2E banner'));
-        await page.getByRole('button', { name: 'Start', exact: true }).click();
+        await page.getByRole('button', { name: 'Start wedstrijd' }).click();
 
         await expect(page.getByTestId('appearance').first()).toBeVisible();
 

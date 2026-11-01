@@ -7,6 +7,7 @@ export default {
     drivers: 'Wie rijdt?',
     meetingTime: 'Verzameltijd op {club}',
     meetAt: 'verzamelen {time}',
+    meetingLabel: 'verzamelen',
     notPlanned: 'Nog niet ingepland',
     driven: 'Gereden',
     planned: 'Ingepland',
