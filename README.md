@@ -39,7 +39,7 @@ Built with **Vite+**, styled with **Tailwind CSS** and **Nuxt UI**, powered by *
 
 ### Prerequisites
 
-Make sure you have [Node.js](https://nodejs.org/) and npm installed. The version is pinned in `.node-version` (read by `vp` and CI) and `.nvmrc` (read by `nvm use`) — currently **Node 24**. Bump both together.
+Make sure you have [Node.js](https://nodejs.org/) and npm installed. The version is pinned in `.nvmrc` (read by `nvm use` and CI) and `engines.node` in `package.json` (read by `vp`) — currently **Node 26**. Bump both together.
 
 ### Installation
 
