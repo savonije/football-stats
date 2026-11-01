@@ -37,8 +37,12 @@ test.describe('Goal banner', () => {
                 .click();
 
             await expect(page.getByTestId('score-against')).toHaveText('1');
+            // Not getByText: for its first second a toast also has an
+            // aria-hidden copy in a live region, which would match as well.
             await expect(
-                page.getByText('Doelpunt gemaakt door de tegenstander'),
+                page.getByRole('listitem').filter({
+                    hasText: 'Doelpunt gemaakt door de tegenstander',
+                }),
             ).toBeVisible();
             await expect(banner).not.toContainText('Doelpunt');
         });
