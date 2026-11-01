@@ -25,6 +25,7 @@ export const addMatch = async (seasonId: string, match: NewMatch) => {
             washing: match.washing || null,
             ...(match.knvbCode && { knvbCode: match.knvbCode }),
             ...match.venue,
+            ...(match.referee && { referee: match.referee }),
             createdAt: serverTimestamp(),
             ended: false,
             paused: false,

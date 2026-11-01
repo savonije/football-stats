@@ -82,6 +82,7 @@ export const useMatchStore = defineStore('matchStore', {
                 opponent: string;
                 date: Date;
                 home: boolean;
+                referee: string;
                 goalsFor: number;
                 goalsAgainst: number;
             },

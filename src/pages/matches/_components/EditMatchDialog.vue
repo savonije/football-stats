@@ -36,6 +36,7 @@
     const location = ref('');
     const field = ref('');
     const dressingRoom = ref('');
+    const referee = ref('');
     const goalsFor = ref(0);
     const goalsAgainst = ref(0);
     const loading = ref(false);
@@ -70,6 +71,7 @@
                 location: location.value.trim(),
                 field: field.value.trim(),
                 dressingRoom: dressingRoom.value.trim(),
+                referee: referee.value.trim(),
                 goalsFor: goalsFor.value,
                 goalsAgainst: goalsAgainst.value,
             });
@@ -98,6 +100,7 @@
         location.value = match?.location ?? '';
         field.value = match?.field ?? '';
         dressingRoom.value = match?.dressingRoom ?? '';
+        referee.value = match?.referee ?? '';
         goalsFor.value = match?.result?.goalsFor ?? 0;
         goalsAgainst.value = match?.result?.goalsAgainst ?? 0;
     });
@@ -174,6 +177,11 @@
                             class="w-full"
                         />
                     </div>
+                </div>
+
+                <div>
+                    <label for="referee">{{ t('match.referee') }}</label>
+                    <UInput id="referee" v-model="referee" class="w-full" />
                 </div>
 
                 <div v-if="isPlayed(match)" class="flex gap-3">

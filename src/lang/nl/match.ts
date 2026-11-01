@@ -74,6 +74,7 @@ export default {
     paused: 'Gepauzeerd',
     playersPresent: '{count} aanwezig',
     practical: 'Praktische informatie',
+    referee: 'Scheidsrechter',
     recentResults: 'Recente resultaten',
     removeGoalAgainst: 'Doelpunt tegen verwijderen',
     removeGoalFor: 'Doelpunt voor verwijderen',

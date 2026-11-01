@@ -32,6 +32,7 @@ export interface Match {
     location?: string;
     field?: string;
     dressingRoom?: string;
+    referee?: string;
 }
 
 /**
@@ -56,6 +57,7 @@ export interface NewMatch {
     playerIds?: string[];
     knvbCode?: number;
     venue?: MatchVenue;
+    referee?: string;
 }
 
 export interface Appearance {

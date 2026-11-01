@@ -81,6 +81,13 @@
                   }
                 : null,
             venueRow.value,
+            match.referee
+                ? {
+                      icon: 'i-lucide-whistle',
+                      label: t('match.referee'),
+                      value: match.referee,
+                  }
+                : null,
             drivingRow.value,
             settingsStore.washingEnabled && match.washing
                 ? {

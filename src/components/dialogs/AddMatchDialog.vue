@@ -27,6 +27,7 @@
         home: true,
         players: [],
         washing: '',
+        referee: '',
         result: { goalsFor: 0, goalsAgainst: 0 },
     });
 
@@ -70,6 +71,7 @@
         try {
             await addMatch(seasonStore.currentSeason, {
                 ...form,
+                referee: form.referee?.trim(),
                 date: matchDate,
                 playerIds: form.players,
             });
@@ -144,6 +146,15 @@
                         v-model="form.home"
                         class="w-full"
                         :items="homeOptions"
+                    />
+                </div>
+
+                <div>
+                    <label for="referee">{{ t('match.referee') }}</label>
+                    <UInput
+                        id="referee"
+                        v-model="form.referee"
+                        class="w-full"
                     />
                 </div>
 
