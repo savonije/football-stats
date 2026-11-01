@@ -69,18 +69,16 @@
 </script>
 
 <template>
-    <div class="flex items-start justify-between gap-3">
-        <AppBreadcrumb :label="matchStore.selectedMatch?.opponent" />
+    <AppBreadcrumb :label="matchStore.selectedMatch?.opponent" />
 
-        <div v-if="matchStore.selectedMatch" class="-mt-2">
+    <div v-if="matchStore.selectedMatch" class="mx-auto w-200 max-w-full">
+        <div class="mb-3 flex justify-end empty:hidden">
             <MatchActionsMenu
                 :match="matchStore.selectedMatch"
                 @add-players="addingPlayers = true"
             />
         </div>
-    </div>
 
-    <div v-if="matchStore.selectedMatch" class="mx-auto w-200 max-w-full">
         <MatchHero
             :match="matchStore.selectedMatch"
             :season-id="seasonStore.currentSeason"
@@ -119,7 +117,7 @@
             variant="subtle"
         />
 
-        <div class="space-y-3">
+        <div class="grid gap-3 md:grid-cols-2">
             <PlayerAppearanceItem
                 v-for="appearance in matchStore.presentPlayersWithNames"
                 :key="appearance.id"
