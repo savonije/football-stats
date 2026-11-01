@@ -6,7 +6,6 @@ export default {
     parentOf: 'Ouder van',
     drivers: 'Wie rijdt?',
     meetingTime: 'Verzameltijd op {club}',
-    meetAt: 'verzamelen {time}',
     meetingLabel: 'verzamelen',
     notPlanned: 'Nog niet ingepland',
     driven: 'Gereden',

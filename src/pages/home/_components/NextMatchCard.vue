@@ -1,19 +1,16 @@
 <script setup lang="ts">
     import dayjs from 'dayjs';
     import { computed } from 'vue';
-    import { useI18n } from 'vue-i18n';
     import { RouterLink } from 'vue-router';
 
+    import MatchInfoRow from '@/components/match/MatchInfoRow.vue';
+
+    import { useMatchInfoRows } from '@/composables/useMatchInfoRows';
     import { useMatchStore } from '@/stores/matchStore';
-    import { usePlayerStore } from '@/stores/playerStore';
-    import { useSettingsStore } from '@/stores/settingsStore';
     import { hasKickoffTime } from '@/utils/date';
     import { hasStarted } from '@/utils/match';
 
     const matchStore = useMatchStore();
-    const playerStore = usePlayerStore();
-    const settingsStore = useSettingsStore();
-    const { t } = useI18n();
 
     const nextMatch = computed(() => {
         const today = dayjs().startOf('day');
@@ -32,52 +29,17 @@
         );
     });
 
+    const rows = useMatchInfoRows(() => nextMatch.value);
+
     const date = computed(() => nextMatch.value?.date.toDate());
 
     const formatDate = (options: Intl.DateTimeFormatOptions) =>
         date.value?.toLocaleDateString('nl-NL', options) ?? '';
 
-    const washerName = computed(() => {
-        const washing = nextMatch.value?.washing;
-        const player = washing ? playerStore.getPlayerById(washing) : null;
-
-        return player?.name ?? t('washing.notAssigned');
-    });
-
-    const driverNames = computed(() =>
-        (nextMatch.value?.driving?.drivers ?? [])
-            .map((id) => playerStore.getPlayerById(id)?.name ?? '?')
-            .join(', '),
-    );
-
-    const meetingTime = computed(() =>
-        settingsStore.drivingEnabled && !nextMatch.value?.home
-            ? nextMatch.value?.driving?.meetingTime
-            : undefined,
-    );
-
     const kickoff = computed(() =>
         date.value && hasKickoffTime(date.value)
             ? dayjs(date.value).format('HH:mm')
             : '',
-    );
-
-    const stripPrefix = (value: string | undefined, prefix: string) =>
-        value?.replace(new RegExp(`^${prefix}\\s*`, 'i'), '');
-
-    const venueTiles = computed(() =>
-        [
-            {
-                icon: 'i-lucide-goal',
-                label: t('match.venue.field'),
-                value: stripPrefix(nextMatch.value?.field, 'veld'),
-            },
-            {
-                icon: 'i-lucide-shirt',
-                label: t('match.venue.dressingRoom'),
-                value: stripPrefix(nextMatch.value?.dressingRoom, 'kleedkamer'),
-            },
-        ].filter((tile) => tile.value),
     );
 </script>
 
@@ -86,7 +48,7 @@
         v-if="!matchStore.matchesLoaded"
         class="shadow-card rounded-xl bg-white p-5"
     >
-        <h2>{{ t('match.nextMatch') }}</h2>
+        <h2>{{ $t('match.nextMatch') }}</h2>
 
         <div class="flex items-center gap-4">
             <USkeleton class="size-14 shrink-0 rounded-xl" />
@@ -96,108 +58,51 @@
                 <USkeleton class="h-4 w-24" />
             </div>
         </div>
-
-        <div
-            class="border-primary-100 mt-4 flex items-center justify-between border-t pt-3"
-        >
-            <USkeleton class="h-4 w-20" />
-            <USkeleton class="h-4 w-24" />
-        </div>
     </div>
 
     <RouterLink
         v-else-if="nextMatch"
-        class="shadow-card block rounded-xl bg-white p-5 text-inherit no-underline"
+        class="shadow-card block overflow-hidden rounded-xl bg-white text-inherit no-underline"
         :to="{ name: 'matchDetail', params: { id: nextMatch.id } }"
     >
-        <h2>{{ t('match.nextMatch') }}</h2>
+        <div class="px-4 py-5">
+            <h2>{{ $t('match.nextMatch') }}</h2>
 
-        <div class="flex items-center gap-4">
-            <div
-                class="bg-primary-50 flex size-14 shrink-0 flex-col items-center justify-center rounded-xl"
-            >
-                <span class="text-primary text-xl leading-none font-black">
-                    {{ formatDate({ day: 'numeric' }) }}
-                </span>
-                <span
-                    class="tracking-label text-xxs text-primary-600 font-mono font-bold uppercase"
+            <div class="flex items-center gap-4">
+                <div
+                    class="bg-primary-50 flex size-14 shrink-0 flex-col items-center justify-center rounded-xl"
                 >
-                    {{ formatDate({ month: 'short' }) }}
-                </span>
-            </div>
+                    <span class="text-primary text-xl leading-none font-black">
+                        {{ formatDate({ day: 'numeric' }) }}
+                    </span>
+                    <span
+                        class="tracking-label text-xxs text-primary-600 font-mono font-bold uppercase"
+                    >
+                        {{ formatDate({ month: 'short' }) }}
+                    </span>
+                </div>
 
-            <div class="min-w-0 flex-1">
-                <p class="text-primary-900 mb-0 truncate text-lg font-bold">
-                    {{ nextMatch.opponent }}
-                </p>
-                <p class="mb-0 text-sm text-gray-600">
-                    {{ formatDate({ weekday: 'long' }) }}
-                    <template v-if="meetingTime">
-                        · {{ t('driving.meetAt', { time: meetingTime }) }}
-                    </template>
-                    <template v-else-if="kickoff">· {{ kickoff }}</template>
-                </p>
-            </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-primary-900 mb-0 truncate text-lg font-bold">
+                        {{ nextMatch.opponent }}
+                    </p>
+                    <p class="mb-0 text-sm text-gray-600">
+                        {{ formatDate({ weekday: 'long' }) }}
+                        <template v-if="kickoff">· {{ kickoff }}</template>
+                    </p>
+                </div>
 
-            <UBadge
-                class="tracking-badge text-xxs shrink-0 font-mono font-bold uppercase"
-                color="primary"
-                :label="nextMatch.home ? t('common.home') : t('common.away')"
-                variant="subtle"
-            />
-        </div>
-
-        <p
-            v-if="nextMatch.location"
-            class="text-primary-700 mt-4 mb-0 flex items-start gap-2 text-sm font-semibold"
-        >
-            <UIcon
-                class="text-primary-400 mt-0.5 size-4 shrink-0"
-                name="i-lucide-map-pin"
-            />
-            {{ nextMatch.location }}
-        </p>
-
-        <div v-if="venueTiles.length" class="mt-3 flex gap-2">
-            <div
-                v-for="tile in venueTiles"
-                :key="tile.icon"
-                class="bg-primary-50 min-w-0 flex-1 rounded-lg px-3 py-2"
-            >
-                <span
-                    class="tracking-label text-xxs text-primary-600 flex items-center gap-1 font-mono font-bold uppercase"
-                >
-                    <UIcon class="size-3" :name="tile.icon" />
-                    {{ tile.label }}
-                </span>
-                <span
-                    class="text-primary-900 mt-0.5 block text-base leading-snug font-bold"
-                >
-                    {{ tile.value }}
-                </span>
+                <UBadge
+                    class="tracking-badge text-xxs shrink-0 font-mono font-bold uppercase"
+                    color="primary"
+                    :label="
+                        nextMatch.home ? $t('common.home') : $t('common.away')
+                    "
+                    variant="subtle"
+                />
             </div>
         </div>
 
-        <div
-            v-if="settingsStore.washingEnabled"
-            class="border-primary-100 mt-4 flex items-center justify-between border-t pt-3 text-sm"
-        >
-            <span class="font-semibold text-gray-600">
-                {{ t('washing.washer') }}
-            </span>
-            <span class="text-primary-900 font-bold">{{ washerName }}</span>
-        </div>
-
-        <div
-            v-if="settingsStore.drivingEnabled && !nextMatch.home"
-            class="border-primary-100 mt-3 flex items-start justify-between gap-4 border-t pt-3 text-sm"
-        >
-            <span class="shrink-0 font-semibold text-gray-600">
-                {{ t('driving.drivers') }}
-            </span>
-            <span class="text-primary-900 text-right font-bold">
-                {{ driverNames || t('driving.notPlanned') }}
-            </span>
-        </div>
+        <MatchInfoRow v-for="row in rows" :key="row.icon" compact :row />
     </RouterLink>
 </template>
