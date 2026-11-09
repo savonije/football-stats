@@ -31,7 +31,7 @@ export default {
     firstHalf: '1e helft',
     friendly: 'Oefenwedstrijd',
     friendlyHint:
-        'Oefenwedstrijd of toernooi: blijft zichtbaar, maar telt niet mee in de statistieken',
+        'Oefenwedstrijd of toernooi: telt mee voor het hele seizoen, maar hoort bij geen enkele periode',
     firstHalfPlayed: '1e helft gespeeld',
     game: 'Wedstrijd | Wedstrijden',
     goalScorer: 'Doelpuntenmaker',
@@ -87,7 +87,7 @@ export default {
     secondHalf: '2e helft',
     startSecondHalf: 'Tweede helft starten',
     topscorersIntro:
-        'Wie scoort er het vaakst? Hier zie je per speler hoeveel doelpunten die heeft gemaakt, hoe vaak die op doel stond en in hoeveel wedstrijden die meedeed. Oefenwedstrijden en toernooien tellen hier niet mee, maar die kun je natuurlijk nog steeds terugvinden bij de wedstrijden.',
+        'Wie scoort er het vaakst? Hier zie je per speler hoeveel doelpunten die heeft gemaakt, hoe vaak die op doel stond en in hoeveel wedstrijden die meedeed. Oefenwedstrijden en toernooien tellen mee voor het hele seizoen, maar niet voor een periode.',
     topscorersPeriodHint:
         'Benieuwd naar één periode? Kies die bovenaan de pagina.',
     unknownScorer: 'Onbekende maker',

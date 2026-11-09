@@ -29,7 +29,7 @@
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
             .map((player) => {
-                const appearances = matchStore.statsAppearances.filter(
+                const appearances = matchStore.periodAppearances.filter(
                     (a) => a.playerId === player.id,
                 );
 

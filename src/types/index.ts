@@ -33,7 +33,7 @@ export interface Match {
     field?: string;
     dressingRoom?: string;
     referee?: string;
-    /** Friendlies and tournaments: listed, but left out of every statistic. */
+    /** Friendlies and tournaments: count for the season, but belong to no period. */
     friendly?: boolean;
 }
 

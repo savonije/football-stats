@@ -6,8 +6,8 @@ import type { Appearance } from '@/types';
 /**
  * A player's appearances for the currently loaded matches, restricted to
  * matches that have ended — matches still to be played (or in progress) must
- * not count towards a player's statistics, and neither do friendlies. Follows
- * the period picked in the header.
+ * not count towards a player's statistics. Follows the period picked in the
+ * header.
  *
  * `playerId` is taken as a getter so the result stays reactive when the route
  * id changes without the component remounting.
@@ -23,7 +23,9 @@ export const usePlayerAppearances = (
     const endedMatchIds = computed(
         () =>
             new Set(
-                matchStore.statsMatches.filter((m) => m.ended).map((m) => m.id),
+                matchStore.periodMatches
+                    .filter((m) => m.ended)
+                    .map((m) => m.id),
             ),
     );
 

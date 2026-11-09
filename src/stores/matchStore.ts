@@ -413,16 +413,13 @@ export const useMatchStore = defineStore('matchStore', {
         periodMatches(state): Match[] {
             const period = useSeasonStore().selectedPeriod;
             return period
-                ? state.matches.filter((m) =>
-                      isInPeriod(m.date.toDate(), period),
+                ? state.matches.filter(
+                      (m) => !m.friendly && isInPeriod(m.date.toDate(), period),
                   )
                 : state.matches;
         },
-        statsMatches(): Match[] {
-            return this.periodMatches.filter((m) => !m.friendly);
-        },
-        statsAppearances(state): Appearance[] {
-            const ids = new Set(this.statsMatches.map((m) => m.id));
+        periodAppearances(state): Appearance[] {
+            const ids = new Set(this.periodMatches.map((m) => m.id));
             return state.appearances.filter((a) => ids.has(a.matchId));
         },
         presentPlayersWithNames: (state) => {
