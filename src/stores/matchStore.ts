@@ -83,6 +83,7 @@ export const useMatchStore = defineStore('matchStore', {
                 date: Date;
                 home: boolean;
                 referee: string;
+                friendly: boolean;
                 meetingTime: string;
                 goalsFor: number;
                 goalsAgainst: number;
@@ -417,8 +418,11 @@ export const useMatchStore = defineStore('matchStore', {
                   )
                 : state.matches;
         },
-        periodAppearances(state): Appearance[] {
-            const ids = new Set(this.periodMatches.map((m) => m.id));
+        statsMatches(): Match[] {
+            return this.periodMatches.filter((m) => !m.friendly);
+        },
+        statsAppearances(state): Appearance[] {
+            const ids = new Set(this.statsMatches.map((m) => m.id));
             return state.appearances.filter((a) => ids.has(a.matchId));
         },
         presentPlayersWithNames: (state) => {

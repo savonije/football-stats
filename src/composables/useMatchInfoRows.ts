@@ -17,7 +17,7 @@ export interface MatchInfoRow {
 const withLabel = (value: string, label: string) =>
     `${label} ${value.replace(new RegExp(`^${label}\\s*`, 'i'), '')}`;
 
-/** The practical details of a match (location, venue, referee, driving, washing). */
+/** The practical details of a match (friendly, location, venue, referee, driving, washing). */
 export const useMatchInfoRows = (match: () => Match | null) => {
     const { t } = useI18n();
     const playerStore = usePlayerStore();
@@ -62,6 +62,13 @@ export const useMatchInfoRows = (match: () => Match | null) => {
         if (!m) return [];
 
         return [
+            m.friendly
+                ? {
+                      icon: 'i-lucide-handshake',
+                      label: t('match.matchType'),
+                      value: t('match.friendly'),
+                  }
+                : null,
             m.location
                 ? {
                       icon: 'i-lucide-map-pin',

@@ -81,7 +81,7 @@
 
     <template v-else>
         <div class="mb-6 flex items-start justify-between gap-4">
-            <p class="text-primary-800 mb-0 max-w-2xl">
+            <p class="text-primary-800 mb-0 max-w-2xl text-sm">
                 {{ $t('driving.intro', settingsStore.playersPerCar) }}
             </p>
             <DrivingActionsMenu />

@@ -33,6 +33,8 @@ export interface Match {
     field?: string;
     dressingRoom?: string;
     referee?: string;
+    /** Friendlies and tournaments: listed, but left out of every statistic. */
+    friendly?: boolean;
 }
 
 /**
@@ -59,6 +61,7 @@ export interface NewMatch {
     venue?: MatchVenue;
     referee?: string;
     meetingTime?: string;
+    friendly?: boolean;
 }
 
 export interface Appearance {

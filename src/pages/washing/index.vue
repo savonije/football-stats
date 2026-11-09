@@ -43,7 +43,7 @@
     />
 
     <template v-else>
-        <p class="text-primary-800 mb-6 max-w-2xl">
+        <p class="text-primary-800 mb-6 max-w-2xl text-sm">
             {{ $t('washing.intro') }}
         </p>
 

@@ -38,6 +38,7 @@
     const dressingRoom = ref('');
     const referee = ref('');
     const meetingTime = ref('');
+    const friendly = ref(false);
     const goalsFor = ref(0);
     const goalsAgainst = ref(0);
     const loading = ref(false);
@@ -74,6 +75,7 @@
                 dressingRoom: dressingRoom.value.trim(),
                 referee: referee.value.trim(),
                 meetingTime: meetingTime.value,
+                friendly: friendly.value,
                 goalsFor: goalsFor.value,
                 goalsAgainst: goalsAgainst.value,
             });
@@ -104,6 +106,7 @@
         dressingRoom.value = match?.dressingRoom ?? '';
         referee.value = match?.referee ?? '';
         meetingTime.value = match?.driving?.meetingTime ?? '';
+        friendly.value = match?.friendly ?? false;
         goalsFor.value = match?.result?.goalsFor ?? 0;
         goalsAgainst.value = match?.result?.goalsAgainst ?? 0;
     });
@@ -224,6 +227,15 @@
                         />
                     </div>
                 </div>
+
+                <USeparator class="-mx-4 w-auto sm:-mx-6" />
+
+                <USwitch
+                    v-model="friendly"
+                    :description="t('match.friendlyHint')"
+                    :label="t('match.friendly')"
+                    data-testid="match-friendly"
+                />
             </div>
         </template>
 

@@ -29,6 +29,9 @@ export default {
     endMatchSuccess: 'Wedstrijd succesvol beëindigd',
     finalScore: 'Afgelopen',
     firstHalf: '1e helft',
+    friendly: 'Oefenwedstrijd',
+    friendlyHint:
+        'Oefenwedstrijd of toernooi: blijft zichtbaar, maar telt niet mee in de statistieken',
     firstHalfPlayed: '1e helft gespeeld',
     game: 'Wedstrijd | Wedstrijden',
     goalScorer: 'Doelpuntenmaker',
@@ -52,6 +55,7 @@ export default {
     isEnded: 'Wedstrijd beëindigd',
     kickoff: 'Aftrap',
     live: 'Live',
+    matchType: 'Soort wedstrijd',
     messages: {
         firstHalfEnded: 'Eerste helft beëindigd',
         matchAdded: 'Wedstrijd succesvol toegevoegd',
@@ -82,6 +86,10 @@ export default {
         'Het laatste doelpunt van {team} wordt verwijderd, inclusief de minuut waarin het viel. Dit kan niet ongedaan worden gemaakt.',
     secondHalf: '2e helft',
     startSecondHalf: 'Tweede helft starten',
+    topscorersIntro:
+        'Wie scoort er het vaakst? Hier zie je per speler hoeveel doelpunten die heeft gemaakt, hoe vaak die op doel stond en in hoeveel wedstrijden die meedeed. Oefenwedstrijden en toernooien tellen hier niet mee, maar die kun je natuurlijk nog steeds terugvinden bij de wedstrijden.',
+    topscorersPeriodHint:
+        'Benieuwd naar één periode? Kies die bovenaan de pagina.',
     unknownScorer: 'Onbekende maker',
     viewMatchDetails: 'Bekijk wedstrijd details',
     winPercentage: 'Winstpercentage',

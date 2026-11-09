@@ -29,7 +29,7 @@
         return playerStore
             .playersInSeason(seasonStore.currentSeason)
             .map((player) => {
-                const appearances = matchStore.periodAppearances.filter(
+                const appearances = matchStore.statsAppearances.filter(
                     (a) => a.playerId === player.id,
                 );
 
@@ -113,6 +113,13 @@
 </script>
 
 <template>
+    <p class="text-primary-800 mb-6 max-w-2xl text-sm">
+        {{ $t('match.topscorersIntro') }}
+        <template v-if="seasonStore.currentPeriods.length">
+            {{ $t('match.topscorersPeriodHint') }}
+        </template>
+    </p>
+
     <TopscorerPodium :players="scorers.slice(0, 3)" />
 
     <GoalDistributionBar :players="scorers" />

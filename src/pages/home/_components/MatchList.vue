@@ -111,7 +111,9 @@
                   {
                       id: 'period',
                       accessorFn: (match: Match) =>
-                          seasonStore.periodNumberOf(match.date.toDate()),
+                          match.friendly
+                              ? null
+                              : seasonStore.periodNumberOf(match.date.toDate()),
                       header: t('seasons.period'),
                       enableGlobalFilter: false,
                       meta: {

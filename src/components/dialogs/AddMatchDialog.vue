@@ -30,6 +30,7 @@
         washing: '',
         referee: '',
         meetingTime: '',
+        friendly: false,
         result: { goalsFor: 0, goalsAgainst: 0 },
     });
 
@@ -229,6 +230,15 @@
                         value-key="value"
                     />
                 </div>
+
+                <USeparator class="-mx-4 w-auto sm:-mx-6" />
+
+                <USwitch
+                    v-model="form.friendly"
+                    :description="t('match.friendlyHint')"
+                    :label="t('match.friendly')"
+                    data-testid="match-friendly"
+                />
             </div>
         </template>
 
