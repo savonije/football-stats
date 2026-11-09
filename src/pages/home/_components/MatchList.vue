@@ -46,20 +46,26 @@
               t('washing.notAssigned'))
             : t('washing.notAssigned');
 
-    const formatMatchDate = (match: Match) => {
+    const dateParts = (match: Match) => {
         const date = match.date.toDate();
-        return dayjs(date).format(
-            hasKickoffTime(date) ? 'DD-MM-YYYY HH:mm' : 'DD-MM-YYYY',
-        );
+        const day = dayjs(date);
+        const kickoff = hasKickoffTime(date);
+        return {
+            day: day.format('D'),
+            month: day.format('MMM').replace('.', ''),
+            weekday: day.format('dddd'),
+            time: kickoff ? day.format('HH:mm') : null,
+            short: day.format(kickoff ? 'dd HH:mm' : 'dddd'),
+        };
     };
 
     const resultClass = (match: Match) => {
         if (!hasStarted(match) || !match.result) return 'text-gray-500';
         if (match.result.goalsFor > match.result.goalsAgainst)
-            return 'text-green-700';
+            return 'bg-green-50 text-green-700';
         if (match.result.goalsFor < match.result.goalsAgainst)
-            return 'text-red-700';
-        return 'text-yellow-700';
+            return 'bg-red-50 text-red-700';
+        return 'bg-yellow-50 text-yellow-700';
     };
 
     const columns = computed<TableColumn<Match>[]>(() => [
@@ -204,15 +210,61 @@
             :pagination-options="{
                 getPaginationRowModel: getPaginationRowModel(),
             }"
-            :ui="TABLE_UI"
+            :ui="{ ...TABLE_UI, thead: 'max-sm:hidden' }"
             @select="onSelect"
         >
             <template #date-cell="{ row }">
-                {{ row.original.date ? formatMatchDate(row.original) : '-' }}
+                <div v-if="row.original.date" class="flex items-center gap-3">
+                    <div
+                        class="bg-primary-50 text-primary-800 flex w-11 shrink-0 flex-col items-center rounded-lg py-1.5 leading-none"
+                    >
+                        <span class="text-lg font-bold">
+                            {{ dateParts(row.original).day }}
+                        </span>
+                        <span
+                            class="text-xxs tracking-label font-semibold uppercase"
+                        >
+                            {{ dateParts(row.original).month }}
+                        </span>
+                    </div>
+                    <div class="flex flex-col leading-tight max-sm:hidden">
+                        <span class="font-semibold capitalize">
+                            {{ dateParts(row.original).weekday }}
+                        </span>
+                        <span
+                            v-if="dateParts(row.original).time"
+                            class="text-sm text-gray-500 tabular-nums"
+                        >
+                            {{ dateParts(row.original).time }}
+                        </span>
+                    </div>
+                </div>
+                <template v-else>-</template>
+            </template>
+
+            <template #opponent-cell="{ row }">
+                {{ row.original.opponent }}
+                <div
+                    v-if="row.original.date"
+                    class="mt-1 flex items-center gap-2 text-xs font-normal text-gray-500 sm:hidden"
+                >
+                    <span>{{ dateParts(row.original).short }}</span>
+                    <UBadge color="neutral" size="sm" variant="subtle">
+                        {{
+                            row.original.home
+                                ? t('common.home')
+                                : t('common.away')
+                        }}
+                    </UBadge>
+                </div>
             </template>
 
             <template #homeOrAway-cell="{ row }">
-                {{ row.original.home ? t('common.home') : t('common.away') }}
+                <UBadge color="neutral" variant="subtle">
+                    {{
+                        row.original.home ? t('common.home') : t('common.away')
+                    }}
+                </UBadge>
             </template>
 
             <template #period-cell="{ row }">
@@ -232,7 +284,10 @@
             </template>
 
             <template #result-cell="{ row }">
-                <span class="font-bold" :class="resultClass(row.original)">
+                <span
+                    class="rounded-md px-2 py-1 font-bold tabular-nums"
+                    :class="resultClass(row.original)"
+                >
                     {{
                         isPlayed(row.original) && row.original.result
                             ? `${row.original.result.goalsFor}-${row.original.result.goalsAgainst}`
